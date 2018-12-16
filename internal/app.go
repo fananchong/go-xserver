@@ -58,8 +58,10 @@ func (app *App) Run() {
 		return
 	}
 
-	app.initProf()
+	// init pprof
+	app.initPprof()
 
+	// running
 	app.onAppReady()
 	for !termination {
 		select {
@@ -76,7 +78,7 @@ func (app *App) Run() {
 }
 
 func (app *App) initLog() {
-	common.XLOG = common.NewGLogger()
+	common.XLOG = NewGLogger()
 	logDir := viper.GetString("common.LogDir")
 	if logDir != "" {
 		os.MkdirAll(logDir, os.ModeDir)
@@ -99,7 +101,7 @@ func (app *App) initPlugin() error {
 	return nil
 }
 
-func (app *App) initProf() {
+func (app *App) initPprof() {
 	addr := viper.GetString("common.Pprof")
 	if addr != "" {
 		go func() {

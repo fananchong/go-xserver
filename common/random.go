@@ -4,4 +4,5 @@ import (
 	"math/rand"
 )
 
-var XRAND *rand.Rand = nil
+// XRAND : Global random function
+var XRAND *rand.Rand

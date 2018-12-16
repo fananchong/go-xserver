@@ -25,7 +25,7 @@ case $1 in
     ?);;
 esac
 
-
+set +ex
 export SRC_DIR=
 export BIN_DIR=
 export SERVICE_DIR=
