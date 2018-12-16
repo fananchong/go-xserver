@@ -9,10 +9,9 @@ export FLAG_RACE=-race
 export GOBIN=$BIN_DIR
 
 go vet ./...
-for dir in $SERVICE_DIR; do
-    if [[ $dir ]]; then
-        cd $dir && ./build.sh
-    fi
+cd $SERVICE_DIR
+for plugin_name in `ls -l | grep '^d' | awk '{print $9}'`; do
+    go build $FLAG_RACE -buildmode=plugin -o $BIN_DIR/$plugin_name.so ./$plugin_name;
 done
 cd $SRC_DIR
 go install $FLAG_RACE .

@@ -52,6 +52,7 @@ func (app *App) Run() {
 
 	// init log
 	app.initLog()
+	defer common.XLOG.Flush()
 
 	// load plugin
 	if err := app.initPlugin(); err != nil {
@@ -81,7 +82,7 @@ func (app *App) initLog() {
 	common.XLOG = NewGLogger()
 	logDir := viper.GetString("common.LogDir")
 	if logDir != "" {
-		os.MkdirAll(logDir, os.ModeDir)
+		os.MkdirAll(logDir, os.ModePerm)
 	}
 	common.XLOG.SetLogDir(logDir)
 	common.XLOG.SetLogLevel(viper.GetInt("common.LogLevel"))
