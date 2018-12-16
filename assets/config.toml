@@ -1,0 +1,37 @@
+[common]
+Version = "0.0.1"
+LogDir = "./logs"
+LogLevel = 0
+IntranetToken = "6d8f1f3a-739f-47fe-9ed1-ea39276cd10d"
+MsgCmdOffset = 1000
+Pprof = ":50000"
+
+[dbaccount]
+Name = "account"
+Addrs = ["127.0.0.1:6379"]
+Password = ""
+DBIndex = 0
+
+[dbtoken]
+Name = "token"
+Addrs = ["127.0.0.1:6379"]
+Password = ""
+DBIndex = 0
+
+[dbserver]
+Name = "server"
+Addrs = ["127.0.0.1:6379"]
+Password = ""
+DBIndex = 0
+
+[dbmgr]
+Name = "mgr"
+Addrs = ["127.0.0.1:6379"]
+Password = ""
+DBIndex = 0
+
+[login]
+Listen = ":8080"
+Sign1 = "5UY6$f$h"
+Sign2 = "3wokZB%q"
+Sign3 = "%2Fi9TRf"
