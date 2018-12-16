@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fsnotify/fsnotify"
@@ -39,6 +40,13 @@ func getAssetsPath() string {
 	for i, v := range os.Args {
 		if v == "-assets" || v == "--assets" {
 			path = os.Args[i+1] + "/"
+			break
+		}
+		if strings.Contains(v, "-assets=") {
+			path = os.Args[i]
+			path = strings.Replace(path, "--assets=", "", -1)
+			path = strings.Replace(path, "-assets=", "", -1)
+			path = path + "/"
 			break
 		}
 	}
