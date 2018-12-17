@@ -46,7 +46,7 @@ func (app *App) Run() {
 
 	// load config
 	if err := loadConfig(); err != nil {
-		fmt.Println(err)
+		fmt.Println("loadConfig fail, err =", err)
 		return
 	}
 
@@ -56,6 +56,7 @@ func (app *App) Run() {
 
 	// load plugin
 	if err := app.initPlugin(); err != nil {
+		common.XLOG.Errorln(err)
 		return
 	}
 
