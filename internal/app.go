@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"math/rand"
 	"net/http"
 	_ "net/http/pprof" // only need init function in pprof
@@ -46,7 +45,6 @@ func (app *App) Run() {
 
 	// load config
 	if err := loadConfig(); err != nil {
-		fmt.Println("loadConfig fail, err =", err)
 		return
 	}
 

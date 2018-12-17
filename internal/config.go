@@ -21,6 +21,10 @@ func loadConfig() error {
 		Run: func(c *cobra.Command, args []string) {
 		},
 	}
+	rootCmd.SetHelpFunc(func(c *cobra.Command, args []string) {
+		c.Usage()
+		os.Exit(1)
+	})
 	flags := rootCmd.PersistentFlags()
 	flags.StringVarP(&configPath, "config", "c", "../config", "config path name")
 	flags.StringVarP(&app, "app", "a", "", "application name")
@@ -49,6 +53,5 @@ func loadConfig() error {
 			}
 		})
 	})
-
 	return rootCmd.Execute()
 }
