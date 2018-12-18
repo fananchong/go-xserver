@@ -3,6 +3,8 @@ package internal
 import (
 	"fmt"
 	"os"
+	"reflect"
+	"strings"
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fsnotify/fsnotify"
@@ -17,7 +19,7 @@ var (
 
 func loadConfig() error {
 	rootCmd := &cobra.Command{
-		Use: "app",
+		Use: "go-xserver",
 		Run: func(c *cobra.Command, args []string) {
 		},
 	}
@@ -29,6 +31,7 @@ func loadConfig() error {
 	flags.StringVarP(&configPath, "config", "c", "../config", "config path name")
 	flags.StringVarP(&app, "app", "a", "", "application name")
 	viper.BindPFlags(rootCmd.PersistentFlags())
+	bindConfig(rootCmd, common.Config{})
 	cobra.OnInitialize(func() {
 		viper.SetConfigFile(configPath + "/config.toml")
 		viper.AutomaticEnv()
@@ -54,4 +57,51 @@ func loadConfig() error {
 		})
 	})
 	return rootCmd.Execute()
+}
+
+func bindConfig(c *cobra.Command, s interface{}) {
+	flags := c.Flags()
+
+	rt := reflect.TypeOf(s)
+	for i := 0; i < rt.NumField(); i++ {
+		sf := rt.Field(i)
+		name := strings.ToLower(sf.Name)
+		if sf.Type.Kind() != reflect.Struct {
+			fmt.Println("bindConfig fail")
+			os.Exit(1)
+		}
+		srt := sf.Type
+		for j := 0; j < srt.NumField(); j++ {
+			ssf := srt.Field(j)
+			sname := fmt.Sprintf("%s-%s", name, strings.ToLower(ssf.Name))
+			switch ssf.Type.Kind() {
+			case reflect.Bool:
+				flags.Bool(sname, false, "")
+			case reflect.String:
+				flags.String(sname, "", "")
+			case reflect.Int:
+				flags.Int(sname, 0, "")
+			case reflect.Uint:
+				flags.Uint(sname, 0, "")
+			case reflect.Slice:
+				switch sssf := ssf.Type.Elem(); sssf.Kind() {
+				case reflect.Bool:
+					flags.BoolSlice(sname, []bool{}, "")
+				case reflect.String:
+					flags.StringSlice(sname, []string{}, "")
+				case reflect.Int:
+					flags.IntSlice(sname, []int{}, "")
+				case reflect.Uint:
+					flags.UintSlice(sname, []uint{}, "")
+				default:
+					fmt.Println("bindConfig fail, err = unsupported field: ", sname)
+					os.Exit(1)
+				}
+			default:
+				fmt.Println("bindConfig fail, err = unsupported field: ", sname)
+				os.Exit(1)
+			}
+			viper.BindPFlag(fmt.Sprintf("%s.%s", name, ssf.Name), flags.Lookup(sname))
+		}
+	}
 }

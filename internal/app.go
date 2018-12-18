@@ -79,12 +79,12 @@ func (app *App) Run() {
 
 func (app *App) initLog() {
 	common.XLOG = NewGLogger()
-	logDir := viper.GetString("common.LogDir")
+	logDir := common.XCONFIG.Common.LogDir
 	if logDir != "" {
 		os.MkdirAll(logDir, os.ModePerm)
 	}
 	common.XLOG.SetLogDir(logDir)
-	common.XLOG.SetLogLevel(viper.GetInt("common.LogLevel"))
+	common.XLOG.SetLogLevel(common.XCONFIG.Common.LogLevel)
 }
 
 func (app *App) initPlugin() error {
@@ -102,7 +102,7 @@ func (app *App) initPlugin() error {
 }
 
 func (app *App) initPprof() {
-	addr := viper.GetString("common.Pprof")
+	addr := common.XCONFIG.Common.Pprof
 	if addr != "" {
 		go func() {
 			common.XLOG.Println("pprof listen :", addr)
