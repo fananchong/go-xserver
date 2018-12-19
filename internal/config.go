@@ -10,13 +10,18 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
 var (
 	configPath string
 	app        string
-	ENV_PREFIX string = "GOXSERVER"
+)
+
+const (
+	// ConstEnvPrefix : you can tell Viper to use a prefix while reading from the environment variables
+	ConstEnvPrefix string = "GOXSERVER"
 )
 
 func loadConfig() error {
@@ -28,12 +33,12 @@ func loadConfig() error {
 	rootCmd.SetHelpFunc(func(c *cobra.Command, args []string) {
 		c.Usage()
 		fmt.Println("")
-		fmt.Println("ENV:")
+		fmt.Println("Environment variables:")
 		keys := viper.AllKeys()
 		sort.Sort(sort.StringSlice(keys))
 		for _, k := range keys {
-			env := strings.ToUpper(strings.Replace(ENV_PREFIX+"_"+k, ".", "_", -1))
-			fmt.Printf("    %s\n", env)
+			env := strings.ToUpper(strings.Replace(ConstEnvPrefix+"_"+k, ".", "_", -1))
+			fmt.Printf("   %s\n", env)
 		}
 		os.Exit(1)
 	})
@@ -71,48 +76,48 @@ func loadConfig() error {
 
 func bindConfig(c *cobra.Command, s interface{}) {
 	flags := c.Flags()
+	parseStruct(flags, reflect.TypeOf(s), "")
+}
 
-	rt := reflect.TypeOf(s)
+func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 	for i := 0; i < rt.NumField(); i++ {
 		sf := rt.Field(i)
-		name := strings.ToLower(sf.Name)
-		if sf.Type.Kind() != reflect.Struct {
-			fmt.Println("bindConfig fail")
-			os.Exit(1)
+		rawName := strings.ToLower(sf.Name)
+		if prefix != "" {
+			rawName = prefix + "." + rawName
 		}
-		srt := sf.Type
-		for j := 0; j < srt.NumField(); j++ {
-			ssf := srt.Field(j)
-			sname := fmt.Sprintf("%s-%s", name, strings.ToLower(ssf.Name))
-			switch ssf.Type.Kind() {
+		name := strings.Replace(rawName, ".", "-", -1)
+		switch sf.Type.Kind() {
+		case reflect.Struct:
+			parseStruct(flags, sf.Type, rawName)
+			continue
+		case reflect.Bool:
+			flags.Bool(name, false, "")
+		case reflect.String:
+			flags.String(name, "", "")
+		case reflect.Int:
+			flags.Int(name, 0, "")
+		case reflect.Uint:
+			flags.Uint(name, 0, "")
+		case reflect.Slice:
+			switch ssf := sf.Type.Elem(); ssf.Kind() {
 			case reflect.Bool:
-				flags.Bool(sname, false, "")
+				flags.BoolSlice(name, []bool{}, "")
 			case reflect.String:
-				flags.String(sname, "", "")
+				flags.StringSlice(name, []string{}, "")
 			case reflect.Int:
-				flags.Int(sname, 0, "")
+				flags.IntSlice(name, []int{}, "")
 			case reflect.Uint:
-				flags.Uint(sname, 0, "")
-			case reflect.Slice:
-				switch sssf := ssf.Type.Elem(); sssf.Kind() {
-				case reflect.Bool:
-					flags.BoolSlice(sname, []bool{}, "")
-				case reflect.String:
-					flags.StringSlice(sname, []string{}, "")
-				case reflect.Int:
-					flags.IntSlice(sname, []int{}, "")
-				case reflect.Uint:
-					flags.UintSlice(sname, []uint{}, "")
-				default:
-					fmt.Println("bindConfig fail, err = unsupported field: ", sname)
-					os.Exit(1)
-				}
+				flags.UintSlice(name, []uint{}, "")
 			default:
-				fmt.Println("bindConfig fail, err = unsupported field: ", sname)
+				fmt.Println("bindConfig fail, err = unsupported field: ", rawName)
 				os.Exit(1)
 			}
-			viper.BindPFlag(fmt.Sprintf("%s.%s", name, ssf.Name), flags.Lookup(sname))
-			viper.BindEnv(fmt.Sprintf("%s.%s", name, ssf.Name), fmt.Sprintf("%s_%s_%s", ENV_PREFIX, strings.ToUpper(name), strings.ToUpper(ssf.Name)))
+		default:
+			fmt.Println("bindConfig fail, err = unsupported field: ", rawName)
+			os.Exit(1)
 		}
+		viper.BindPFlag(rawName, flags.Lookup(name))
+		viper.BindEnv(rawName, strings.Replace(fmt.Sprintf("%s_%s", ConstEnvPrefix, strings.ToUpper(name)), "-", "_", -1))
 	}
 }
