@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/fananchong/go-xserver/common"
@@ -15,6 +16,7 @@ import (
 var (
 	configPath string
 	app        string
+	ENV_PREFIX string = "GOXSERVER"
 )
 
 func loadConfig() error {
@@ -25,6 +27,14 @@ func loadConfig() error {
 	}
 	rootCmd.SetHelpFunc(func(c *cobra.Command, args []string) {
 		c.Usage()
+		fmt.Println("")
+		fmt.Println("ENV:")
+		keys := viper.AllKeys()
+		sort.Sort(sort.StringSlice(keys))
+		for _, k := range keys {
+			env := strings.ToUpper(strings.Replace(ENV_PREFIX+"_"+k, ".", "_", -1))
+			fmt.Printf("    %s\n", env)
+		}
 		os.Exit(1)
 	})
 	flags := rootCmd.PersistentFlags()
@@ -102,6 +112,7 @@ func bindConfig(c *cobra.Command, s interface{}) {
 				os.Exit(1)
 			}
 			viper.BindPFlag(fmt.Sprintf("%s.%s", name, ssf.Name), flags.Lookup(sname))
+			viper.BindEnv(fmt.Sprintf("%s.%s", name, ssf.Name), fmt.Sprintf("%s_%s_%s", ENV_PREFIX, strings.ToUpper(name), strings.ToUpper(ssf.Name)))
 		}
 	}
 }
