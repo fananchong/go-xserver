@@ -5,6 +5,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/fananchong/go-xserver/common"
@@ -17,6 +18,7 @@ import (
 var (
 	configPath string
 	app        string
+	rootCmd    *cobra.Command
 )
 
 const (
@@ -25,26 +27,18 @@ const (
 )
 
 func loadConfig() error {
-	rootCmd := &cobra.Command{
+	rootCmd = &cobra.Command{
 		Use: "go-xserver",
 		Run: func(c *cobra.Command, args []string) {
 		},
 	}
 	rootCmd.SetHelpFunc(func(c *cobra.Command, args []string) {
-		c.Usage()
-		fmt.Println("")
-		fmt.Println("Environment variables:")
-		keys := viper.AllKeys()
-		sort.Sort(sort.StringSlice(keys))
-		for _, k := range keys {
-			env := strings.ToUpper(strings.Replace(ConstEnvPrefix+"_"+k, ".", "_", -1))
-			fmt.Printf("   %s\n", env)
-		}
+		printUsage()
 		os.Exit(1)
 	})
 	flags := rootCmd.PersistentFlags()
-	flags.StringVarP(&configPath, "config", "c", "../config", "config path name")
-	flags.StringVarP(&app, "app", "a", "", "application name")
+	flags.StringVarP(&configPath, "config", "c", "../config", "配置目录路径")
+	flags.StringVarP(&app, "app", "a", "", "应用名（插件，必填）")
 	viper.BindPFlags(rootCmd.PersistentFlags())
 	bindConfig(rootCmd, common.Config{})
 	cobra.OnInitialize(func() {
@@ -87,28 +81,60 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 			rawName = prefix + "." + rawName
 		}
 		name := strings.Replace(rawName, ".", "-", -1)
+		desc := sf.Tag.Get("desc")
+		defaultValue := sf.Tag.Get("default")
 		switch sf.Type.Kind() {
 		case reflect.Struct:
 			parseStruct(flags, sf.Type, rawName)
 			continue
 		case reflect.Bool:
-			flags.Bool(name, false, "")
+			v, _ := strconv.ParseBool(defaultValue)
+			flags.Bool(name, v, desc)
 		case reflect.String:
-			flags.String(name, "", "")
+			flags.String(name, defaultValue, desc)
 		case reflect.Int:
-			flags.Int(name, 0, "")
+			v, _ := strconv.ParseInt(defaultValue, 10, 32)
+			flags.Int(name, int(v), desc)
 		case reflect.Uint:
-			flags.Uint(name, 0, "")
+			v, _ := strconv.ParseUint(defaultValue, 10, 32)
+			flags.Uint(name, uint(v), desc)
 		case reflect.Slice:
 			switch ssf := sf.Type.Elem(); ssf.Kind() {
 			case reflect.Bool:
-				flags.BoolSlice(name, []bool{}, "")
+				var v []bool
+				if defaultValue != "" {
+					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
+						tmp2, _ := strconv.ParseBool(tmp)
+						v = append(v, tmp2)
+					}
+				}
+				flags.BoolSlice(name, v, desc)
 			case reflect.String:
-				flags.StringSlice(name, []string{}, "")
+				var v []string
+				if defaultValue != "" {
+					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
+						v = append(v, tmp)
+					}
+				}
+				flags.StringSlice(name, v, desc)
 			case reflect.Int:
-				flags.IntSlice(name, []int{}, "")
+				var v []int
+				if defaultValue != "" {
+					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
+						tmp2, _ := strconv.ParseInt(tmp, 10, 32)
+						v = append(v, int(tmp2))
+					}
+				}
+				flags.IntSlice(name, v, desc)
 			case reflect.Uint:
-				flags.UintSlice(name, []uint{}, "")
+				var v []uint
+				if defaultValue != "" {
+					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
+						tmp2, _ := strconv.ParseUint(tmp, 10, 32)
+						v = append(v, uint(tmp2))
+					}
+				}
+				flags.UintSlice(name, v, desc)
 			default:
 				fmt.Println("bindConfig fail, err = unsupported field: ", rawName)
 				os.Exit(1)
@@ -119,5 +145,17 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 		}
 		viper.BindPFlag(rawName, flags.Lookup(name))
 		viper.BindEnv(rawName, strings.Replace(fmt.Sprintf("%s_%s", ConstEnvPrefix, strings.ToUpper(name)), "-", "_", -1))
+	}
+}
+
+func printUsage() {
+	rootCmd.Usage()
+	fmt.Println("")
+	fmt.Println("Environment variables:")
+	keys := viper.AllKeys()
+	sort.Sort(sort.StringSlice(keys))
+	for _, k := range keys {
+		env := strings.ToUpper(strings.Replace(ConstEnvPrefix+"_"+k, ".", "_", -1))
+		fmt.Printf("   %s\n", env)
 	}
 }

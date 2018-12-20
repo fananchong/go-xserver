@@ -89,6 +89,10 @@ func (app *App) initLog() {
 
 func (app *App) initPlugin() error {
 	appName := viper.GetString("app")
+	if appName == "" {
+		printUsage()
+		os.Exit(1)
+	}
 	p, err := plugin.Open(appName + ".so")
 	if err != nil {
 		return err
