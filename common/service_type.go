@@ -17,6 +17,15 @@ const (
 	// Gateway : 类型为网关服 3
 	Gateway
 
+	// Lobby : 类型为大厅服 4
+	Lobby
+
+	// Match : 类型为匹配服 5
+	Match
+
+	// Room : 类型为房间服 6
+	Room
+
 	// ServerTypeSize : 服务类型数量
 	ServerTypeSize
 )

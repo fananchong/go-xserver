@@ -4,5 +4,5 @@ import (
 	"math/rand"
 )
 
-// XRAND : Global random function
+// XRAND : 全局随机函数对象
 var XRAND *rand.Rand

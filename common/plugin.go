@@ -1,6 +1,6 @@
 package common
 
-// Plugin : The interface that conforms to the go-xserver call
+// Plugin : 插件接口
 type Plugin interface {
 	Init() bool
 	Start() bool

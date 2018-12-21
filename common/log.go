@@ -1,9 +1,9 @@
 package common
 
-// XLOG : Global log function
+// XLOG : 全局日志类对象
 var XLOG ILogger
 
-// ILogger : The interface of logger instance
+// ILogger : 日志类接口
 type ILogger interface {
 	Debug(args ...interface{})
 	Debugln(args ...interface{})
