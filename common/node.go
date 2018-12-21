@@ -1,10 +1,12 @@
 package common
 
+import uuid "github.com/satori/go.uuid"
+
 // XNODE : 本节点对象
 var XNODE INode
 
 // NodeID : 节点ID类型
-type NodeID [16]byte
+type NodeID uuid.UUID
 
 // INode : 节点类接口（其实现，封装自动接入服务器组、服务发现、服务消息传递等细节）
 type INode interface {

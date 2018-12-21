@@ -6,7 +6,7 @@ import (
 	"github.com/fananchong/go-xserver/common"
 )
 
-// PluginObj : Exported to internal.App
+// PluginObj : 代表一个插件对象
 var PluginObj common.Plugin
 
 func init() {
@@ -14,23 +14,25 @@ func init() {
 	PluginObj = &Plugin{}
 }
 
-// Plugin : Plugin class implementation
+// Plugin : 插件类
 type Plugin struct {
 }
 
-// Init : Plugin class function Init implementation
-func (plugin *Plugin) Init() bool {
+// Init : 插件类实现初始化
+func (plugin *Plugin) Init() (nodeType common.NodeType, ok bool) {
 	common.XLOG.Infoln("Plugin Init")
-	return true
+	nodeType = common.Mgr
+	ok = true
+	return
 }
 
-// Start : Plugin class function Start implementation
+// Start : 插件类实现启动
 func (plugin *Plugin) Start() bool {
 	common.XLOG.Infoln("Plugin Start")
 	return true
 }
 
-// Close : Plugin class function Close implementation
+// Close : 插件类实现关闭
 func (plugin *Plugin) Close() {
 	common.XLOG.Infoln("Plugin Close")
 }

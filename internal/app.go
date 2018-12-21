@@ -77,6 +77,40 @@ func (app *App) Run() {
 	app.onAppShutDown()
 }
 
+func (app *App) onAppReady() {
+	var nodeType common.NodeType
+	var ok bool
+	if nodeType, ok = app.runner.Init(); !ok {
+		app.close()
+		return
+	}
+	if app.initNode(nodeType) {
+		go func() {
+			if app.runner.Start() == false {
+				app.close()
+			}
+		}()
+	}
+}
+
+func (app *App) onAppShutDown() {
+	app.runner.Close()
+}
+
+func (app *App) close() {
+	close(app.signal)
+}
+
+func (app *App) initNode(nodeType common.NodeType) bool {
+	node := NewNode(nodeType)
+	if node.Init() == false {
+		app.close()
+		return false
+	}
+	common.XNODE = node
+	return true
+}
+
 func (app *App) initLog() {
 	common.XLOG = NewGLogger()
 	logDir := common.XCONFIG.Common.LogDir
@@ -113,24 +147,4 @@ func (app *App) initPprof() {
 			http.ListenAndServe(addr, nil)
 		}()
 	}
-}
-
-func (app *App) close() {
-	close(app.signal)
-}
-
-func (app *App) onAppReady() {
-	if app.runner.Init() == false {
-		app.close()
-		return
-	}
-	go func() {
-		if app.runner.Start() == false {
-			app.close()
-		}
-	}()
-}
-
-func (app *App) onAppShutDown() {
-	app.runner.Close()
 }

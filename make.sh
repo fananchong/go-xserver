@@ -2,15 +2,18 @@
 
 set -ex
 
+CUR_DIR=$PWD
 SRC_DIR=$PWD
 BIN_DIR=$PWD/bin
 SERVICE_DIR=$PWD/services/
 PROTO_DIR=$PWD/internal/protocol/
 FLAGS=-race
-GOBIN=$BIN_DIR
+export GOBIN=$BIN_DIR
 
-cd $PROTO_DIR
-./g.sh
+if [[ $1 == "prebuild" ]]; then
+    cd $PROTO_DIR
+    ./g.sh
+fi
 
 cd $SRC_DIR
 go vet ./...
@@ -29,3 +32,5 @@ case $1 in
         ;;
     ?);;
 esac
+
+cd $CUR_DIR
