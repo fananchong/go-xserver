@@ -33,6 +33,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
+// 服务器ID类型
 type SERVER_ID struct {
 	Low  uint64 `protobuf:"fixed64,1,opt,name=Low,proto3" json:"Low,omitempty"`
 	High uint64 `protobuf:"fixed64,2,opt,name=High,proto3" json:"High,omitempty"`

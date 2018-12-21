@@ -4,6 +4,6 @@ package protocol;
 
 // 服务器ID类型
 message SERVER_ID {
-	fixed64 Low = 1;
-	fixed64 High = 2;
+    fixed64 Low = 1;
+    fixed64 High = 2;
 }
