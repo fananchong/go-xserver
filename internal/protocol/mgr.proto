@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package protocol;
+import "common.proto";
+
+enum CMD_MGR {
+    PING = 0;                           // PING ( S <-> S )
+    REGISTER_SERVER = 1;                // 注册服务器信息( S -> MGR -> S )
+    LOSE_SERVER = 2;                    // 丢失服务器信息( MGR -> S )
+};
+
+// 服务器信息
+message SERVER_INFO {
+    SERVER_ID Id = 1;                   // 服务器ID
+    repeated string Addrs = 2;          // 地址，0 内网地址 ； 1 外网地址
+    repeated uint32 Ports = 3;          // 端口号列表
+    repeated uint32 Overload = 4;       // 负载值列表
+    string Version = 5;                 // 版本号，用于灰度更新
+}
+
+// 注册服务器信息( S -> MGR -> S )
+message MSG_MGR_REGISTER_SERVER {
+    SERVER_INFO Data = 1;
+}
+
+// 丢失服务器信息( MGR -> S )
+message MSG_MGR_LOSE_SERVER {
+    SERVER_ID Id = 1;                   // 服务器ID
+}
