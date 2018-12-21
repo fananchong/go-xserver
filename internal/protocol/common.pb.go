@@ -35,8 +35,8 @@ const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 // 服务器ID类型
 type SERVER_ID struct {
-	Low  uint64 `protobuf:"fixed64,1,opt,name=Low,proto3" json:"Low,omitempty"`
-	High uint64 `protobuf:"fixed64,2,opt,name=High,proto3" json:"High,omitempty"`
+	Low  uint64 `protobuf:"varint,1,opt,name=Low,proto3" json:"Low,omitempty"`
+	High uint64 `protobuf:"varint,2,opt,name=High,proto3" json:"High,omitempty"`
 }
 
 func (m *SERVER_ID) Reset()                    { *m = SERVER_ID{} }
@@ -77,14 +77,14 @@ func (m *SERVER_ID) MarshalTo(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if m.Low != 0 {
-		dAtA[i] = 0x9
+		dAtA[i] = 0x8
 		i++
-		i = encodeFixed64Common(dAtA, i, uint64(m.Low))
+		i = encodeVarintCommon(dAtA, i, uint64(m.Low))
 	}
 	if m.High != 0 {
-		dAtA[i] = 0x11
+		dAtA[i] = 0x10
 		i++
-		i = encodeFixed64Common(dAtA, i, uint64(m.High))
+		i = encodeVarintCommon(dAtA, i, uint64(m.High))
 	}
 	return i, nil
 }
@@ -120,10 +120,10 @@ func (m *SERVER_ID) Size() (n int) {
 	var l int
 	_ = l
 	if m.Low != 0 {
-		n += 9
+		n += 1 + sovCommon(uint64(m.Low))
 	}
 	if m.High != 0 {
-		n += 9
+		n += 1 + sovCommon(uint64(m.High))
 	}
 	return n
 }
@@ -171,39 +171,43 @@ func (m *SERVER_ID) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 1 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Low", wireType)
 			}
 			m.Low = 0
-			if (iNdEx + 8) > l {
-				return io.ErrUnexpectedEOF
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCommon
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Low |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
-			iNdEx += 8
-			m.Low = uint64(dAtA[iNdEx-8])
-			m.Low |= uint64(dAtA[iNdEx-7]) << 8
-			m.Low |= uint64(dAtA[iNdEx-6]) << 16
-			m.Low |= uint64(dAtA[iNdEx-5]) << 24
-			m.Low |= uint64(dAtA[iNdEx-4]) << 32
-			m.Low |= uint64(dAtA[iNdEx-3]) << 40
-			m.Low |= uint64(dAtA[iNdEx-2]) << 48
-			m.Low |= uint64(dAtA[iNdEx-1]) << 56
 		case 2:
-			if wireType != 1 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field High", wireType)
 			}
 			m.High = 0
-			if (iNdEx + 8) > l {
-				return io.ErrUnexpectedEOF
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCommon
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.High |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
-			iNdEx += 8
-			m.High = uint64(dAtA[iNdEx-8])
-			m.High |= uint64(dAtA[iNdEx-7]) << 8
-			m.High |= uint64(dAtA[iNdEx-6]) << 16
-			m.High |= uint64(dAtA[iNdEx-5]) << 24
-			m.High |= uint64(dAtA[iNdEx-4]) << 32
-			m.High |= uint64(dAtA[iNdEx-3]) << 40
-			m.High |= uint64(dAtA[iNdEx-2]) << 48
-			m.High |= uint64(dAtA[iNdEx-1]) << 56
 		default:
 			iNdEx = preIndex
 			skippy, err := skipCommon(dAtA[iNdEx:])
@@ -337,8 +341,8 @@ var fileDescriptorCommon = []byte{
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0xce, 0xcf, 0xcd,
 	0xcd, 0xcf, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x00, 0x53, 0xc9, 0xf9, 0x39, 0x4a,
 	0x86, 0x5c, 0x9c, 0xc1, 0xae, 0x41, 0x61, 0xae, 0x41, 0xf1, 0x9e, 0x2e, 0x42, 0x02, 0x5c, 0xcc,
-	0x3e, 0xf9, 0xe5, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x6c, 0x41, 0x20, 0xa6, 0x90, 0x10, 0x17, 0x8b,
+	0x3e, 0xf9, 0xe5, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x2c, 0x41, 0x20, 0xa6, 0x90, 0x10, 0x17, 0x8b,
 	0x47, 0x66, 0x7a, 0x86, 0x04, 0x13, 0x58, 0x08, 0xcc, 0x76, 0x12, 0x38, 0xf1, 0x48, 0x8e, 0xf1,
 	0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0x48, 0x62, 0x03, 0x1b,
-	0x67, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0x1f, 0xd9, 0xb3, 0x1a, 0x65, 0x00, 0x00, 0x00,
+	0x67, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xe3, 0x00, 0xcf, 0xa4, 0x65, 0x00, 0x00, 0x00,
 }
