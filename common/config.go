@@ -1,16 +1,18 @@
 package common
 
-// XCONFIG : Global config function
+import "github.com/fananchong/go-xserver/common/custom"
+
+// XCONFIG : 全局配置类对象
 var XCONFIG Config
 
 // Config : 配置类
 type Config struct {
-	Common    ConfigCommon // 一些基础参数
-	DbAccount ConfigRedis  // 帐号数据库（Redis）
-	DbToken   ConfigRedis  // Token数据库（Redis）
-	DbServer  ConfigRedis  // Server数据库（Redis）
-	DbMgr     ConfigRedis  // Mgr数据库（Redis）
-	Login     ConfigLogin  // Login服务器配置
+	Common    ConfigCommon       // 一些基础参数
+	DbAccount ConfigRedis        // 帐号数据库（Redis）
+	DbToken   ConfigRedis        // Token数据库（Redis）
+	DbServer  ConfigRedis        // Server数据库（Redis）
+	DbMgr     ConfigRedis        // Mgr数据库（Redis）
+	Login     custom.ConfigLogin // Login服务器配置
 }
 
 // ConfigCommon : 配置 common 节
@@ -30,12 +32,4 @@ type ConfigRedis struct {
 	Addrs    []string `default:"[127.0.0.1:6379]" desc:"Redis 数据库地址"`
 	Password string   `default:"" desc:"Redis 数据库密码"`
 	DBIndex  int      `default:"0" desc:"Redis DB 索引"`
-}
-
-// ConfigLogin : 配置 login 节
-type ConfigLogin struct {
-	Listen string `default:":8080" desc:"登录服务器监听地址"`
-	Sign1  string `default:"5UY6$f$h" desc:"用于登录验证的部分签名段"`
-	Sign2  string `default:"3wokZB%q" desc:"用于登录验证的部分签名段"`
-	Sign3  string `default:"%2Fi9TRf" desc:"用于登录验证的部分签名段"`
 }
