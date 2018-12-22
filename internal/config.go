@@ -22,8 +22,7 @@ var (
 )
 
 const (
-	// ConstEnvPrefix : you can tell Viper to use a prefix while reading from the environment variables
-	ConstEnvPrefix string = "GOXSERVER"
+	constEnvPrefix string = "GOXSERVER"
 )
 
 func loadConfig() error {
@@ -144,7 +143,7 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 			os.Exit(1)
 		}
 		viper.BindPFlag(rawName, flags.Lookup(name))
-		viper.BindEnv(rawName, strings.Replace(fmt.Sprintf("%s_%s", ConstEnvPrefix, strings.ToUpper(name)), "-", "_", -1))
+		viper.BindEnv(rawName, strings.Replace(fmt.Sprintf("%s_%s", constEnvPrefix, strings.ToUpper(name)), "-", "_", -1))
 	}
 }
 
@@ -155,7 +154,7 @@ func printUsage() {
 	keys := viper.AllKeys()
 	sort.Sort(sort.StringSlice(keys))
 	for _, k := range keys {
-		env := strings.ToUpper(strings.Replace(ConstEnvPrefix+"_"+k, ".", "_", -1))
+		env := strings.ToUpper(strings.Replace(constEnvPrefix+"_"+k, ".", "_", -1))
 		fmt.Printf("   %s\n", env)
 	}
 }

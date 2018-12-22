@@ -3,7 +3,7 @@ package internal
 import (
 	"math/rand"
 	"net/http"
-	_ "net/http/pprof" // only need init function in pprof
+	_ "net/http/pprof" // 只使用 pprof 包的 init 函数
 	"os"
 	"os/signal"
 	"plugin"
@@ -15,23 +15,24 @@ import (
 	"github.com/spf13/viper"
 )
 
-// App : An application class
+// App : 应用程序类
 type App struct {
 	signal chan os.Signal
 	runner common.Plugin
 }
 
-// NewApp : Constructor function of class App
+// NewApp : 应用程序类的构造函数
 func NewApp() *App {
 	app := &App{}
 	return app
 }
 
-// Run : App instance launch
+// Run : 启动应用程序
 func (app *App) Run() {
+	// 设置最大线程数
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	runtime.GC()
 
+	// 设置信号量
 	termination := false
 	app.signal = make(chan os.Signal)
 	signal.Notify(app.signal,
@@ -41,27 +42,28 @@ func (app *App) Run() {
 		syscall.SIGTERM,
 		syscall.SIGPIPE)
 
+	// 初始化随机种子
 	common.XRAND = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	// load config
+	// 加载配置
 	if err := loadConfig(); err != nil {
 		return
 	}
 
-	// init log
+	// 初始化 Log
 	app.initLog()
 	defer common.XLOG.Flush()
 
-	// load plugin
+	// 加载插件
 	if err := app.initPlugin(); err != nil {
 		common.XLOG.Errorln(err)
 		return
 	}
 
-	// init pprof
+	// 初始化性能分析工具
 	app.initPprof()
 
-	// running
+	// 应用程序正式运行
 	app.onAppReady()
 	for !termination {
 		select {
@@ -103,7 +105,7 @@ func (app *App) close() {
 
 func (app *App) initNode(nodeType common.NodeType) bool {
 	node := NewNode(nodeType)
-	if node.Init() == false {
+	if node == nil {
 		app.close()
 		return false
 	}

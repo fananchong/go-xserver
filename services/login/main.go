@@ -36,3 +36,6 @@ func (plugin *Plugin) Start() bool {
 func (plugin *Plugin) Close() {
 	common.XLOG.Infoln("Plugin Close")
 }
+
+// main : 作为插件包，该函数可以不存在。添加之，是避免 go-lint 烦人的错误提示
+func main() {}

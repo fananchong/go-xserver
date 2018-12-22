@@ -9,10 +9,10 @@ var XCONFIG Config
 type Config struct {
 	Common    ConfigCommon       // 一些基础参数
 	DbAccount ConfigRedis        // 帐号数据库（Redis）
-	DbToken   ConfigRedis        // Token数据库（Redis）
-	DbServer  ConfigRedis        // Server数据库（Redis）
-	DbMgr     ConfigRedis        // Mgr数据库（Redis）
-	Login     custom.ConfigLogin // Login服务器配置
+	DbToken   ConfigRedis        // Token 数据库（Redis）
+	DbServer  ConfigRedis        // Server 数据库（Redis）
+	DbMgr     ConfigRedis        // Mgr 数据库（Redis）
+	Login     custom.ConfigLogin // Login 服务器配置
 }
 
 // ConfigCommon : 配置 common 节
@@ -21,7 +21,7 @@ type ConfigCommon struct {
 	LogDir        string `default:"./logs" desc:"Log 路径"`
 	LogLevel      int    `default:"0" desc:"Log 等级"`
 	Debug         bool   `default:"false" desc:"Debug 版本标志"`
-	IntranetToken string `default:"6d8f1f3a-739f-47fe-9ed1-ea39276cd10d" desc:"内部服务器验证TOKEN"`
+	IntranetToken string `default:"6d8f1f3a-739f-47fe-9ed1-ea39276cd10d" desc:"内部服务器验证 TOKEN"`
 	MsgCmdOffset  int    `default:"1000" desc:"消息号 = 服务类型 * MsgCmdOffset + 数字"`
 	Pprof         string `default:"" desc:"Http pprof 地址"`
 }

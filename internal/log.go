@@ -5,7 +5,7 @@ import (
 	"github.com/fananchong/go-xserver/common"
 )
 
-// NewGLogger : Constructor function of class glog
+// NewGLogger : glog 构造函数
 func NewGLogger() common.ILogger {
 	return glog.GetLogger()
 }
