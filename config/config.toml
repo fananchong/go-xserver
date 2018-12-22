@@ -4,6 +4,12 @@ LogDir = "./logs"
 LogLevel = 0
 Debug = true
 
+[network]
+IPType = 1
+IPInner = "127.0.0.1"
+IPOuter = "127.0.0.1"
+Port = [7500, 30000]
+
 [dbaccount]
 Name = "account"
 Addrs = ["127.0.0.1:6379"]
@@ -27,6 +33,3 @@ Name = "mgr"
 Addrs = ["127.0.0.1:6379"]
 Password = ""
 DBIndex = 0
-
-[login]
-Listen = ":8080"

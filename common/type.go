@@ -37,6 +37,6 @@ const (
 	// IPINNER : 类型 0 ，内网 IP
 	IPINNER IPType = iota
 
-	// IPOUTTER : 类型 1 ，外网 IP
-	IPOUTTER
+	// IPOUTER : 类型 1 ，外网 IP
+	IPOUTER
 )

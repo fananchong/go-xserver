@@ -103,7 +103,7 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 				var v []bool
 				if defaultValue != "" {
 					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						tmp2, _ := strconv.ParseBool(tmp)
+						tmp2, _ := strconv.ParseBool(strings.Trim(tmp, " "))
 						v = append(v, tmp2)
 					}
 				}
@@ -112,7 +112,7 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 				var v []string
 				if defaultValue != "" {
 					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						v = append(v, tmp)
+						v = append(v, strings.Trim(tmp, " "))
 					}
 				}
 				flags.StringSlice(name, v, desc)
@@ -120,7 +120,7 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 				var v []int
 				if defaultValue != "" {
 					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						tmp2, _ := strconv.ParseInt(tmp, 10, 32)
+						tmp2, _ := strconv.ParseInt(strings.Trim(tmp, " "), 10, 32)
 						v = append(v, int(tmp2))
 					}
 				}
@@ -129,7 +129,7 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 				var v []uint
 				if defaultValue != "" {
 					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						tmp2, _ := strconv.ParseUint(tmp, 10, 32)
+						tmp2, _ := strconv.ParseUint(strings.Trim(tmp, " "), 10, 32)
 						v = append(v, uint(tmp2))
 					}
 				}
