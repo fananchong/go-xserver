@@ -26,6 +26,11 @@ func (plugin *Plugin) Init() (nodeType common.NodeType, ok bool) {
 	return
 }
 
+// RegisterCallBack : 插件类实现启动前处理，注册自定义回调
+func (plugin *Plugin) RegisterCallBack() {
+	common.XLOG.Infoln("Plugin RegisterCallBack")
+}
+
 // Start : 插件类实现启动
 func (plugin *Plugin) Start() bool {
 	common.XLOG.Infoln("Plugin Start")

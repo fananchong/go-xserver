@@ -86,13 +86,20 @@ func (app *App) onAppReady() {
 		app.close()
 		return
 	}
-	if app.initNode(nodeType) {
-		go func() {
-			if app.runner.Start() == false {
-				app.close()
-			}
-		}()
+	if app.initNode(nodeType) == false {
+		app.close()
+		return
 	}
+	app.runner.RegisterCallBack()
+	if startNode(common.XNODE) == false {
+		app.close()
+		return
+	}
+	go func() {
+		if app.runner.Start() == false {
+			app.close()
+		}
+	}()
 }
 
 func (app *App) onAppShutDown() {
@@ -104,7 +111,7 @@ func (app *App) close() {
 }
 
 func (app *App) initNode(nodeType common.NodeType) bool {
-	node := NewNode(nodeType)
+	node := newNode(nodeType)
 	if node == nil {
 		app.close()
 		return false
@@ -114,7 +121,7 @@ func (app *App) initNode(nodeType common.NodeType) bool {
 }
 
 func (app *App) initLog() {
-	common.XLOG = NewGLogger()
+	common.XLOG = newGLogger()
 	logDir := common.XCONFIG.Common.LogDir
 	if logDir != "" {
 		os.MkdirAll(logDir, os.ModePerm)

@@ -7,17 +7,30 @@ import (
 
 // Node : 普通节点
 type Node struct {
+	nodeType common.NodeType
 	gotcp.Session
 }
 
 // NewNode : 普通节点实现类的构造函数
-func NewNode() *Node {
-	return &Node{}
+func NewNode(nodeType common.NodeType) *Node {
+	return &Node{
+		nodeType: nodeType,
+	}
 }
 
 // Init : 初始化节点
 func (node *Node) Init() bool {
 	return true
+}
+
+// Start : 节点开始工作
+func (node *Node) Start() bool {
+	return true
+}
+
+// Close : 关闭节点
+func (node *Node) Close() {
+
 }
 
 // OnRecv : 接收到网络数据包，被触发
@@ -34,6 +47,11 @@ func (node *Node) OnClose() {
 // GetID : 获取本节点信息，节点ID
 func (node *Node) GetID() common.NodeID {
 	return common.NodeID{}
+}
+
+// GetType : 获取本节点信息，节点类型
+func (node *Node) GetType() common.NodeType {
+	return node.nodeType
 }
 
 // GetIP : 获取本节点信息，IP

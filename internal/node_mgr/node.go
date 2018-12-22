@@ -7,7 +7,7 @@ import (
 
 // Node : 管理节点
 type Node struct {
-	gotcp.Server
+	server gotcp.Server
 }
 
 // NewNode : 管理节点实现类的构造函数
@@ -17,12 +17,28 @@ func NewNode() *Node {
 
 // Init : 初始化节点
 func (node *Node) Init() bool {
+	node.server.RegisterSessType(Session{})
 	return true
+}
+
+// Start : 节点开始工作
+func (node *Node) Start() bool {
+	return node.server.Start("")
+}
+
+// Close : 关闭节点
+func (node *Node) Close() {
+	node.server.Close()
 }
 
 // GetID : 获取本节点信息，节点ID
 func (node *Node) GetID() common.NodeID {
 	return common.NodeID{}
+}
+
+// GetType : 获取本节点信息，节点类型
+func (node *Node) GetType() common.NodeType {
+	return common.Mgr
 }
 
 // GetIP : 获取本节点信息，IP

@@ -11,11 +11,12 @@ enum CMD_MGR {
 
 // 服务器信息
 message SERVER_INFO {
-    SERVER_ID Id = 1;                   // 服务器ID
-    repeated string Addrs = 2;          // 地址，0 内网地址 ； 1 外网地址
-    repeated uint32 Ports = 3;          // 端口号列表
-    repeated uint32 Overload = 4;       // 负载值列表
-    string Version = 5;                 // 版本号，用于灰度更新
+    SERVER_ID Id = 1;                   // 服务ID
+    uint32 Type = 2;                    // 服务类型
+    repeated string Addrs = 3;          // 地址，0 内网地址 ； 1 外网地址
+    repeated uint32 Ports = 4;          // 端口号列表
+    repeated uint32 Overload = 5;       // 负载值列表
+    string Version = 6;                 // 版本号，用于灰度更新
 }
 
 // 注册服务器信息( S -> MGR -> S )

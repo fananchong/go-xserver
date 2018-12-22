@@ -6,8 +6,7 @@ import (
 	nodenormal "github.com/fananchong/go-xserver/internal/node_normal"
 )
 
-// NewNode : 节点实现类的构造函数
-func NewNode(nodeType common.NodeType) common.INode {
+func newNode(nodeType common.NodeType) common.INode {
 	switch nodeType {
 	case common.Mgr:
 		node := nodemgr.NewNode()
@@ -15,10 +14,20 @@ func NewNode(nodeType common.NodeType) common.INode {
 			return node
 		}
 	default:
-		node := nodenormal.NewNode()
+		node := nodenormal.NewNode(nodeType)
 		if node.Init() {
 			return node
 		}
 	}
 	return nil
+}
+
+func startNode(node common.INode) bool {
+	nodeType := node.GetType()
+	switch nodeType {
+	case common.Mgr:
+		return node.(*nodemgr.Node).Start()
+	default:
+		return node.(*nodenormal.Node).Start()
+	}
 }
