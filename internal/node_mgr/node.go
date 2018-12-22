@@ -1,7 +1,10 @@
 package nodemgr
 
 import (
+	"fmt"
+
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -23,7 +26,9 @@ func (node *Node) Init() bool {
 
 // Start : 节点开始工作
 func (node *Node) Start() bool {
-	return node.server.Start("")
+	ip := utility.GetIPInner()
+	port := common.XCONFIG.Network.Port[1]
+	return node.server.Start(fmt.Sprintf("%s:%d", ip, port))
 }
 
 // Close : 关闭节点
