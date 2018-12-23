@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/gotcp"
 	"github.com/spf13/viper"
 )
 
@@ -128,6 +129,7 @@ func (app *App) initLog() {
 	}
 	common.XLOG.SetLogDir(logDir)
 	common.XLOG.SetLogLevel(common.XCONFIG.Common.LogLevel)
+	gotcp.SetLogger(common.XLOG)
 }
 
 func (app *App) initPlugin() error {

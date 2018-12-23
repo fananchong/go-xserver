@@ -10,7 +10,8 @@ import (
 
 // Node : 管理节点
 type Node struct {
-	server gotcp.Server
+	server         gotcp.Server
+	registerHelper RegisterSelfHelper
 }
 
 // NewNode : 管理节点实现类的构造函数
@@ -28,11 +29,13 @@ func (node *Node) Init() bool {
 func (node *Node) Start() bool {
 	ip := utility.GetIPInner()
 	port := common.XCONFIG.Network.Port[1]
+	node.registerHelper.Start()
 	return node.server.Start(fmt.Sprintf("%s:%d", ip, port))
 }
 
 // Close : 关闭节点
 func (node *Node) Close() {
+	node.registerHelper.Close()
 	node.server.Close()
 }
 
