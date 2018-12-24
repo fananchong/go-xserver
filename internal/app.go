@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/gotcp"
 	"github.com/spf13/viper"
@@ -63,6 +64,12 @@ func (app *App) Run() {
 
 	// 初始化性能分析工具
 	app.initPprof()
+
+	// 连接 redis mgr 数据库
+	if err := initRedis(); err != nil {
+		common.XLOG.Errorln(err)
+		return
+	}
 
 	// 应用程序正式运行
 	app.onAppReady()
@@ -158,4 +165,13 @@ func (app *App) initPprof() {
 			http.ListenAndServe(addr, nil)
 		}()
 	}
+}
+
+func initRedis() error {
+	go_redis_orm.SetNewRedisHandler(go_redis_orm.NewDefaultRedisClient)
+	return go_redis_orm.CreateDB(
+		common.XCONFIG.DbMgr.Name,
+		common.XCONFIG.DbMgr.Addrs,
+		common.XCONFIG.DbMgr.Password,
+		common.XCONFIG.DbMgr.DBIndex)
 }

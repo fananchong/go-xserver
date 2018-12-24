@@ -1,0 +1,10 @@
+{
+  "name": "MgrServer",
+  "type": "1-1",
+  "key": "uint32",
+  "struct_format": "gogo",
+  "fields": {
+	  "addr": "string",
+    "port": "uint16"
+  }
+}

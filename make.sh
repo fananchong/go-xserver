@@ -7,11 +7,14 @@ SRC_DIR=$PWD
 BIN_DIR=$PWD/bin
 SERVICE_DIR=$PWD/services/
 PROTO_DIR=$PWD/internal/protocol/
+DB_DIR=$PWD/internal/db/
 FLAGS=-race
 export GOBIN=$BIN_DIR
 
 if [[ $1 == "prebuild" ]]; then
     cd $PROTO_DIR
+    ./g.sh
+    cd $DB_DIR
     ./g.sh
 fi
 

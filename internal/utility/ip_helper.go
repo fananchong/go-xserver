@@ -9,34 +9,45 @@ import (
 	"github.com/fananchong/go-xserver/common"
 )
 
+var (
+	ipinner string
+	ipouter string
+)
+
 // GetIPInner : 获取内网 IP
 func GetIPInner() string {
-	switch common.XCONFIG.Network.IPType {
-	case 0:
-		ip, err := networkCard2IP(common.XCONFIG.Network.IPInner)
-		if err != nil {
-			common.XLOG.Errorln(err)
-			os.Exit(1)
+	if ipinner == "" {
+		switch common.XCONFIG.Network.IPType {
+		case 0:
+			ip, err := networkCard2IP(common.XCONFIG.Network.IPInner)
+			if err != nil {
+				common.XLOG.Errorln(err)
+				os.Exit(1)
+			}
+			ipinner = ip
+		default:
+			ipinner = common.XCONFIG.Network.IPInner
 		}
-		return ip
-	default:
-		return common.XCONFIG.Network.IPInner
 	}
+	return ipinner
 }
 
 // GetIPOuter : 获取外网 IP
 func GetIPOuter() string {
-	switch common.XCONFIG.Network.IPType {
-	case 0:
-		ip, err := networkCard2IP(common.XCONFIG.Network.IPOuter)
-		if err != nil {
-			common.XLOG.Errorln(err)
-			os.Exit(1)
+	if ipouter == "" {
+		switch common.XCONFIG.Network.IPType {
+		case 0:
+			ip, err := networkCard2IP(common.XCONFIG.Network.IPOuter)
+			if err != nil {
+				common.XLOG.Errorln(err)
+				os.Exit(1)
+			}
+			ipouter = ip
+		default:
+			ipouter = common.XCONFIG.Network.IPOuter
 		}
-		return ip
-	default:
-		return common.XCONFIG.Network.IPOuter
 	}
+	return ipouter
 }
 
 func networkCard2IP(name string) (string, error) {
@@ -56,4 +67,8 @@ func networkCard2IP(name string) (string, error) {
 		}
 	}
 	return "", errors.New("no find address. nic: " + name)
+}
+
+func GetIntranetListenPort() int {
+	return common.XCONFIG.Network.Port[1]
 }

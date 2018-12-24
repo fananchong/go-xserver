@@ -28,7 +28,7 @@ func (node *Node) Init() bool {
 // Start : 节点开始工作
 func (node *Node) Start() bool {
 	ip := utility.GetIPInner()
-	port := common.XCONFIG.Network.Port[1]
+	port := utility.GetIntranetListenPort()
 	node.registerHelper.Start()
 	return node.server.Start(fmt.Sprintf("%s:%d", ip, port))
 }

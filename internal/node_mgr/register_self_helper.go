@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/db"
+	"github.com/fananchong/go-xserver/internal/utility"
 )
 
 // RegisterSelfHelper : 管理节点注册自己到 Redis 数据库的帮助类
@@ -34,7 +36,12 @@ func (helper *RegisterSelfHelper) loop() {
 }
 
 func (helper *RegisterSelfHelper) register() {
-	common.XLOG.Debugln("register self")
+	data := db.NewMgrServer(common.XCONFIG.DbMgr.Name, 0)
+	data.SetAddr(utility.GetIPInner())
+	data.SetPort(uint16(utility.GetIntranetListenPort()))
+	if err := data.Save(); err != nil {
+		common.XLOG.Errorln(err)
+	}
 }
 
 // Close : 结束
