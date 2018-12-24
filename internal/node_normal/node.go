@@ -2,13 +2,12 @@ package nodenormal
 
 import (
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/gotcp"
 )
 
 // Node : 普通节点
 type Node struct {
 	nodeType common.NodeType
-	gotcp.Session
+	sess     Session
 }
 
 // NewNode : 普通节点实现类的构造函数
@@ -25,23 +24,13 @@ func (node *Node) Init() bool {
 
 // Start : 节点开始工作
 func (node *Node) Start() bool {
+	node.sess.Start()
 	return true
 }
 
 // Close : 关闭节点
 func (node *Node) Close() {
-
-}
-
-// OnRecv : 接收到网络数据包，被触发
-func (node *Node) OnRecv(data []byte, flag byte) {
-	if node.IsVerified() == false {
-		node.Verify()
-	}
-}
-
-// OnClose : 断开连接，被触发
-func (node *Node) OnClose() {
+	node.sess.Close()
 }
 
 // GetID : 获取本节点信息，节点ID

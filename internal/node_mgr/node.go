@@ -11,7 +11,7 @@ import (
 // Node : 管理节点
 type Node struct {
 	server         gotcp.Server
-	registerHelper RegisterSelfHelper
+	registerHelper RegisterMgrHelper
 }
 
 // NewNode : 管理节点实现类的构造函数
