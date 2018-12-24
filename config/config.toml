@@ -1,7 +1,7 @@
 [common]
 Version = "0.0.1"
 LogDir = "./logs"
-LogLevel = 0
+LogLevel = 1
 Debug = true
 
 [network]
@@ -13,23 +13,23 @@ Port = [7500, 30000]
 [dbaccount]
 Name = "account"
 Addrs = ["127.0.0.1:6379"]
-Password = ""
-DBIndex = 0
+Password = "123456"
+DBIndex = 1
 
 [dbtoken]
 Name = "token"
 Addrs = ["127.0.0.1:6379"]
-Password = ""
-DBIndex = 0
+Password = "123456"
+DBIndex = 1
 
 [dbserver]
 Name = "server"
 Addrs = ["127.0.0.1:6379"]
-Password = ""
-DBIndex = 0
+Password = "123456"
+DBIndex = 1
 
 [dbmgr]
 Name = "mgr"
 Addrs = ["127.0.0.1:6379"]
-Password = ""
-DBIndex = 0
+Password = "123456"
+DBIndex = 1

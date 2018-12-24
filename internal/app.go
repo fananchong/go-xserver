@@ -135,7 +135,7 @@ func (app *App) initLog() {
 		os.MkdirAll(logDir, os.ModePerm)
 	}
 	common.XLOG.SetLogDir(logDir)
-	common.XLOG.SetLogLevel(common.XCONFIG.Common.LogLevel)
+	common.XLOG.SetLogLevel(common.XCONFIG.Common.LogLevel - 1)
 	gotcp.SetLogger(common.XLOG)
 }
 
