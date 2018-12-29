@@ -38,7 +38,7 @@ func (helper *RegisterMgrHelper) loop() {
 func (helper *RegisterMgrHelper) register() {
 	data := db.NewMgrServer(common.XCONFIG.DbMgr.Name, 0)
 	data.SetAddr(utility.GetIPInner())
-	data.SetPort(uint16(utility.GetIntranetListenPort()))
+	data.SetPort(utility.GetIntranetListenPort())
 	if err := data.Save(); err != nil {
 		common.XLOG.Errorln(err)
 	}

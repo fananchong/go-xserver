@@ -7,13 +7,14 @@ import (
 // Node : 普通节点
 type Node struct {
 	nodeType common.NodeType
-	sess     Session
+	sess     *Session
 }
 
 // NewNode : 普通节点实现类的构造函数
 func NewNode(nodeType common.NodeType) *Node {
 	return &Node{
 		nodeType: nodeType,
+		sess:     NewSession(),
 	}
 }
 
@@ -35,7 +36,7 @@ func (node *Node) Close() {
 
 // GetID : 获取本节点信息，节点ID
 func (node *Node) GetID() common.NodeID {
-	return common.NodeID{}
+	return node.sess.ID
 }
 
 // GetType : 获取本节点信息，节点类型

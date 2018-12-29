@@ -69,6 +69,7 @@ func networkCard2IP(name string) (string, error) {
 	return "", errors.New("no find address. nic: " + name)
 }
 
-func GetIntranetListenPort() int {
+// GetIntranetListenPort : 获取服务器组内监听端口
+func GetIntranetListenPort() int32 {
 	return common.XCONFIG.Network.Port[1]
 }

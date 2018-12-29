@@ -14,14 +14,15 @@ message SERVER_INFO {
     SERVER_ID Id = 1;                   // 服务ID
     uint32 Type = 2;                    // 服务类型
     repeated string Addrs = 3;          // 地址，0 内网地址 ； 1 外网地址
-    repeated uint32 Ports = 4;          // 端口号列表
+    repeated int32 Ports = 4;           // 端口号列表
     repeated uint32 Overload = 5;       // 负载值列表
     string Version = 6;                 // 版本号，用于灰度更新
 }
 
 // 注册服务器信息( S -> MGR -> S )
 message MSG_MGR_REGISTER_SERVER {
-    SERVER_INFO Data = 1;
+    SERVER_INFO Data = 1;               // 服务器信息
+    string Token = 2;                   // 令牌，注册验证用
 }
 
 // 丢失服务器信息( MGR -> S )

@@ -5,6 +5,6 @@
   "struct_format": "gogo",
   "fields": {
 	  "addr": "string",
-    "port": "uint16"
+    "port": "int32"
   }
 }

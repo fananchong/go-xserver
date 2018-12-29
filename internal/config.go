@@ -116,7 +116,7 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 					}
 				}
 				flags.StringSlice(name, v, desc)
-			case reflect.Int:
+			case reflect.Int, reflect.Int32:
 				var v []int
 				if defaultValue != "" {
 					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
@@ -125,7 +125,7 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 					}
 				}
 				flags.IntSlice(name, v, desc)
-			case reflect.Uint:
+			case reflect.Uint, reflect.Uint32:
 				var v []uint
 				if defaultValue != "" {
 					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {

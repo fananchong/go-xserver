@@ -16,7 +16,7 @@ import (
 type MgrServer struct {
 	Key  uint32
 	addr string
-	port uint16
+	port int32
 
 	__dirtyData               map[string]interface{}
 	__dirtyDataForStructFiled map[string]interface{}
@@ -60,7 +60,7 @@ func (this *MgrServer) Load() error {
 	}
 	var data struct {
 		Addr string `redis:"addr"`
-		Port uint16 `redis:"port"`
+		Port int32  `redis:"port"`
 	}
 	if err := redis.ScanStruct(val, &data); err != nil {
 		return err
@@ -146,7 +146,7 @@ func (this *MgrServer) GetAddr() string {
 	return this.addr
 }
 
-func (this *MgrServer) GetPort() uint16 {
+func (this *MgrServer) GetPort() int32 {
 	return this.port
 }
 
@@ -155,7 +155,7 @@ func (this *MgrServer) SetAddr(value string) {
 	this.__dirtyData["addr"] = string([]byte(value))
 }
 
-func (this *MgrServer) SetPort(value uint16) {
+func (this *MgrServer) SetPort(value int32) {
 	this.port = value
 	this.__dirtyData["port"] = value
 }
