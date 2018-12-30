@@ -18,8 +18,10 @@ type INode interface {
 	GetOverload(i int) uint // 负载
 	GetVersion() string     // 版本号
 
-	// 根据节点类型，随机选择 1 节点
-	SelectOne(nodeType NodeType) INode
+	// 获取节点
+	SelectOne(nodeType NodeType) INode     // 根据节点类型，随机选择 1 节点
+	GetNodeList(nodeType NodeType) []INode // 获取某类型节点列表
+	GetAllNode() []INode                   // 获取所有节点
 
 	// 发送消息
 	SendOne(nodeType NodeType, data []byte)                      // 根据节点类型，随机选择 1 节点，发送数据

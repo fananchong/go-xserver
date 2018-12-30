@@ -74,6 +74,16 @@ func (node *Node) SelectOne(nodeType common.NodeType) common.INode {
 	return node
 }
 
+// GetNodeList : 获取某类型节点列表
+func (node *Node) GetNodeList(nodeType common.NodeType) []common.INode {
+	return nil
+}
+
+// GetAllNode : 获取所有节点
+func (node *Node) GetAllNode() []common.INode {
+	return nil
+}
+
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据
 func (node *Node) SendOne(nodeType common.NodeType, data []byte) {
 
