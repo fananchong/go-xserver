@@ -28,4 +28,5 @@ message MSG_MGR_REGISTER_SERVER {
 // 丢失服务器信息( MGR -> S )
 message MSG_MGR_LOSE_SERVER {
     SERVER_ID Id = 1;                   // 服务器ID
+    uint32 Type = 2;                    // 服务类型
 }

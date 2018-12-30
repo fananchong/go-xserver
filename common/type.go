@@ -28,6 +28,9 @@ const (
 
 	// NodeTypeSize : 节点类型数量
 	NodeTypeSize
+
+	// Unknow : 未知
+	Unknow = NodeTypeSize
 )
 
 // IPType : IP 类型

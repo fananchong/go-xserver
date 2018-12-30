@@ -45,7 +45,7 @@ TRY_AGAIN:
 }
 
 func (sess *Session) registerSelf() {
-	msg := protocol.MSG_MGR_REGISTER_SERVER{}
+	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = utility.NodeID2ServerID(sess.ID)
 	msg.Data.Type = uint32(common.XNODE.GetType())
@@ -57,13 +57,31 @@ func (sess *Session) registerSelf() {
 	// msg.Data.Version
 
 	msg.Token = common.XCONFIG.Common.IntranetToken
-	sess.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), &msg)
+	sess.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
 	common.XLOG.Infoln("register self to mgr server. self info:", msg.GetData())
 }
 
 // OnRecv : 接收到网络数据包，被触发
 func (sess *Session) OnRecv(data []byte, flag byte) {
-
+	cmd := gotcp.GetCmd(data)
+	switch cmd {
+	case uint64(protocol.CMD_MGR_REGISTER_SERVER):
+		msg := &protocol.MSG_MGR_REGISTER_SERVER{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			return
+		}
+		common.XLOG.Infoln(msg)
+	case uint64(protocol.CMD_MGR_LOSE_SERVER):
+		msg := &protocol.MSG_MGR_LOSE_SERVER{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			return
+		}
+		common.XLOG.Infoln(msg)
+	case uint64(protocol.CMD_MGR_PING):
+		// do nothing
+	default:
+		common.XLOG.Errorln("unknow cmd, cmd =", cmd)
+	}
 }
 
 // OnClose : 断开连接，被触发

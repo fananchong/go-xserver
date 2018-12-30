@@ -45,3 +45,8 @@ func ServerID2UUID(sid *protocol.SERVER_ID) uuid.UUID {
 	binary.LittleEndian.PutUint64(uid[8:], sid.GetHigh())
 	return uid
 }
+
+// EqualSID : 2 个 SID 是否相等
+func EqualSID(sid1 *protocol.SERVER_ID, sid2 *protocol.SERVER_ID) bool {
+	return sid1.GetLow() == sid2.GetLow() && sid1.GetHigh() == sid2.GetHigh()
+}
