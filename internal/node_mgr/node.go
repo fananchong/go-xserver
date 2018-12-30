@@ -6,17 +6,21 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
+	"github.com/gogo/protobuf/proto"
 )
 
 // Node : 管理节点
 type Node struct {
 	server         gotcp.Server
 	registerHelper RegisterMgrHelper
+	defaultNodeInterfaceImpl
 }
 
 // NewNode : 管理节点实现类的构造函数
 func NewNode() *Node {
-	return &Node{}
+	node := &Node{}
+	node.defaultNodeInterfaceImpl.nid = utility.NewNID()
+	return node
 }
 
 // Init : 初始化节点
@@ -27,10 +31,8 @@ func (node *Node) Init() bool {
 
 // Start : 节点开始工作
 func (node *Node) Start() bool {
-	ip := utility.GetIPInner()
-	port := utility.GetIntranetListenPort()
 	node.registerHelper.Start()
-	return node.server.Start(fmt.Sprintf("%s:%d", ip, port))
+	return node.server.Start(fmt.Sprintf("%s:%d", utility.GetIPInner(), utility.GetIntranetListenPort()))
 }
 
 // Close : 关闭节点
@@ -41,7 +43,7 @@ func (node *Node) Close() {
 
 // GetID : 获取本节点信息，节点ID
 func (node *Node) GetID() common.NodeID {
-	return common.NodeID{}
+	return node.nid
 }
 
 // GetType : 获取本节点信息，节点类型
@@ -51,16 +53,17 @@ func (node *Node) GetType() common.NodeType {
 
 // GetIP : 获取本节点信息，IP
 func (node *Node) GetIP(i common.IPType) string {
-	return ""
+	return utility.GetIP(i)
 }
 
 // GetPort : 获取本节点信息，端口
-func (node *Node) GetPort(i int) int {
-	return 0
+func (node *Node) GetPort(i int) int32 {
+	return common.XCONFIG.Network.Port[i]
 }
 
 // GetOverload : 获取本节点信息，负载
-func (node *Node) GetOverload(i int) uint {
+func (node *Node) GetOverload(i int) uint32 {
+	// TODO:
 	return 0
 }
 
@@ -69,46 +72,7 @@ func (node *Node) GetVersion() string {
 	return common.XCONFIG.Common.Version
 }
 
-// SelectOne : 根据节点类型，随机选择 1 节点
-func (node *Node) SelectOne(nodeType common.NodeType) common.INode {
-	return node
+// SendMsg : 往该节点，发送数据
+func (node *Node) SendMsg(cmd uint64, msg proto.Message) bool {
+	panic("")
 }
-
-// GetNodeList : 获取某类型节点列表
-func (node *Node) GetNodeList(nodeType common.NodeType) []common.INode {
-	return nil
-}
-
-// GetAllNode : 获取所有节点
-func (node *Node) GetAllNode() []common.INode {
-	return nil
-}
-
-// SendOne : 根据节点类型，随机选择 1 节点，发送数据
-func (node *Node) SendOne(nodeType common.NodeType, data []byte) {
-
-}
-
-// SendByType : 对某类型节点，广播数据
-func (node *Node) SendByType(nodeType common.NodeType, data []byte, exclude []common.NodeID) {
-
-}
-
-// SendByID : 往指定节点，发送数据
-func (node *Node) SendByID(nodeID common.NodeID, data []byte) {
-
-}
-
-// Send : 往该节点，发送数据
-func (node *Node) Send(data []byte) {
-
-}
-
-// SendAll : 对服务器组，广播数据
-func (node *Node) SendAll(data []byte, exclude []common.NodeID) {
-
-}
-
-func (node *Node) RegisterOnConnect()    {}
-func (node *Node) RegisterOnRecv()       {}
-func (node *Node) RegisterOnDisconnect() {}

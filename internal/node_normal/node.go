@@ -2,6 +2,7 @@ package nodenormal
 
 import (
 	"github.com/fananchong/go-xserver/common"
+	"github.com/gogo/protobuf/proto"
 )
 
 // Node : 普通节点
@@ -36,7 +37,7 @@ func (node *Node) Close() {
 
 // GetID : 获取本节点信息，节点ID
 func (node *Node) GetID() common.NodeID {
-	return node.sess.ID
+	return node.sess.NID
 }
 
 // GetType : 获取本节点信息，节点类型
@@ -50,12 +51,12 @@ func (node *Node) GetIP(i common.IPType) string {
 }
 
 // GetPort : 获取本节点信息，端口
-func (node *Node) GetPort(i int) int {
+func (node *Node) GetPort(i int) int32 {
 	return 0
 }
 
 // GetOverload : 获取本节点信息，负载
-func (node *Node) GetOverload(i int) uint {
+func (node *Node) GetOverload(i int) uint32 {
 	return 0
 }
 
@@ -65,7 +66,7 @@ func (node *Node) GetVersion() string {
 }
 
 // SelectOne : 根据节点类型，随机选择 1 节点
-func (node *Node) SelectOne(nodeType common.NodeType) common.INode {
+func (node *Node) GetNodeOne(nodeType common.NodeType) common.INode {
 	return node
 }
 
@@ -75,32 +76,32 @@ func (node *Node) GetNodeList(nodeType common.NodeType) []common.INode {
 }
 
 // GetAllNode : 获取所有节点
-func (node *Node) GetAllNode() []common.INode {
+func (node *Node) GetNodeAll() []common.INode {
 	return nil
 }
 
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据
-func (node *Node) SendOne(nodeType common.NodeType, data []byte) {
-
+func (node *Node) SendOne(nodeType common.NodeType, cmd uint64, msg proto.Message) bool {
+	return false
 }
 
 // SendByType : 对某类型节点，广播数据
-func (node *Node) SendByType(nodeType common.NodeType, data []byte, exclude []common.NodeID) {
+func (node *Node) SendByType(nodeType common.NodeType, cmd uint64, msg proto.Message, excludeSelf bool) {
 
 }
 
 // SendByID : 往指定节点，发送数据
-func (node *Node) SendByID(nodeID common.NodeID, data []byte) {
-
+func (node *Node) SendByID(nodeID common.NodeID, cmd uint64, msg proto.Message) bool {
+	return false
 }
 
 // Send : 往该节点，发送数据
-func (node *Node) Send(data []byte) {
-
+func (node *Node) SendMsg(cmd uint64, msg proto.Message) bool {
+	return false
 }
 
 // SendAll : 对服务器组，广播数据
-func (node *Node) SendAll(data []byte, exclude []common.NodeID) {
+func (node *Node) SendAll(cmd uint64, msg proto.Message, excludeSelf bool) {
 
 }
 

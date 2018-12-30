@@ -8,21 +8,20 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
-	uuid "github.com/satori/go.uuid"
 )
 
 // Session : 网络会话类
 type Session struct {
 	*gotcp.Session
-	ID common.NodeID
+	NID common.NodeID
 }
 
 // NewSession : 网络会话类的构造函数
 func NewSession() *Session {
-	uid := uuid.NewV2(uuid.DomainPerson)
-	common.XLOG.Infoln("Node ID:", uid.String())
+	nid := utility.NewNID()
+	common.XLOG.Infoln("NODE ID:", utility.NodeID2UUID(nid).String())
 	return &Session{
-		ID: utility.UUID2NodeID(uid),
+		NID: nid,
 	}
 }
 
@@ -47,7 +46,7 @@ TRY_AGAIN:
 func (sess *Session) registerSelf() {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
-	msg.Data.Id = utility.NodeID2ServerID(sess.ID)
+	msg.Data.Id = utility.NodeID2ServerID(sess.NID)
 	msg.Data.Type = uint32(common.XNODE.GetType())
 	msg.Data.Addrs = []string{utility.GetIPInner(), utility.GetIPOuter()}
 	msg.Data.Ports = common.XCONFIG.Network.Port
@@ -70,13 +69,13 @@ func (sess *Session) OnRecv(data []byte, flag byte) {
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
 			return
 		}
-		common.XLOG.Infoln(msg)
+		common.XLOG.Infoln("one server register. id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
 	case uint64(protocol.CMD_MGR_LOSE_SERVER):
 		msg := &protocol.MSG_MGR_LOSE_SERVER{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
 			return
 		}
-		common.XLOG.Infoln(msg)
+		common.XLOG.Infoln("one server lose. id:", utility.ServerID2UUID(msg.GetId()).String())
 	case uint64(protocol.CMD_MGR_PING):
 		// do nothing
 	default:

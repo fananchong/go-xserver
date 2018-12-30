@@ -1,12 +1,18 @@
 package utility
 
 import (
+	"bytes"
 	"encoding/binary"
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	uuid "github.com/satori/go.uuid"
 )
+
+// NewNID : 生成一个NID
+func NewNID() common.NodeID {
+	return UUID2NodeID(uuid.NewV2(uuid.DomainPerson))
+}
 
 // UUID2NodeID : uuid.UUID 转化为 common.NodeID
 func UUID2NodeID(uid uuid.UUID) common.NodeID {
@@ -49,4 +55,9 @@ func ServerID2UUID(sid *protocol.SERVER_ID) uuid.UUID {
 // EqualSID : 2 个 SID 是否相等
 func EqualSID(sid1 *protocol.SERVER_ID, sid2 *protocol.SERVER_ID) bool {
 	return sid1.GetLow() == sid2.GetLow() && sid1.GetHigh() == sid2.GetHigh()
+}
+
+// EqualNID : 2 个 NID 是否相等
+func EqualNID(nid1 common.NodeID, nid2 common.NodeID) bool {
+	return bytes.Equal(nid1[:], nid2[:])
 }

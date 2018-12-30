@@ -5,18 +5,21 @@ import (
 	"net"
 	"os"
 	"regexp"
+	"sync"
 
 	"github.com/fananchong/go-xserver/common"
 )
 
 var (
-	ipinner string
-	ipouter string
+	ipinner     string
+	ipouter     string
+	onceipinner sync.Once
+	onceipouter sync.Once
 )
 
 // GetIPInner : 获取内网 IP
 func GetIPInner() string {
-	if ipinner == "" {
+	onceipinner.Do(func() {
 		switch common.XCONFIG.Network.IPType {
 		case 0:
 			ip, err := networkCard2IP(common.XCONFIG.Network.IPInner)
@@ -28,13 +31,13 @@ func GetIPInner() string {
 		default:
 			ipinner = common.XCONFIG.Network.IPInner
 		}
-	}
+	})
 	return ipinner
 }
 
 // GetIPOuter : 获取外网 IP
 func GetIPOuter() string {
-	if ipouter == "" {
+	onceipouter.Do(func() {
 		switch common.XCONFIG.Network.IPType {
 		case 0:
 			ip, err := networkCard2IP(common.XCONFIG.Network.IPOuter)
@@ -46,8 +49,20 @@ func GetIPOuter() string {
 		default:
 			ipouter = common.XCONFIG.Network.IPOuter
 		}
-	}
+	})
 	return ipouter
+}
+
+// GetIP : 根据类型获取IP
+func GetIP(t common.IPType) string {
+	switch t {
+	case common.IPINNER:
+		return GetIPInner()
+	case common.IPOUTER:
+		return GetIPOuter()
+	default:
+		panic("unknow ip type.")
+	}
 }
 
 func networkCard2IP(name string) (string, error) {

@@ -13,6 +13,7 @@ type Session struct {
 	Info    *protocol.SERVER_INFO
 	msgData []byte
 	msgFlag byte
+	defaultNodeInterfaceImpl
 }
 
 // OnRecv : 接收到网络数据包，被触发
@@ -53,6 +54,7 @@ func (sess *Session) doVerify(cmd uint64, data []byte, flag byte) bool {
 		sess.Info = msg.GetData()
 		sess.msgData = data
 		sess.msgFlag = flag
+		sess.defaultNodeInterfaceImpl.nid = utility.ServerID2NodeID(msg.GetData().GetId())
 		sess.Verify()
 		return true
 	}
@@ -99,6 +101,7 @@ func (sess *Session) doLose() {
 		xsessionmgr.forAll(func(elem *Session) {
 			elem.SendMsg(uint64(protocol.CMD_MGR_LOSE_SERVER), msg)
 		})
+		common.XLOG.Infoln("lose node, type:", msg.Type, "id:", utility.ServerID2UUID(msg.Id).String())
 	}
 }
 
@@ -108,6 +111,38 @@ func (sess *Session) GetType() common.NodeType {
 		return common.NodeType(sess.Info.GetType())
 	}
 	return common.Unknow
+}
+
+// GetIP : 获取本节点信息，IP
+func (sess *Session) GetIP(i common.IPType) string {
+	if sess.Info != nil {
+		return sess.Info.GetAddrs()[i]
+	}
+	return ""
+}
+
+// GetPort : 获取本节点信息，端口
+func (sess *Session) GetPort(i int) int32 {
+	if sess.Info != nil {
+		return sess.Info.GetPorts()[i]
+	}
+	return 0
+}
+
+// GetOverload : 获取本节点信息，负载
+func (sess *Session) GetOverload(i int) uint32 {
+	if sess.Info != nil {
+		return sess.Info.GetOverload()[i]
+	}
+	return 0
+}
+
+// GetVersion : 获取本节点信息，版本号
+func (sess *Session) GetVersion() string {
+	if sess.Info != nil {
+		return sess.Info.GetVersion()
+	}
+	return ""
 }
 
 // GetSID : 获取 SID
