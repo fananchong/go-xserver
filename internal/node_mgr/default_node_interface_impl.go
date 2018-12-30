@@ -11,6 +11,10 @@ type defaultNodeInterfaceImpl struct {
 	nid common.NodeID
 }
 
+func (impl *defaultNodeInterfaceImpl) SetID(nid common.NodeID) {
+	impl.nid = nid
+}
+
 // GetID : 获取本节点信息，节点ID
 func (impl *defaultNodeInterfaceImpl) GetID() common.NodeID {
 	return impl.nid
@@ -74,7 +78,3 @@ func (impl *defaultNodeInterfaceImpl) SendAll(cmd uint64, msg proto.Message, exc
 		sess.SendMsg(cmd, msg)
 	})
 }
-
-func (impl *defaultNodeInterfaceImpl) RegisterOnConnect()    {}
-func (impl *defaultNodeInterfaceImpl) RegisterOnRecv()       {}
-func (impl *defaultNodeInterfaceImpl) RegisterOnDisconnect() {}

@@ -104,7 +104,3 @@ func (node *Node) SendMsg(cmd uint64, msg proto.Message) bool {
 func (node *Node) SendAll(cmd uint64, msg proto.Message, excludeSelf bool) {
 
 }
-
-func (node *Node) RegisterOnConnect()    {}
-func (node *Node) RegisterOnRecv()       {}
-func (node *Node) RegisterOnDisconnect() {}

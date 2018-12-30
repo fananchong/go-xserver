@@ -9,11 +9,11 @@ import (
 
 // Session : 网络会话类
 type Session struct {
+	defaultNodeInterfaceImpl
 	gotcp.Session
 	Info    *protocol.SERVER_INFO
 	msgData []byte
 	msgFlag byte
-	defaultNodeInterfaceImpl
 }
 
 // OnRecv : 接收到网络数据包，被触发
@@ -54,7 +54,7 @@ func (sess *Session) doVerify(cmd uint64, data []byte, flag byte) bool {
 		sess.Info = msg.GetData()
 		sess.msgData = data
 		sess.msgFlag = flag
-		sess.defaultNodeInterfaceImpl.nid = utility.ServerID2NodeID(msg.GetData().GetId())
+		sess.SetID(utility.ServerID2NodeID(msg.GetData().GetId()))
 		sess.Verify()
 		return true
 	}

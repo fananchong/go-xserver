@@ -11,6 +11,7 @@
 	It has these top-level messages:
 		SERVER_ID
 		SERVER_INFO
+		MSG_MGR_PING
 		MSG_MGR_REGISTER_SERVER
 		MSG_MGR_LOSE_SERVER
 */

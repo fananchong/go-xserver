@@ -4,7 +4,7 @@ package protocol;
 import "common.proto";
 
 enum CMD_MGR {
-    PING = 0;                           // PING ( S <-> S )
+    PING = 0;                           // PING ( MGR -> S )
     REGISTER_SERVER = 1;                // 注册服务器信息( S -> MGR -> S )
     LOSE_SERVER = 2;                    // 丢失服务器信息( MGR -> S )
 };
@@ -17,6 +17,10 @@ message SERVER_INFO {
     repeated int32 Ports = 4;           // 端口号列表
     repeated uint32 Overload = 5;       // 负载值列表
     string Version = 6;                 // 版本号，用于灰度更新
+}
+
+// PING ( MGR -> S )
+message MSG_MGR_PING {
 }
 
 // 注册服务器信息( S -> MGR -> S )

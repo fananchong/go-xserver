@@ -1,9 +1,11 @@
 package nodemgr
 
 import (
-	"fmt"
+	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/db"
+	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 	"github.com/gogo/protobuf/proto"
@@ -11,34 +13,71 @@ import (
 
 // Node : 管理节点
 type Node struct {
-	server         gotcp.Server
-	registerHelper RegisterMgrHelper
 	defaultNodeInterfaceImpl
+	components []utility.IComponent
 }
 
 // NewNode : 管理节点实现类的构造函数
 func NewNode() *Node {
 	node := &Node{}
-	node.defaultNodeInterfaceImpl.nid = utility.NewNID()
+	node.SetID(utility.NewNID())
 	return node
 }
 
 // Init : 初始化节点
 func (node *Node) Init() bool {
-	node.server.RegisterSessType(Session{})
+	// tcp server
+	server := &gotcp.Server{}
+	server.RegisterSessType(Session{})
+	server.SetAddress(utility.GetIPInner(), utility.GetIntranetListenPort())
+	server.SetUnfixedPort(true)
+
+	// register ticker
+	registerTicker := utility.NewTickerHelper(1*time.Second, node.register)
+
+	// ping ticker
+	pingTicker := utility.NewTickerHelper(5*time.Second, node.ping)
+
+	// bind components
+	node.components = []utility.IComponent{
+		server,
+		registerTicker,
+		pingTicker,
+	}
 	return true
 }
 
 // Start : 节点开始工作
 func (node *Node) Start() bool {
-	node.registerHelper.Start()
-	return node.server.Start(fmt.Sprintf("%s:%d", utility.GetIPInner(), utility.GetIntranetListenPort()))
+	for _, v := range node.components {
+		if v != nil && v.Start() == false {
+			panic("")
+		}
+	}
+	return true
 }
 
 // Close : 关闭节点
 func (node *Node) Close() {
-	node.registerHelper.Close()
-	node.server.Close()
+	for _, v := range node.components {
+		v.Close()
+	}
+}
+
+func (node *Node) register() {
+	data := db.NewMgrServer(common.XCONFIG.DbMgr.Name, 0)
+	data.SetAddr(utility.GetIPInner())
+	data.SetPort(utility.GetIntranetListenPort())
+	if err := data.Save(); err != nil {
+		common.XLOG.Errorln(err)
+	}
+}
+
+func (node *Node) ping() {
+	xsessionmgr.forAll(func(sess *Session) {
+		msg := &protocol.MSG_MGR_PING{}
+		sess.SendMsg(uint64(protocol.CMD_MGR_PING), msg)
+	})
 }
 
 // GetID : 获取本节点信息，节点ID
