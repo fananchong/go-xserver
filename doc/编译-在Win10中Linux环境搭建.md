@@ -6,6 +6,18 @@
 
   - Shift + 鼠标右键，点击`在此处打开 Linux Shell(L)` ,即可打开 WSL
 
+## 安装 VSCode
+
+主要步骤：
+
+  - 安装 VSCode
+  - 设置代理
+  - 安装 go 插件
+  - WSL 嵌入 VSCode
+
+详细请参考：https://blog.csdn.net/u013272009/article/details/84971807
+
+
 ## 安装 Docker for Windows（非必须）
 
   - 按照 https://www.docker.com/products/docker-desktop 中提示安装之
@@ -21,13 +33,6 @@
   - 修正挂接目录问题
     - 请参考 https://blog.csdn.net/u013272009/article/details/81222689
 
-## 安装 VSCode
 
-主要步骤：
-
-- 安装 VSCode
-- 设置代理
-- 安装 go 插件
-- WSL 嵌入 VSCode
-
-详细请参考：https://blog.csdn.net/u013272009/article/details/84971807
+  - Docker 容器开启失败
+    - 请参考 https://blog.csdn.net/u013272009/article/details/85002613
