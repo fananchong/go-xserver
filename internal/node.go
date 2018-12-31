@@ -2,8 +2,8 @@ package internal
 
 import (
 	"github.com/fananchong/go-xserver/common"
-	nodemgr "github.com/fananchong/go-xserver/internal/node_mgr"
-	nodenormal "github.com/fananchong/go-xserver/internal/node_normal"
+	nodemgr "github.com/fananchong/go-xserver/internal/node/mgr"
+	nodenormal "github.com/fananchong/go-xserver/internal/node/normal"
 )
 
 func newNode(nodeType common.NodeType) common.INode {

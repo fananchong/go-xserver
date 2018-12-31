@@ -1,4 +1,4 @@
-package nodemgr
+package nodecommon
 
 import (
 	"sync"
@@ -9,25 +9,27 @@ import (
 )
 
 var (
-	xsessionmgr = newSessionMgr()
+	// XSESSIONMGR : 网络会话管理器
+	XSESSIONMGR = newSessionMgr()
 )
 
 // SessionMgr : 网络会话对象管理类
 type SessionMgr struct {
 	m       sync.RWMutex
-	ss      map[common.NodeType][]*Session
-	ssByID  map[common.NodeID]*Session
+	ss      map[common.NodeType][]*SessionBase
+	ssByID  map[common.NodeID]*SessionBase
 	counter uint32
 }
 
 func newSessionMgr() *SessionMgr {
 	return &SessionMgr{
-		ss:     make(map[common.NodeType][]*Session),
-		ssByID: make(map[common.NodeID]*Session),
+		ss:     make(map[common.NodeType][]*SessionBase),
+		ssByID: make(map[common.NodeID]*SessionBase),
 	}
 }
 
-func (sessmgr *SessionMgr) register(sess *Session) {
+// Register : 有网络会话节点加入
+func (sessmgr *SessionMgr) Register(sess *SessionBase) {
 	t := sess.GetType()
 	sid := sess.GetSID()
 	sessmgr.m.Lock()
@@ -39,7 +41,8 @@ func (sessmgr *SessionMgr) register(sess *Session) {
 	sessmgr.ssByID[sess.GetID()] = sess
 }
 
-func (sessmgr *SessionMgr) lose(sess *Session) {
+// Lose : 丢失网络会话节点
+func (sessmgr *SessionMgr) Lose(sess *SessionBase) {
 	t := sess.GetType()
 	sid := sess.GetSID()
 	sessmgr.m.Lock()
@@ -68,7 +71,8 @@ func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t common.Node
 	return false
 }
 
-func (sessmgr *SessionMgr) getByID(nid common.NodeID) *Session {
+// GetByID : 根据 NID 获取网络会话节点
+func (sessmgr *SessionMgr) GetByID(nid common.NodeID) *SessionBase {
 	sessmgr.m.RLock()
 	defer sessmgr.m.RUnlock()
 	if v, ok := sessmgr.ssByID[nid]; ok {
@@ -77,28 +81,31 @@ func (sessmgr *SessionMgr) getByID(nid common.NodeID) *Session {
 	return nil
 }
 
-func (sessmgr *SessionMgr) getByType(t common.NodeType) []*Session {
+// GetByType : 根据节点类型，获取某类网络会话节点列表
+func (sessmgr *SessionMgr) GetByType(t common.NodeType) []*SessionBase {
 	sessmgr.m.RLock()
 	defer sessmgr.m.RUnlock()
-	var ret []*Session
+	var ret []*SessionBase
 	if lst, ok := sessmgr.ss[t]; ok {
 		ret = append(ret, lst...)
 	}
 	return ret
 }
 
-func (sessmgr *SessionMgr) getAll() []*Session {
+// GetAll : 获取所有网络会话节点列表
+func (sessmgr *SessionMgr) GetAll() []*SessionBase {
 	sessmgr.m.RLock()
 	defer sessmgr.m.RUnlock()
-	var ret []*Session
+	var ret []*SessionBase
 	for _, lst := range sessmgr.ss {
 		ret = append(ret, lst...)
 	}
 	return ret
 }
 
-func (sessmgr *SessionMgr) selectOne(t common.NodeType) *Session {
-	lst := xsessionmgr.getByType(t)
+// SelectOne : 选择 1 个某类型的网络会话节点
+func (sessmgr *SessionMgr) SelectOne(t common.NodeType) *SessionBase {
+	lst := XSESSIONMGR.GetByType(t)
 	n := len(lst)
 	if n > 0 {
 		index := int32(sessmgr.counter % uint32(n))
@@ -108,15 +115,17 @@ func (sessmgr *SessionMgr) selectOne(t common.NodeType) *Session {
 	return nil
 }
 
-func (sessmgr *SessionMgr) forByType(t common.NodeType, f func(*Session)) {
-	lst := sessmgr.getByType(t)
+// ForByType : 根据类型遍历网络会话节点
+func (sessmgr *SessionMgr) ForByType(t common.NodeType, f func(*SessionBase)) {
+	lst := sessmgr.GetByType(t)
 	for _, v := range lst {
 		f(v)
 	}
 }
 
-func (sessmgr *SessionMgr) forAll(f func(*Session)) {
-	lst := sessmgr.getAll()
+// ForAll : 遍历所有网络会话节点
+func (sessmgr *SessionMgr) ForAll(f func(*SessionBase)) {
+	lst := sessmgr.GetAll()
 	for _, v := range lst {
 		f(v)
 	}

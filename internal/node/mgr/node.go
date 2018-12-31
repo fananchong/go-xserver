@@ -5,6 +5,7 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/db"
+	nodecommon "github.com/fananchong/go-xserver/internal/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
@@ -13,7 +14,7 @@ import (
 
 // Node : 管理节点
 type Node struct {
-	defaultNodeInterfaceImpl
+	nodecommon.DefaultNodeInterfaceImpl
 	components []utility.IComponent
 }
 
@@ -21,6 +22,14 @@ type Node struct {
 func NewNode() *Node {
 	node := &Node{}
 	node.SetID(utility.NewNID())
+	node.Info = &protocol.SERVER_INFO{}
+	node.Info.Id = utility.NodeID2ServerID(node.GetID())
+	node.Info.Type = uint32(common.Mgr)
+	node.Info.Addrs = []string{utility.GetIPInner(), utility.GetIPOuter()}
+	node.Info.Ports = common.XCONFIG.Network.Port
+	// TODO: 后续支持
+	// node.Info.Overload
+	// node.InfoVersion
 	return node
 }
 
@@ -74,41 +83,10 @@ func (node *Node) register() {
 }
 
 func (node *Node) ping() {
-	xsessionmgr.forAll(func(sess *Session) {
+	nodecommon.XSESSIONMGR.ForAll(func(sess *nodecommon.SessionBase) {
 		msg := &protocol.MSG_MGR_PING{}
 		sess.SendMsg(uint64(protocol.CMD_MGR_PING), msg)
 	})
-}
-
-// GetID : 获取本节点信息，节点ID
-func (node *Node) GetID() common.NodeID {
-	return node.nid
-}
-
-// GetType : 获取本节点信息，节点类型
-func (node *Node) GetType() common.NodeType {
-	return common.Mgr
-}
-
-// GetIP : 获取本节点信息，IP
-func (node *Node) GetIP(i common.IPType) string {
-	return utility.GetIP(i)
-}
-
-// GetPort : 获取本节点信息，端口
-func (node *Node) GetPort(i int) int32 {
-	return common.XCONFIG.Network.Port[i]
-}
-
-// GetOverload : 获取本节点信息，负载
-func (node *Node) GetOverload(i int) uint32 {
-	// TODO:
-	return 0
-}
-
-// GetVersion : 获取本节点信息，版本号
-func (node *Node) GetVersion() string {
-	return common.XCONFIG.Common.Version
 }
 
 // SendMsg : 往该节点，发送数据
