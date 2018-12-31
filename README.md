@@ -9,6 +9,18 @@ go-xserver 致力于实现 1 个高可用、高易用的 Golang 服务器框架
 
 go-xserver 以插件的方式，来丰富框架内容
 
+## 编译
+
+- 编译环境需要[翻墙设置](doc/编译-翻墙设置.md)
+
+- 执行以下语句即可：
+
+  ```shell
+  ./make.sh
+  ```
+
+- Windows 10 下开发，请参考[在Win10中Linux环境搭建](doc/编译-在Win10中Linux环境搭建.md)
+
 ## 已完成功能
 
 - [主体框架](doc/规范-代码框架.md)
