@@ -10,6 +10,7 @@
 
 	It has these top-level messages:
 		SERVER_ID
+		CMD_MGR
 		SERVER_INFO
 		MSG_MGR_PING
 		MSG_MGR_REGISTER_SERVER

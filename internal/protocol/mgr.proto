@@ -3,11 +3,14 @@ syntax = "proto3";
 package protocol;
 import "common.proto";
 
-enum CMD_MGR {
-    PING = 0;                           // PING ( MGR -> S )
-    REGISTER_SERVER = 1;                // 注册服务器信息( S -> MGR -> S )
-    LOSE_SERVER = 2;                    // 丢失服务器信息( MGR -> S )
-};
+message CMD_MGR {
+    enum ENUM {
+        INVALID = 0;                    // 未定义
+        PING = 1;                       // PING ( MGR -> S )
+        REGISTER_SERVER = 2;            // 注册服务器信息( S -> MGR -> S )
+        LOSE_SERVER = 3;                // 丢失服务器信息( MGR -> S )
+    }
+}
 
 // 服务器信息
 message SERVER_INFO {
