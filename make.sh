@@ -22,7 +22,7 @@ cd $SRC_DIR
 go vet ./...
 
 cd $SERVICE_DIR
-for plugin_name in `ls -l | grep '^d' | awk '{print $9}'`; do
+for plugin_name in `ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`; do
     go build $FLAGS -buildmode=plugin -o $BIN_DIR/$plugin_name.so ./$plugin_name;
 done
 cd $SRC_DIR
