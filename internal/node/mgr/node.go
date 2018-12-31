@@ -21,15 +21,14 @@ type Node struct {
 // NewNode : 管理节点实现类的构造函数
 func NewNode() *Node {
 	node := &Node{}
-	node.SetID(utility.NewNID())
 	node.Info = &protocol.SERVER_INFO{}
-	node.Info.Id = utility.NodeID2ServerID(node.GetID())
+	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
 	node.Info.Type = uint32(common.Mgr)
 	node.Info.Addrs = []string{utility.GetIPInner(), utility.GetIPOuter()}
 	node.Info.Ports = common.XCONFIG.Network.Port
 	// TODO: 后续支持
 	// node.Info.Overload
-	// node.InfoVersion
+	// node.Info.Version
 	return node
 }
 

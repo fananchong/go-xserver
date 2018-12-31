@@ -1,6 +1,8 @@
 package nodecommon
 
 import (
+	"sync"
+
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
@@ -9,18 +11,20 @@ import (
 
 // DefaultNodeInterfaceImpl : 缺省的节点接口实现
 type DefaultNodeInterfaceImpl struct {
-	nid  common.NodeID
 	Info *protocol.SERVER_INFO
-}
-
-// SetID : 设置节点ID
-func (impl *DefaultNodeInterfaceImpl) SetID(nid common.NodeID) {
-	impl.nid = nid
+	nid  common.NodeID
+	once sync.Once
 }
 
 // GetID : 获取本节点信息，节点ID
 func (impl *DefaultNodeInterfaceImpl) GetID() common.NodeID {
-	return impl.nid
+	if impl.Info != nil {
+		impl.once.Do(func() {
+			impl.nid = utility.ServerID2NodeID(impl.Info.GetId())
+		})
+		return impl.nid
+	}
+	return common.NodeID{}
 }
 
 // GetType : 获取节点类型

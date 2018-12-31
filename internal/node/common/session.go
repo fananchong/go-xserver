@@ -3,7 +3,6 @@ package nodecommon
 import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -78,7 +77,6 @@ func (sessbase *SessionBase) doVerify(cmd uint64, data []byte, flag byte) bool {
 			return false
 		}
 		sessbase.derived.DoVerify(msg, data, flag)
-		sessbase.SetID(utility.ServerID2NodeID(msg.GetData().GetId()))
 		sessbase.Verify()
 		return true
 	}

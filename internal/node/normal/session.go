@@ -18,11 +18,8 @@ type Session struct {
 
 // NewSession : 网络会话类的构造函数
 func NewSession() *Session {
-	nid := utility.NewNID()
-	common.XLOG.Infoln("NODE ID:", utility.NodeID2UUID(nid).String())
 	sess := &Session{}
 	sess.SessionBase = nodecommon.NewSessionBase(sess)
-	sess.SetID(nid)
 	return sess
 }
 
