@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 )
@@ -11,7 +12,7 @@ import (
 // Node : 普通节点
 type Node struct {
 	*Session
-	components []utility.IComponent
+	components []utils.IComponent
 }
 
 // NewNode : 普通节点实现类的构造函数
@@ -22,7 +23,7 @@ func NewNode(nodeType common.NodeType) *Node {
 	node.Info = &protocol.SERVER_INFO{}
 	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
 	node.Info.Type = uint32(nodeType)
-	node.Info.Addrs = []string{utility.GetIPInner(), utility.GetIPOuter()}
+	node.Info.Addrs = []string{utils.GetIPInner(), utils.GetIPOuter()}
 	node.Info.Ports = common.XCONFIG.Network.Port
 	// TODO: 后续支持
 	// node.Info.Overload
@@ -34,10 +35,10 @@ func NewNode(nodeType common.NodeType) *Node {
 // Init : 初始化节点
 func (node *Node) Init() bool {
 	// ping ticker
-	pingTicker := utility.NewTickerHelper(5*time.Second, node.ping)
+	pingTicker := utils.NewTickerHelper(5*time.Second, node.ping)
 
 	// bind components
-	node.components = []utility.IComponent{
+	node.components = []utils.IComponent{
 		node.Session,
 		pingTicker,
 	}

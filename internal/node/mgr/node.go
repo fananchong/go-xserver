@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/db"
 	nodecommon "github.com/fananchong/go-xserver/internal/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -15,7 +16,7 @@ import (
 // Node : 管理节点
 type Node struct {
 	nodecommon.DefaultNodeInterfaceImpl
-	components []utility.IComponent
+	components []utils.IComponent
 }
 
 // NewNode : 管理节点实现类的构造函数
@@ -24,7 +25,7 @@ func NewNode() *Node {
 	node.Info = &protocol.SERVER_INFO{}
 	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
 	node.Info.Type = uint32(common.Mgr)
-	node.Info.Addrs = []string{utility.GetIPInner(), utility.GetIPOuter()}
+	node.Info.Addrs = []string{utils.GetIPInner(), utils.GetIPOuter()}
 	node.Info.Ports = common.XCONFIG.Network.Port
 	// TODO: 后续支持
 	// node.Info.Overload
@@ -37,17 +38,17 @@ func (node *Node) Init() bool {
 	// tcp server
 	server := &gotcp.Server{}
 	server.RegisterSessType(Session{})
-	server.SetAddress(utility.GetIPInner(), utility.GetIntranetListenPort())
+	server.SetAddress(utils.GetIPInner(), utils.GetIntranetListenPort())
 	server.SetUnfixedPort(true)
 
 	// register ticker
-	registerTicker := utility.NewTickerHelper(1*time.Second, node.register)
+	registerTicker := utils.NewTickerHelper(1*time.Second, node.register)
 
 	// ping ticker
-	pingTicker := utility.NewTickerHelper(5*time.Second, node.ping)
+	pingTicker := utils.NewTickerHelper(5*time.Second, node.ping)
 
 	// bind components
-	node.components = []utility.IComponent{
+	node.components = []utils.IComponent{
 		server,
 		registerTicker,
 		pingTicker,
@@ -74,8 +75,8 @@ func (node *Node) Close() {
 
 func (node *Node) register() {
 	data := db.NewMgrServer(common.XCONFIG.DbMgr.Name, 0)
-	data.SetAddr(utility.GetIPInner())
-	data.SetPort(utility.GetIntranetListenPort())
+	data.SetAddr(utils.GetIPInner())
+	data.SetPort(utils.GetIntranetListenPort())
 	if err := data.Save(); err != nil {
 		common.XLOG.Errorln(err)
 	}

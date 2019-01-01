@@ -1,4 +1,4 @@
-package utility
+package utils
 
 import (
 	"errors"
@@ -87,4 +87,9 @@ func networkCard2IP(name string) (string, error) {
 // GetIntranetListenPort : 获取服务器组内监听端口
 func GetIntranetListenPort() int32 {
 	return common.XCONFIG.Network.Port[1]
+}
+
+// GetDefaultServicePort : 获取缺省的对外端口
+func GetDefaultServicePort() int32 {
+	return common.XCONFIG.Network.Port[0]
 }

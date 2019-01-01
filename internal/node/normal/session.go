@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/db"
 	nodecommon "github.com/fananchong/go-xserver/internal/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -46,7 +47,7 @@ func (sess *Session) registerSelf() {
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = utility.NodeID2ServerID(sess.GetID())
 	msg.Data.Type = uint32(common.XNODE.GetType())
-	msg.Data.Addrs = []string{utility.GetIPInner(), utility.GetIPOuter()}
+	msg.Data.Addrs = []string{utils.GetIPInner(), utils.GetIPOuter()}
 	msg.Data.Ports = common.XCONFIG.Network.Port
 
 	// TODO: 后续支持
