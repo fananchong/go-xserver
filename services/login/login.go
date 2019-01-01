@@ -31,10 +31,14 @@ func (login *Login) Init() {
 // RegisterCallBack : 注册回调
 func (login *Login) RegisterCallBack() {
 	http.HandleFunc("/login", login.msgLogin)
+	common.XLOGIN.RegisterCustomAccountVerification(login.customVerify)
 }
 
 // Start : 启动
 func (login *Login) Start() bool {
+	if common.XLOGIN.Start() == false {
+		return false
+	}
 	go func() {
 		common.XLOG.Infoln("LISTEN:", login.addr)
 		login.web.ListenAndServe()
@@ -44,6 +48,7 @@ func (login *Login) Start() bool {
 
 // Close : 关闭
 func (login *Login) Close() {
+	common.XLOGIN.Close()
 	if login.web != nil {
 		login.web.Close()
 		login.web = nil

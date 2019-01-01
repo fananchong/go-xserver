@@ -7,8 +7,8 @@ var XLOGIN ILogin
 type LoginErrCode int
 
 const (
-	// OK : 登陆成功
-	OK LoginErrCode = iota
+	// LoginSuccess : 登陆成功
+	LoginSuccess LoginErrCode = iota
 
 	// VerifyFail : 验证错误
 	VerifyFail
@@ -17,10 +17,13 @@ const (
 	SystemError
 )
 
+// FuncTypeAccountVerification : 账号验证函数声明
+type FuncTypeAccountVerification func(account, password string, userdata []byte) LoginErrCode
+
 // ILogin : 登陆模块接口
 type ILogin interface {
 	Start() bool
-	RegisterCustomAccountVerification(func(account, password string, userdata []byte) LoginErrCode)
+	RegisterCustomAccountVerification(f FuncTypeAccountVerification)
 	Login(account, password string, defaultMode bool, userdata []byte) (token, address string, port int32, errcode LoginErrCode)
 	Close()
 }

@@ -88,6 +88,7 @@ func (app *App) Run() {
 }
 
 func (app *App) onAppReady() {
+	common.XLOGIN = NewLogin()
 	var nodeType common.NodeType
 	var ok bool
 	if nodeType, ok = app.runner.Init(); !ok {
