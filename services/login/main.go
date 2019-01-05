@@ -9,33 +9,23 @@ import (
 // PluginObj : 代表一个插件对象
 var PluginObj common.Plugin
 
+// PluginType : 插件类型
+var PluginType common.NodeType
+
 func init() {
 	fmt.Println("LOAD PLUGIN: LOGIN")
 	PluginObj = &Plugin{}
+	PluginType = common.Login
 }
 
 // Plugin : 插件类
 type Plugin struct {
 }
 
-// Init : 插件类实现初始化
-func (plugin *Plugin) Init() (nodeType common.NodeType, ok bool) {
-	common.XLOG.Infoln("Plugin Init")
-	xsvr.Init()
-	nodeType = common.Login
-	ok = true
-	return
-}
-
-// RegisterCallBack : 插件类实现启动前处理，注册自定义回调
-func (plugin *Plugin) RegisterCallBack() {
-	common.XLOG.Infoln("Plugin RegisterCallBack")
-	xsvr.RegisterCallBack()
-}
-
 // Start : 插件类实现启动
 func (plugin *Plugin) Start() bool {
 	common.XLOG.Infoln("Plugin Start")
+	xsvr.Init()
 	xsvr.Start()
 	return true
 }

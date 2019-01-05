@@ -1,4 +1,4 @@
-package internal
+package components
 
 import (
 	"fmt"
@@ -14,6 +14,21 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
+
+// Config : 配置组件
+type Config struct {
+}
+
+// Start : 实例化组件
+func (*Config) Start() bool {
+	err := loadConfig()
+	return err == nil
+}
+
+// Close : 关闭组件
+func (*Config) Close() {
+	// do nothing
+}
 
 var (
 	configPath string

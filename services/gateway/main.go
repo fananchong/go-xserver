@@ -9,26 +9,17 @@ import (
 // PluginObj : 代表一个插件对象
 var PluginObj common.Plugin
 
+// PluginType : 插件类型
+var PluginType common.NodeType
+
 func init() {
 	fmt.Println("LOAD PLUGIN: GATEWAY")
 	PluginObj = &Plugin{}
+	PluginType = common.Gateway
 }
 
 // Plugin : 插件类
 type Plugin struct {
-}
-
-// Init : 插件类实现初始化
-func (plugin *Plugin) Init() (nodeType common.NodeType, ok bool) {
-	common.XLOG.Infoln("Plugin Init")
-	nodeType = common.Gateway
-	ok = true
-	return
-}
-
-// RegisterCallBack : 插件类实现启动前处理，注册自定义回调
-func (plugin *Plugin) RegisterCallBack() {
-	common.XLOG.Infoln("Plugin RegisterCallBack")
 }
 
 // Start : 插件类实现启动
