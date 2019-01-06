@@ -37,13 +37,16 @@ func (app *App) Run() {
 		syscall.SIGTERM,
 		syscall.SIGPIPE)
 
+	// 注册组件
 	app.components = []utils.IComponent{
 		&components.Rand{},
 		&components.Config{},
 		&components.Log{},
 		&components.Pprof{},
 		&components.Redis{},
+		//&components.TCPServer{},
 		&components.Node{},
+		&components.Login{},
 		&components.Plugin{}, // 最后 1 个，为 Plugin
 	}
 
@@ -64,7 +67,6 @@ func (app *App) Run() {
 }
 
 func (app *App) onAppReady() {
-	common.XLOGIN = NewLogin() // TODO: 待处理
 	for i := 0; i < len(app.components); i++ {
 		c := app.components[i]
 		if !c.Start() {

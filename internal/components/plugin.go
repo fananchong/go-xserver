@@ -63,3 +63,8 @@ func loadPlugin() {
 		pluginType = *t.(*common.NodeType)
 	})
 }
+
+func getPluginType() common.NodeType {
+	loadPlugin()
+	return pluginType
+}

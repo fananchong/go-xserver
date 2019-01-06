@@ -14,8 +14,7 @@ type Node struct {
 
 // Start : 实例化组件
 func (node *Node) Start() bool {
-	loadPlugin()
-	switch pluginType {
+	switch getPluginType() {
 	case common.Mgr:
 		node.node0 = nodemgr.NewNode()
 		if node.node0.Init() {

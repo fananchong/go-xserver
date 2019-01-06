@@ -1,4 +1,4 @@
-package internal
+package components
 
 import "github.com/fananchong/go-xserver/common"
 
@@ -6,14 +6,12 @@ import "github.com/fananchong/go-xserver/common"
 type Login struct {
 }
 
-// NewLogin : 登陆模块构造函数
-func NewLogin() *Login {
-	return &Login{}
-}
-
 // Start : 启动
 func (login *Login) Start() bool {
-	return false
+	if getPluginType() == common.Login {
+		common.XLOGIN = login
+	}
+	return true
 }
 
 // RegisterCustomAccountVerification : 注册回调
