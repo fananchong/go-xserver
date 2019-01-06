@@ -44,7 +44,7 @@ func (app *App) Run() {
 		&components.Log{},
 		&components.Pprof{},
 		&components.Redis{},
-		//&components.TCPServer{},
+		&components.TCPServer{},
 		&components.Node{},
 		&components.Login{},
 		&components.Plugin{}, // 最后 1 个，为 Plugin

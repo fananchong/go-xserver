@@ -44,6 +44,10 @@ func loadConfig() error {
 	rootCmd = &cobra.Command{
 		Use: "go-xserver",
 		Run: func(c *cobra.Command, args []string) {
+			if appName := viper.GetString("app"); appName == "" {
+				printUsage()
+				os.Exit(1)
+			}
 		},
 	}
 	rootCmd.SetHelpFunc(func(c *cobra.Command, args []string) {

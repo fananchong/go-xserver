@@ -12,14 +12,21 @@ type TCPServer struct {
 
 // Start : 实例化组件
 func (*TCPServer) Start() bool {
-	if common.XTCPSVRFORCLIENT = startTCPServer(utils.GetIPOuter(), utils.GetDefaultServicePort()); common.XTCPSVRFORCLIENT == nil {
-		return false
+	loadPlugin()
+	s := common.XTCPSVRFORCLIENT.(*gotcp.Server)
+	if s.GetSessionType() != nil {
+		if !startTCPServer(s, utils.GetIPOuter(), utils.GetDefaultServicePort()) {
+			return false
+		}
+		common.XCONFIG.Network.Port[0] = s.GetRealPort()
 	}
-	if common.XTCPSVRFORINTRANET = startTCPServer(utils.GetIPInner(), utils.GetIntranetListenPort()); common.XTCPSVRFORINTRANET == nil {
-		return false
+	s = common.XTCPSVRFORINTRANET.(*gotcp.Server)
+	if s.GetSessionType() != nil {
+		if !startTCPServer(s, utils.GetIPInner(), utils.GetIntranetListenPort()) {
+			return false
+		}
+		common.XCONFIG.Network.Port[1] = s.GetRealPort()
 	}
-	common.XCONFIG.Network.Port[0] = common.XTCPSVRFORCLIENT.(*gotcp.Server).GetRealPort()
-	common.XCONFIG.Network.Port[1] = common.XTCPSVRFORINTRANET.(*gotcp.Server).GetRealPort()
 	return true
 }
 
@@ -35,12 +42,8 @@ func (*TCPServer) Close() {
 	}
 }
 
-func startTCPServer(addr string, port int32) common.ITCPServer {
-	s := &gotcp.Server{}
+func startTCPServer(s *gotcp.Server, addr string, port int32) bool {
 	s.SetAddress(addr, port)
 	s.SetUnfixedPort(true)
-	if s.Start() {
-		return s
-	}
-	return nil
+	return s.Start()
 }
