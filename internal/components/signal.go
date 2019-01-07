@@ -10,7 +10,13 @@ import (
 
 // Signal : 信号处理组件
 type Signal struct {
+	ctx *common.Context
 	sig chan os.Signal
+}
+
+// NewSignal : 实例化
+func NewSignal(ctx *common.Context) *Signal {
+	return &Signal{ctx: ctx}
 }
 
 // Start : 实例化组件
@@ -29,7 +35,7 @@ func (s *Signal) Start() bool {
 			switch sig {
 			case syscall.SIGPIPE:
 			default:
-				common.XLOG.Infoln("[app] recive signal:", sig)
+				s.ctx.Log.Infoln("[app] recive signal:", sig)
 				return true
 			}
 		}

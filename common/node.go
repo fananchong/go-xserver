@@ -5,9 +5,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// XNODE : 本节点对象
-var XNODE INode
-
 // NodeID : 节点ID类型
 type NodeID uuid.UUID
 

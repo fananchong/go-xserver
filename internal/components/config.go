@@ -17,11 +17,17 @@ import (
 
 // Config : 配置组件
 type Config struct {
+	ctx *common.Context
+}
+
+// NewConfig : 实例化
+func NewConfig(ctx *common.Context) *Config {
+	return &Config{ctx: ctx}
 }
 
 // Start : 实例化组件
-func (*Config) Start() bool {
-	err := loadConfig()
+func (confing *Config) Start() bool {
+	err := loadConfig(confing.ctx)
 	return err == nil
 }
 
@@ -40,7 +46,7 @@ const (
 	constEnvPrefix string = "GOXSERVER"
 )
 
-func loadConfig() error {
+func loadConfig(ctx *common.Context) error {
 	rootCmd = &cobra.Command{
 		Use: "go-xserver",
 		Run: func(c *cobra.Command, args []string) {
@@ -66,7 +72,8 @@ func loadConfig() error {
 			fmt.Println("viper.ReadInConfig fail, err =", err)
 			os.Exit(1)
 		}
-		if err := viper.Unmarshal(&common.XCONFIG); err != nil {
+		ctx.Config = &common.Config{}
+		if err := viper.Unmarshal(ctx.Config); err != nil {
 			fmt.Println("viper.Unmarshal fail, err =", err)
 			os.Exit(1)
 		}
@@ -74,11 +81,11 @@ func loadConfig() error {
 		viper.OnConfigChange(func(e fsnotify.Event) {
 			c := common.Config{}
 			if err := viper.Unmarshal(&c); err != nil {
-				common.XLOG.Errorln("viper.Unmarshal fail, err =", err)
+				ctx.Log.Errorln("viper.Unmarshal fail, err =", err)
 			} else {
 				if c.Common.Version != "" {
-					common.XCONFIG = c
-					common.XLOG.Printf("config: %#v\n", common.XCONFIG)
+					ctx.Config = &c
+					ctx.Log.Printf("config: %#v\n", ctx.Config)
 				}
 			}
 		})

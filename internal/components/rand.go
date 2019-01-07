@@ -9,11 +9,17 @@ import (
 
 // Rand : 随机函数组件
 type Rand struct {
+	ctx *common.Context
+}
+
+// NewRand : 实例化
+func NewRand(ctx *common.Context) *Rand {
+	return &Rand{ctx: ctx}
 }
 
 // Start : 实例化组件
-func (*Rand) Start() bool {
-	common.XRAND = rand.New(rand.NewSource(time.Now().UnixNano()))
+func (r *Rand) Start() bool {
+	r.ctx.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 	return true
 }
 

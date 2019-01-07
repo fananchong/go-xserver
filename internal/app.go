@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"context"
 	"os"
 
 	"github.com/fananchong/go-xserver/common"
@@ -10,12 +11,15 @@ import (
 
 // App : 应用程序类
 type App struct {
+	ctx        *common.Context
 	components []utils.IComponent
 }
 
 // NewApp : 应用程序类的构造函数
 func NewApp() *App {
-	app := &App{}
+	app := &App{
+		ctx: &common.Context{Ctx: context.Background()},
+	}
 	return app
 }
 
@@ -23,16 +27,16 @@ func NewApp() *App {
 func (app *App) Run() {
 	// 注册组件
 	app.components = []utils.IComponent{
-		&components.Rand{},
-		&components.Config{},
-		&components.Log{},
-		&components.Pprof{},
-		&components.Redis{},
-		&components.TCPServer{},
-		&components.Node{},
-		common.XLOGIN,
-		&components.Plugin{}, // 必须倒数第 2 个为 Plugin
-		&components.Signal{}, // 必须最后 1 个为 Signal
+		components.NewRand(app.ctx),
+		components.NewConfig(app.ctx),
+		components.NewLog(app.ctx),
+		components.NewPprof(app.ctx),
+		components.NewRedis(app.ctx),
+		components.NewLogin(app.ctx),
+		components.NewTCPServer(app.ctx),
+		components.NewNode(app.ctx),
+		components.NewPlugin(app.ctx), // 必须倒数第 2 个为 Plugin
+		components.NewSignal(app.ctx), // 必须最后 1 个为 Signal
 	}
 
 	// 应用程序正式运行

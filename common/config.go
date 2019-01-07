@@ -1,8 +1,5 @@
 package common
 
-// XCONFIG : 全局配置类对象
-var XCONFIG Config
-
 // Config : 配置类
 type Config struct {
 	Common    ConfigCommon  // 一些基础参数

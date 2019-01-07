@@ -12,14 +12,15 @@ var PluginObj common.Plugin
 // PluginType : 插件类型
 var PluginType common.NodeType
 
-var login *Login
+// Ctx : 应用程序上下文
+var Ctx *common.Context
+
+var login = NewLogin()
 
 func init() {
 	fmt.Println("LOAD PLUGIN: LOGIN")
 	PluginObj = &Plugin{}
 	PluginType = common.Login
-	login = NewLogin()
-	login.Init()
 }
 
 // Plugin : 插件类
@@ -28,14 +29,14 @@ type Plugin struct {
 
 // Start : 插件类实现启动
 func (plugin *Plugin) Start() bool {
-	common.XLOG.Infoln("Plugin Start")
+	Ctx.Log.Infoln("Plugin Start")
 	login.Start()
 	return true
 }
 
 // Close : 插件类实现关闭
 func (plugin *Plugin) Close() {
-	common.XLOG.Infoln("Plugin Close")
+	Ctx.Log.Infoln("Plugin Close")
 	login.Close()
 }
 

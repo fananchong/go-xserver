@@ -8,23 +8,29 @@ import (
 
 // Node : 节点组件
 type Node struct {
+	ctx   *common.Context
 	node0 *nodemgr.Node
 	node1 *nodenormal.Node
 }
 
+// NewNode : 实例化
+func NewNode(ctx *common.Context) *Node {
+	return &Node{ctx: ctx}
+}
+
 // Start : 实例化组件
 func (node *Node) Start() bool {
-	switch getPluginType() {
+	switch getPluginType(node.ctx) {
 	case common.Mgr:
-		node.node0 = nodemgr.NewNode()
+		node.node0 = nodemgr.NewNode(node.ctx)
 		if node.node0.Init() {
-			common.XNODE = node.node0
+			node.ctx.Node = node.node0
 			return node.node0.Start()
 		}
 	default:
-		node.node1 = nodenormal.NewNode(pluginType)
+		node.node1 = nodenormal.NewNode(node.ctx, pluginType)
 		if node.node1.Init() {
-			common.XNODE = node.node1
+			node.ctx.Node = node.node1
 			return node.node1.Start()
 		}
 	}

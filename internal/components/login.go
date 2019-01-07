@@ -1,14 +1,26 @@
 package components
 
-import "github.com/fananchong/go-xserver/common"
+import (
+	"github.com/fananchong/go-xserver/common"
+)
 
 // Login : 登陆模块
 type Login struct {
+	ctx *common.Context
+}
+
+// NewLogin : 实例化登陆模块
+func NewLogin(ctx *common.Context) *Login {
+	login := &Login{
+		ctx: ctx,
+	}
+	login.ctx.Login = login
+	return login
 }
 
 // Start : 启动
 func (login *Login) Start() bool {
-	if getPluginType() == common.Login {
+	if getPluginType(login.ctx) == common.Login {
 
 	}
 	return true

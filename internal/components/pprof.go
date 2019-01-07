@@ -9,15 +9,21 @@ import (
 
 // Pprof : http pprof组件
 type Pprof struct {
+	ctx *common.Context
 	web *http.Server
+}
+
+// NewPprof : 实例化
+func NewPprof(ctx *common.Context) *Pprof {
+	return &Pprof{ctx: ctx}
 }
 
 // Start : 实例化组件
 func (pprof *Pprof) Start() bool {
-	addr := common.XCONFIG.Common.Pprof
+	addr := pprof.ctx.Config.Common.Pprof
 	if addr != "" {
 		go func() {
-			common.XLOG.Println("pprof listen :", addr)
+			pprof.ctx.Log.Println("pprof listen :", addr)
 			pprof.web = &http.Server{Addr: addr, Handler: nil}
 			pprof.web.ListenAndServe()
 		}()

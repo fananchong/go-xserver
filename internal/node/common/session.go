@@ -18,14 +18,16 @@ type ISessionDerived interface {
 type SessionBase struct {
 	DefaultNodeInterfaceImpl
 	*gotcp.Session
+	Ctx     *common.Context
 	MsgData []byte
 	MsgFlag byte
 	derived ISessionDerived
 }
 
 // NewSessionBase : 网络会话类的构造函数
-func NewSessionBase(derived ISessionDerived) *SessionBase {
+func NewSessionBase(ctx *common.Context, derived ISessionDerived) *SessionBase {
 	return &SessionBase{
+		Ctx:     ctx,
 		Session: &gotcp.Session{},
 		derived: derived,
 	}
@@ -45,7 +47,7 @@ func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
 	case protocol.CMD_MGR_PING:
 		// do nothing
 	default:
-		common.XLOG.Errorln("unknow cmd, cmd =", cmd)
+		sessbase.Ctx.Log.Errorln("unknow cmd, cmd =", cmd)
 	}
 }
 
@@ -69,10 +71,10 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 			sessbase.Close()
 			return false
 		}
-		if msg.GetToken() != common.XCONFIG.Common.IntranetToken {
-			common.XLOG.Errorln("IntranetToken error!")
-			common.XLOG.Errorln("Msg token:", msg.GetToken())
-			common.XLOG.Errorln("Expect token:", common.XCONFIG.Common.IntranetToken)
+		if msg.GetToken() != sessbase.Ctx.Config.Common.IntranetToken {
+			sessbase.Ctx.Log.Errorln("IntranetToken error!",
+				"Msg token:", msg.GetToken(),
+				"Expect token:", sessbase.Ctx.Config.Common.IntranetToken)
 			sessbase.Close()
 			return false
 		}
@@ -80,7 +82,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 		sessbase.Verify()
 		return true
 	}
-	common.XLOG.Errorln("Before message[CMD_MGR_REGISTER_SERVER], recv cmd:", cmd)
+	sessbase.Ctx.Log.Errorln("Before message[CMD_MGR_REGISTER_SERVER], recv cmd:", cmd)
 	sessbase.Close()
 	return false
 }

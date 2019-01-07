@@ -22,7 +22,7 @@ func (user *User) OnRecv(data []byte, flag byte) {
 	case proto_login.CMD_LOGIN_LOGIN:
 		// do nothing
 	default:
-		common.XLOG.Errorln("unknow cmd, cmd =", cmd)
+		Ctx.Log.Errorln("unknow cmd, cmd =", cmd)
 	}
 }
 
@@ -47,10 +47,10 @@ func (user *User) doVerify(cmd proto_login.CMD_LOGIN_ENUM, data []byte, flag byt
 }
 
 func (user *User) doLogin(account, passwd string, mode proto_login.ENUM_LOGIN_MODE_ENUM, userdata []byte) {
-	common.XLOG.Infoln("account =", account, "password =", passwd, "mode =", mode)
-	token, addr, port, errCode := common.XLOGIN.Login(account, passwd, mode == proto_login.ENUM_LOGIN_MODE_DEFAULT, userdata)
+	Ctx.Log.Infoln("account =", account, "password =", passwd, "mode =", mode)
+	token, addr, port, errCode := Ctx.Login.Login(account, passwd, mode == proto_login.ENUM_LOGIN_MODE_DEFAULT, userdata)
 	if errCode == common.LoginSuccess {
-		common.XLOG.Infoln("token =", token, "addr =", addr, "port =", port)
+		Ctx.Log.Infoln("token =", token, "addr =", addr, "port =", port)
 		msg := &proto_login.MSG_LOGIN_RESULT{}
 		msg.Err = proto_login.ENUM_LOGIN_ERROR_OK
 		msg.Token = token
@@ -58,7 +58,7 @@ func (user *User) doLogin(account, passwd string, mode proto_login.ENUM_LOGIN_MO
 		msg.Port = port
 		user.SendMsg(uint64(proto_login.CMD_LOGIN_LOGIN), msg)
 	} else {
-		common.XLOG.Errorln("login fail. error =", errCode)
+		Ctx.Log.Errorln("login fail. error =", errCode)
 		msg := &proto_login.MSG_LOGIN_RESULT{}
 		msg.Err = proto_login.ENUM_LOGIN_ERROR_ENUM(errCode)
 		user.SendMsg(uint64(proto_login.CMD_LOGIN_LOGIN), msg)

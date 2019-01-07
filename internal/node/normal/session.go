@@ -18,9 +18,9 @@ type Session struct {
 }
 
 // NewSession : 网络会话类的构造函数
-func NewSession() *Session {
+func NewSession(ctx *common.Context) *Session {
 	sess := &Session{}
-	sess.SessionBase = nodecommon.NewSessionBase(sess)
+	sess.SessionBase = nodecommon.NewSessionBase(ctx, sess)
 	return sess
 }
 
@@ -33,7 +33,7 @@ func (sess *Session) Start() bool {
 func (sess *Session) connectMgrServer() {
 	sess.ResetTCPSession()
 TRY_AGAIN:
-	addr, port := getMgrInfoByBlock()
+	addr, port := getMgrInfoByBlock(sess.Ctx)
 	if sess.Connect(fmt.Sprintf("%s:%d", addr, port), sess) == false {
 		time.Sleep(1 * time.Second)
 		goto TRY_AGAIN
@@ -46,24 +46,24 @@ func (sess *Session) registerSelf() {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = utility.NodeID2ServerID(sess.GetID())
-	msg.Data.Type = uint32(common.XNODE.GetType())
-	msg.Data.Addrs = []string{utils.GetIPInner(), utils.GetIPOuter()}
-	msg.Data.Ports = common.XCONFIG.Network.Port
+	msg.Data.Type = uint32(sess.Ctx.Node.GetType())
+	msg.Data.Addrs = []string{utils.GetIPInner(sess.Ctx), utils.GetIPOuter(sess.Ctx)}
+	msg.Data.Ports = sess.Ctx.Config.Network.Port
 
 	// TODO: 后续支持
 	// msg.Data.Overload
 	// msg.Data.Version
 
-	msg.Token = common.XCONFIG.Common.IntranetToken
+	msg.Token = sess.Ctx.Config.Common.IntranetToken
 	sess.Info = msg.GetData()
 	sess.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
-	common.XLOG.Infoln("register self to mgr server. self info:", msg.GetData())
+	sess.Ctx.Log.Infoln("register self to mgr server. self info:", msg.GetData())
 }
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
 	//nodecommon.XSESSIONMGR.Register()
-	common.XLOG.Infoln("one server register. id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Log.Infoln("one server register. id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
 }
 
 // DoVerify : 验证时保存自己的注册消息
@@ -73,7 +73,7 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 // DoLose : 节点丢失时处理
 func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
 	//nodecommon.XSESSIONMGR.Lose()
-	common.XLOG.Infoln("one server lose. id:", utility.ServerID2UUID(msg.GetId()).String())
+	sess.Ctx.Log.Infoln("one server lose. id:", utility.ServerID2UUID(msg.GetId()).String())
 }
 
 // DoClose : 节点关闭时处理
@@ -84,18 +84,18 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 	}()
 }
 
-func getMgrInfoByBlock() (string, int32) {
-	common.XLOG.Infoln("Try get mgr server info ...")
-	data := db.NewMgrServer(common.XCONFIG.DbMgr.Name, 0)
+func getMgrInfoByBlock(ctx *common.Context) (string, int32) {
+	ctx.Log.Infoln("Try get mgr server info ...")
+	data := db.NewMgrServer(ctx.Config.DbMgr.Name, 0)
 	for {
 		if err := data.Load(); err == nil {
 			break
 		} else {
-			common.XLOG.Debugln(err)
+			ctx.Log.Debugln(err)
 			time.Sleep(1 * time.Second)
 		}
 	}
-	common.XLOG.Infoln("Mgr server address:", data.GetAddr())
-	common.XLOG.Infoln("Mgr server port:", data.GetPort())
+	ctx.Log.Infoln("Mgr server address:", data.GetAddr())
+	ctx.Log.Infoln("Mgr server port:", data.GetPort())
 	return data.GetAddr(), data.GetPort()
 }

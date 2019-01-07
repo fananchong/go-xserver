@@ -18,48 +18,48 @@ var (
 )
 
 // GetIPInner : 获取内网 IP
-func GetIPInner() string {
+func GetIPInner(ctx *common.Context) string {
 	onceipinner.Do(func() {
-		switch common.XCONFIG.Network.IPType {
+		switch ctx.Config.Network.IPType {
 		case 0:
-			ip, err := networkCard2IP(common.XCONFIG.Network.IPInner)
+			ip, err := networkCard2IP(ctx.Config.Network.IPInner)
 			if err != nil {
-				common.XLOG.Errorln(err)
+				ctx.Log.Errorln(err)
 				os.Exit(1)
 			}
 			ipinner = ip
 		default:
-			ipinner = common.XCONFIG.Network.IPInner
+			ipinner = ctx.Config.Network.IPInner
 		}
 	})
 	return ipinner
 }
 
 // GetIPOuter : 获取外网 IP
-func GetIPOuter() string {
+func GetIPOuter(ctx *common.Context) string {
 	onceipouter.Do(func() {
-		switch common.XCONFIG.Network.IPType {
+		switch ctx.Config.Network.IPType {
 		case 0:
-			ip, err := networkCard2IP(common.XCONFIG.Network.IPOuter)
+			ip, err := networkCard2IP(ctx.Config.Network.IPOuter)
 			if err != nil {
-				common.XLOG.Errorln(err)
+				ctx.Log.Errorln(err)
 				os.Exit(1)
 			}
 			ipouter = ip
 		default:
-			ipouter = common.XCONFIG.Network.IPOuter
+			ipouter = ctx.Config.Network.IPOuter
 		}
 	})
 	return ipouter
 }
 
 // GetIP : 根据类型获取IP
-func GetIP(t common.IPType) string {
+func GetIP(ctx *common.Context, t common.IPType) string {
 	switch t {
 	case common.IPINNER:
-		return GetIPInner()
+		return GetIPInner(ctx)
 	case common.IPOUTER:
-		return GetIPOuter()
+		return GetIPOuter(ctx)
 	default:
 		panic("unknow ip type.")
 	}
@@ -85,11 +85,11 @@ func networkCard2IP(name string) (string, error) {
 }
 
 // GetIntranetListenPort : 获取服务器组内监听端口
-func GetIntranetListenPort() int32 {
-	return common.XCONFIG.Network.Port[1]
+func GetIntranetListenPort(ctx *common.Context) int32 {
+	return ctx.Config.Network.Port[1]
 }
 
 // GetDefaultServicePort : 获取缺省的对外端口
-func GetDefaultServicePort() int32 {
-	return common.XCONFIG.Network.Port[0]
+func GetDefaultServicePort(ctx *common.Context) int32 {
+	return ctx.Config.Network.Port[0]
 }

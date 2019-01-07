@@ -9,6 +9,7 @@ import (
 
 // Ticker : 定时器帮助类
 type Ticker struct {
+	myctx     *common.Context
 	ctx       context.Context
 	ctxCancel context.CancelFunc
 	interval  time.Duration
@@ -16,8 +17,9 @@ type Ticker struct {
 }
 
 // NewTickerHelper : 定时器帮助类的构造函数
-func NewTickerHelper(interval time.Duration, f func()) *Ticker {
+func NewTickerHelper(ctx *common.Context, interval time.Duration, f func()) *Ticker {
 	return &Ticker{
+		myctx:    ctx,
 		interval: interval,
 		f:        f,
 	}
@@ -25,7 +27,7 @@ func NewTickerHelper(interval time.Duration, f func()) *Ticker {
 
 // Start : 开始
 func (helper *Ticker) Start() bool {
-	helper.ctx, helper.ctxCancel = context.WithCancel(context.Background())
+	helper.ctx, helper.ctxCancel = context.WithCancel(helper.myctx.Ctx)
 	go helper.loop()
 	return true
 }
@@ -36,7 +38,7 @@ func (helper *Ticker) loop() {
 	for {
 		select {
 		case <-helper.ctx.Done():
-			common.XLOG.Infoln("Ticker close.")
+			helper.myctx.Log.Infoln("Ticker close.")
 			return
 		case <-timer.C:
 			helper.f()

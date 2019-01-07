@@ -16,26 +16,26 @@ type Node struct {
 }
 
 // NewNode : 普通节点实现类的构造函数
-func NewNode(nodeType common.NodeType) *Node {
+func NewNode(ctx *common.Context, nodeType common.NodeType) *Node {
 	node := &Node{
-		Session: NewSession(),
+		Session: NewSession(ctx),
 	}
 	node.Info = &protocol.SERVER_INFO{}
 	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
 	node.Info.Type = uint32(nodeType)
-	node.Info.Addrs = []string{utils.GetIPInner(), utils.GetIPOuter()}
-	node.Info.Ports = common.XCONFIG.Network.Port
+	node.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
+	node.Info.Ports = ctx.Config.Network.Port
 	// TODO: 后续支持
 	// node.Info.Overload
 	// node.Info.Version
-	common.XLOG.Infoln("NODE ID:", utility.NodeID2UUID(node.GetID()).String())
+	ctx.Log.Infoln("NODE ID:", utility.NodeID2UUID(node.GetID()).String())
 	return node
 }
 
 // Init : 初始化节点
 func (node *Node) Init() bool {
 	// ping ticker
-	pingTicker := utils.NewTickerHelper(5*time.Second, node.ping)
+	pingTicker := utils.NewTickerHelper(node.Ctx, 5*time.Second, node.ping)
 
 	// bind components
 	node.components = []utils.IComponent{

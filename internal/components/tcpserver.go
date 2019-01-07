@@ -8,37 +8,46 @@ import (
 
 // TCPServer : TCP Server 组件
 type TCPServer struct {
+	ctx *common.Context
+}
+
+// NewTCPServer : 实例化
+func NewTCPServer(ctx *common.Context) *TCPServer {
+	server := &TCPServer{ctx: ctx}
+	server.ctx.ServerForClient = &gotcp.Server{}
+	server.ctx.ServerForIntranet = &gotcp.Server{}
+	return server
 }
 
 // Start : 实例化组件
-func (*TCPServer) Start() bool {
-	loadPlugin()
-	s := common.XTCPSVRFORCLIENT.(*gotcp.Server)
+func (server *TCPServer) Start() bool {
+	loadPlugin(server.ctx)
+	s := server.ctx.ServerForClient.(*gotcp.Server)
 	if s.GetSessionType() != nil {
-		if !startTCPServer(s, utils.GetIPOuter(), utils.GetDefaultServicePort()) {
+		if !startTCPServer(s, utils.GetIPOuter(server.ctx), utils.GetDefaultServicePort(server.ctx)) {
 			return false
 		}
-		common.XCONFIG.Network.Port[0] = s.GetRealPort()
+		server.ctx.Config.Network.Port[0] = s.GetRealPort()
 	}
-	s = common.XTCPSVRFORINTRANET.(*gotcp.Server)
+	s = server.ctx.ServerForIntranet.(*gotcp.Server)
 	if s.GetSessionType() != nil {
-		if !startTCPServer(s, utils.GetIPInner(), utils.GetIntranetListenPort()) {
+		if !startTCPServer(s, utils.GetIPInner(server.ctx), utils.GetIntranetListenPort(server.ctx)) {
 			return false
 		}
-		common.XCONFIG.Network.Port[1] = s.GetRealPort()
+		server.ctx.Config.Network.Port[1] = s.GetRealPort()
 	}
 	return true
 }
 
 // Close : 关闭组件
-func (*TCPServer) Close() {
-	if common.XTCPSVRFORCLIENT != nil {
-		common.XTCPSVRFORCLIENT.(*gotcp.Server).Close()
-		common.XTCPSVRFORCLIENT = nil
+func (server *TCPServer) Close() {
+	if server.ctx.ServerForClient != nil {
+		server.ctx.ServerForClient.(*gotcp.Server).Close()
+		server.ctx.ServerForClient = nil
 	}
-	if common.XTCPSVRFORINTRANET != nil {
-		common.XTCPSVRFORINTRANET.(*gotcp.Server).Close()
-		common.XTCPSVRFORCLIENT = nil
+	if server.ctx.ServerForIntranet != nil {
+		server.ctx.ServerForIntranet.(*gotcp.Server).Close()
+		server.ctx.ServerForIntranet = nil
 	}
 }
 

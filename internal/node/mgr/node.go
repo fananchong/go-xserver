@@ -15,18 +15,19 @@ import (
 
 // Node : 管理节点
 type Node struct {
+	ctx *common.Context
 	nodecommon.DefaultNodeInterfaceImpl
 	components []utils.IComponent
 }
 
 // NewNode : 管理节点实现类的构造函数
-func NewNode() *Node {
-	node := &Node{}
+func NewNode(ctx *common.Context) *Node {
+	node := &Node{ctx: ctx}
 	node.Info = &protocol.SERVER_INFO{}
 	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
 	node.Info.Type = uint32(common.Mgr)
-	node.Info.Addrs = []string{utils.GetIPInner(), utils.GetIPOuter()}
-	node.Info.Ports = common.XCONFIG.Network.Port
+	node.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
+	node.Info.Ports = ctx.Config.Network.Port
 	// TODO: 后续支持
 	// node.Info.Overload
 	// node.Info.Version
@@ -38,14 +39,15 @@ func (node *Node) Init() bool {
 	// tcp server
 	server := &gotcp.Server{}
 	server.RegisterSessType(Session{})
-	server.SetAddress(utils.GetIPInner(), utils.GetIntranetListenPort())
+	server.SetAddress(utils.GetIPInner(node.ctx), utils.GetIntranetListenPort(node.ctx))
 	server.SetUnfixedPort(true)
+	server.SetUserData(node.ctx)
 
 	// register ticker
-	registerTicker := utils.NewTickerHelper(1*time.Second, node.register)
+	registerTicker := utils.NewTickerHelper(node.ctx, 1*time.Second, node.register)
 
 	// ping ticker
-	pingTicker := utils.NewTickerHelper(5*time.Second, node.ping)
+	pingTicker := utils.NewTickerHelper(node.ctx, 5*time.Second, node.ping)
 
 	// bind components
 	node.components = []utils.IComponent{
@@ -74,11 +76,11 @@ func (node *Node) Close() {
 }
 
 func (node *Node) register() {
-	data := db.NewMgrServer(common.XCONFIG.DbMgr.Name, 0)
-	data.SetAddr(utils.GetIPInner())
-	data.SetPort(utils.GetIntranetListenPort())
+	data := db.NewMgrServer(node.ctx.Config.DbMgr.Name, 0)
+	data.SetAddr(utils.GetIPInner(node.ctx))
+	data.SetPort(utils.GetIntranetListenPort(node.ctx))
 	if err := data.Save(); err != nil {
-		common.XLOG.Errorln(err)
+		node.ctx.Log.Errorln(err)
 	}
 }
 

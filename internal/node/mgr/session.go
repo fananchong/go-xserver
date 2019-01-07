@@ -17,8 +17,8 @@ type Session struct {
 }
 
 // Init : 初始化网络会话节点
-func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISession) {
-	sess.SessionBase = nodecommon.NewSessionBase(sess)
+func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISession, userdata interface{}) {
+	sess.SessionBase = nodecommon.NewSessionBase(userdata.(*common.Context), sess)
 	sess.SessionBase.Init(root, conn, derived)
 }
 
@@ -38,8 +38,8 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	sess.Info = msg.GetData()
 	sess.MsgData = data
 	sess.MsgFlag = flag
-	common.XLOG.Infoln("Node register for me, node id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
-	common.XLOG.Infoln(sess.Info)
+	sess.Ctx.Log.Infoln("Node register for me, node id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Log.Infoln(sess.Info)
 
 	nodecommon.XSESSIONMGR.Register(sess.SessionBase)
 	nodecommon.XSESSIONMGR.ForAll(func(elem *nodecommon.SessionBase) {
@@ -67,6 +67,6 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 		nodecommon.XSESSIONMGR.ForAll(func(elem *nodecommon.SessionBase) {
 			elem.SendMsg(uint64(protocol.CMD_MGR_LOSE_SERVER), msg)
 		})
-		common.XLOG.Infoln("lose node, type:", msg.Type, "id:", utility.ServerID2UUID(msg.Id).String())
+		sess.Ctx.Log.Infoln("lose node, type:", msg.Type, "id:", utility.ServerID2UUID(msg.Id).String())
 	}
 }
