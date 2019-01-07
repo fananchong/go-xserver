@@ -9,4 +9,5 @@ import (
 func init() {
 	common.XTCPSVRFORCLIENT = &gotcp.Server{}
 	common.XTCPSVRFORINTRANET = &gotcp.Server{}
+	common.XLOGIN = &Login{}
 }

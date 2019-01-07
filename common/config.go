@@ -1,19 +1,16 @@
 package common
 
-import "github.com/fananchong/go-xserver/common/custom"
-
 // XCONFIG : 全局配置类对象
 var XCONFIG Config
 
 // Config : 配置类
 type Config struct {
-	Common    ConfigCommon       // 一些基础参数
-	Network   ConfigNetwork      // 网络配置
-	DbAccount ConfigRedis        // 帐号数据库（Redis）
-	DbToken   ConfigRedis        // Token 数据库（Redis）
-	DbServer  ConfigRedis        // Server 数据库（Redis）
-	DbMgr     ConfigRedis        // Mgr 数据库（Redis）
-	Login     custom.ConfigLogin // Login 服务器配置
+	Common    ConfigCommon  // 一些基础参数
+	Network   ConfigNetwork // 网络配置
+	DbAccount ConfigRedis   // 帐号数据库（Redis）
+	DbToken   ConfigRedis   // Token 数据库（Redis）
+	DbServer  ConfigRedis   // Server 数据库（Redis）
+	DbMgr     ConfigRedis   // Mgr 数据库（Redis）
 }
 
 // ConfigCommon : 配置 common 节

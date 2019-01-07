@@ -3,6 +3,7 @@ package internal
 import (
 	"os"
 
+	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/components"
 )
@@ -29,7 +30,7 @@ func (app *App) Run() {
 		&components.Redis{},
 		&components.TCPServer{},
 		&components.Node{},
-		&components.Login{},
+		common.XLOGIN,
 		&components.Plugin{}, // 必须倒数第 2 个为 Plugin
 		&components.Signal{}, // 必须最后 1 个为 Signal
 	}

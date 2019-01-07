@@ -33,16 +33,16 @@ func NewSessionBase(derived ISessionDerived) *SessionBase {
 
 // OnRecv : 接收到网络数据包，被触发
 func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
-	cmd := gotcp.GetCmd(data)
+	cmd := protocol.CMD_MGR_ENUM(gotcp.GetCmd(data))
 	if sessbase.IsVerified() == false && sessbase.doVerify(cmd, data, flag) == false {
 		return
 	}
 	switch cmd {
-	case uint64(protocol.CMD_MGR_REGISTER_SERVER):
+	case protocol.CMD_MGR_REGISTER_SERVER:
 		sessbase.doRegister(data, flag)
-	case uint64(protocol.CMD_MGR_LOSE_SERVER):
+	case protocol.CMD_MGR_LOSE_SERVER:
 		sessbase.doLose(data, flag)
-	case uint64(protocol.CMD_MGR_PING):
+	case protocol.CMD_MGR_PING:
 		// do nothing
 	default:
 		common.XLOG.Errorln("unknow cmd, cmd =", cmd)
@@ -62,8 +62,8 @@ func (sessbase *SessionBase) ResetTCPSession() {
 	sessbase.Session = &gotcp.Session{}
 }
 
-func (sessbase *SessionBase) doVerify(cmd uint64, data []byte, flag byte) bool {
-	if cmd == uint64(protocol.CMD_MGR_REGISTER_SERVER) {
+func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, flag byte) bool {
+	if cmd == protocol.CMD_MGR_REGISTER_SERVER {
 		msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
 			sessbase.Close()

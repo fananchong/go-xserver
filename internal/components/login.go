@@ -9,7 +9,7 @@ type Login struct {
 // Start : 启动
 func (login *Login) Start() bool {
 	if getPluginType() == common.Login {
-		common.XLOGIN = login
+
 	}
 	return true
 }
