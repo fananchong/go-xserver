@@ -33,10 +33,10 @@ func (app *App) Run() {
 		components.NewPprof(app.ctx),
 		components.NewRedis(app.ctx),
 		components.NewLogin(app.ctx),
-		components.NewTCPServer(app.ctx),
+		components.NewPlugin(app.ctx),
 		components.NewNode(app.ctx),
-		components.NewPlugin(app.ctx), // 必须倒数第 2 个为 Plugin
-		components.NewSignal(app.ctx), // 必须最后 1 个为 Signal
+		components.NewTCPServer(app.ctx),
+		components.NewSignal(app.ctx),
 	}
 
 	// 应用程序正式运行
