@@ -6,7 +6,9 @@ import (
 
 // Login : 登陆模块
 type Login struct {
-	ctx *common.Context
+	ctx              *common.Context
+	verificationFunc common.FuncTypeAccountVerification
+	allocType        []common.NodeType
 }
 
 // NewLogin : 实例化登陆模块
@@ -28,6 +30,12 @@ func (login *Login) Start() bool {
 
 // RegisterCustomAccountVerification : 注册回调
 func (login *Login) RegisterCustomAccountVerification(f common.FuncTypeAccountVerification) {
+	login.verificationFunc = f
+}
+
+// RegisterAllocationNodeType : 注册要分配的服务器资源类型
+func (login *Login) RegisterAllocationNodeType(types []common.NodeType) {
+	login.allocType = append(login.allocType, types...)
 }
 
 // Login : 登陆处理

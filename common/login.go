@@ -8,13 +8,14 @@ package common
 //    2. 提供账号正常登陆
 //        a. 提供账号正常上下线，不会回档等错误
 //        b. 提供同账号多端同时登陆，不会异常
-//        c. 提供账号服务器资源分配、比如分配 Gateway 资源
+//        c. 提供账号服务器资源分配
 //    3. 提供自定义验证接口
 
 // 登陆模块逻辑层负责的工作：
 //    1. 自定义协议
 //    2. 自定义客户端交互流程
 //    3. 自定义账号验证过程
+//    4. 自定义分配哪些服务器资源给账号
 
 // go-xserver/services/login :
 //    1. 一个缺省的 Login Server 实现例子
@@ -42,6 +43,7 @@ type FuncTypeAccountVerification func(account, password string, userdata []byte)
 type ILogin interface {
 	Start() bool
 	RegisterCustomAccountVerification(f FuncTypeAccountVerification)
+	RegisterAllocationNodeType(types []NodeType)
 	Login(account, password string, defaultMode bool, userdata []byte) (token, address string, port int32, errcode LoginErrCode)
 	Close()
 }
