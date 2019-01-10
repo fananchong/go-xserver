@@ -1,5 +1,7 @@
 package main
 
+import "github.com/fananchong/go-xserver/common"
+
 // Login : 登陆服务器
 type Login struct {
 }
@@ -12,6 +14,7 @@ func NewLogin() *Login {
 // Start : 启动
 func (login *Login) Start() bool {
 	Ctx.Login.RegisterCustomAccountVerification(login.customVerify)
+	Ctx.Login.RegisterAllocationNodeType([]common.NodeType{common.Gateway})
 	Ctx.ServerForClient.RegisterSessType(User{})
 	return true
 }

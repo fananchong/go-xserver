@@ -50,5 +50,6 @@ func (helper *Ticker) loop() {
 func (helper *Ticker) Close() {
 	if helper.ctxCancel != nil {
 		helper.ctxCancel()
+		helper.ctxCancel = nil
 	}
 }

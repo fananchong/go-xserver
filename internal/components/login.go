@@ -39,7 +39,9 @@ func (login *Login) RegisterAllocationNodeType(types []common.NodeType) {
 }
 
 // Login : 登陆处理
-func (login *Login) Login(account, password string, defaultMode bool, userdata []byte) (token, address string, port int32, errcode common.LoginErrCode) {
+func (login *Login) Login(account, password string, defaultMode bool, userdata []byte) (token string,
+	address []string, port []int32, nodeType []common.NodeType, errcode common.LoginErrCode) {
+	// TODO:
 	return
 }
 

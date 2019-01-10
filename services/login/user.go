@@ -48,14 +48,17 @@ func (user *User) doVerify(cmd proto_login.CMD_LOGIN_ENUM, data []byte, flag byt
 
 func (user *User) doLogin(account, passwd string, mode proto_login.ENUM_LOGIN_MODE_ENUM, userdata []byte) {
 	Ctx.Log.Infoln("account =", account, "password =", passwd, "mode =", mode)
-	token, addr, port, errCode := Ctx.Login.Login(account, passwd, mode == proto_login.ENUM_LOGIN_MODE_DEFAULT, userdata)
+	token, addrs, ports, nodeTypes, errCode := Ctx.Login.Login(account, passwd, mode == proto_login.ENUM_LOGIN_MODE_DEFAULT, userdata)
 	if errCode == common.LoginSuccess {
-		Ctx.Log.Infoln("token =", token, "addr =", addr, "port =", port)
+		Ctx.Log.Infoln("token =", token, "addr =", addrs, "port =", ports, "nodeTypes =", nodeTypes)
 		msg := &proto_login.MSG_LOGIN_RESULT{}
 		msg.Err = proto_login.ENUM_LOGIN_ERROR_OK
 		msg.Token = token
-		msg.Address = addr
-		msg.Port = port
+		msg.Address = append(msg.Address, addrs...)
+		msg.Port = append(msg.Port, ports...)
+		for _, v := range nodeTypes {
+			msg.NodeTyps = append(msg.NodeTyps, int32(v))
+		}
 		user.SendMsg(uint64(proto_login.CMD_LOGIN_LOGIN), msg)
 	} else {
 		Ctx.Log.Errorln("login fail. error =", errCode)

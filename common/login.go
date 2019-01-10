@@ -29,11 +29,11 @@ const (
 	// LoginSuccess : 登陆成功
 	LoginSuccess LoginErrCode = iota
 
-	// VerifyFail : 验证错误
-	VerifyFail
+	// LoginVerifyFail : 验证错误
+	LoginVerifyFail
 
-	// SystemError : 系统错误
-	SystemError
+	// LoginSystemError : 系统错误
+	LoginSystemError
 )
 
 // FuncTypeAccountVerification : 账号验证函数声明
@@ -41,9 +41,8 @@ type FuncTypeAccountVerification func(account, password string, userdata []byte)
 
 // ILogin : 登陆模块接口
 type ILogin interface {
-	Start() bool
-	RegisterCustomAccountVerification(f FuncTypeAccountVerification)
-	RegisterAllocationNodeType(types []NodeType)
-	Login(account, password string, defaultMode bool, userdata []byte) (token, address string, port int32, errcode LoginErrCode)
-	Close()
+	RegisterCustomAccountVerification(f FuncTypeAccountVerification) // 注册自定义账号验证
+	RegisterAllocationNodeType(types []NodeType)                     // 注册自定义要分配的服务器节点类型
+	Login(account, password string, defaultMode bool, userdata []byte) (token string,
+		address []string, port []int32, nodeType []NodeType, errcode LoginErrCode) // 登录。框架层处理登录事宜，并返回 ip list / type list / port list / token 等
 }

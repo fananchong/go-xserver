@@ -4,7 +4,7 @@
   "key": "uint32",
   "struct_format": "gogo",
   "fields": {
-	  "addr": "string",
+    "addr": "string",
     "port": "int32"
   }
 }

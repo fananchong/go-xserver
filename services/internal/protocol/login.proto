@@ -34,8 +34,9 @@ message MSG_LOGIN {
 }
 
 message MSG_LOGIN_RESULT {
-    ENUM_LOGIN_ERROR.ENUM Err = 1;    // 0:登录成功；非0:错误号
-    string Token = 2;            // 令牌
-    string Address = 3;          // Gateway IP
-    int32 Port = 4;              // Gateway Port
+    ENUM_LOGIN_ERROR.ENUM Err = 1;        // 0:登录成功；非0:错误号
+    string Token = 2;                     // 令牌
+    repeated string Address = 3;          // IP 列表
+    repeated int32 Port = 4;              // 端口列表
+    repeated int32 NodeTyps = 5;          // 服务类型列表
 }
