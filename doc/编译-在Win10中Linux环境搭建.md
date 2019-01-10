@@ -14,6 +14,7 @@
   - 设置代理
   - 安装 go 插件
   - WSL 嵌入 VSCode
+  - WSL 内安装 go ；设置代理
 
 详细请参考：https://blog.csdn.net/u013272009/article/details/84971807
 

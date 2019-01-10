@@ -16,7 +16,7 @@ package common
 //    2. 自定义客户端交互流程
 //    3. 自定义账号验证过程
 
-// go-xserver/services/login ：
+// go-xserver/services/login :
 //    1. 一个缺省的 Login Server 实现例子
 //    2. 主要展示逻辑层如何与框架层交互
 //    3. 可以参考实现自己的项目要求的 Login Server
