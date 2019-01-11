@@ -34,8 +34,8 @@ func (app *App) Run() {
 		components.NewRedis(app.ctx),
 		components.NewLogin(app.ctx),
 		components.NewPlugin(app.ctx),
-		components.NewNode(app.ctx),
 		components.NewTCPServer(app.ctx),
+		components.NewNode(app.ctx),
 		components.NewSignal(app.ctx),
 	}
 
