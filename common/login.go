@@ -37,7 +37,7 @@ const (
 )
 
 // FuncTypeAccountVerification : 账号验证函数声明
-type FuncTypeAccountVerification func(account, password string, userdata []byte) LoginErrCode
+type FuncTypeAccountVerification func(account, password string, userdata []byte) (accountID uint64, errcode LoginErrCode)
 
 // ILogin : 登陆模块接口
 type ILogin interface {
