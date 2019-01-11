@@ -31,7 +31,6 @@ func (sess *Session) Start() bool {
 }
 
 func (sess *Session) connectMgrServer() {
-	sess.ResetTCPSession()
 TRY_AGAIN:
 	addr, port := getMgrInfoByBlock(sess.Ctx)
 	if sess.Connect(fmt.Sprintf("%s:%d", addr, port), sess) == false {
@@ -82,6 +81,12 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 		time.Sleep(1 * time.Second)
 		sess.connectMgrServer()
 	}()
+}
+
+// Ping : ping
+func (sess *Session) Ping() {
+	msg := &protocol.MSG_MGR_PING{}
+	sess.SendMsg(uint64(protocol.CMD_MGR_PING), msg)
 }
 
 func getMgrInfoByBlock(ctx *common.Context) (string, int32) {

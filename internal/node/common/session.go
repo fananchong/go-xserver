@@ -59,11 +59,6 @@ func (sessbase *SessionBase) OnClose() {
 	sessbase.derived.DoClose(sessbase)
 }
 
-// ResetTCPSession : 重置 TCP Session 对象
-func (sessbase *SessionBase) ResetTCPSession() {
-	sessbase.Session = &gotcp.Session{}
-}
-
 func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, flag byte) bool {
 	if cmd == protocol.CMD_MGR_REGISTER_SERVER {
 		msg := &protocol.MSG_MGR_REGISTER_SERVER{}

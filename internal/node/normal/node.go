@@ -35,7 +35,7 @@ func NewNode(ctx *common.Context, nodeType common.NodeType) *Node {
 // Init : 初始化节点
 func (node *Node) Init() bool {
 	// ping ticker
-	pingTicker := utils.NewTickerHelper(node.Ctx, 5*time.Second, node.ping)
+	pingTicker := utils.NewTickerHelper(node.Ctx, 5*time.Second, node.Ping)
 
 	// bind components
 	node.components = []utils.IComponent{
@@ -60,9 +60,4 @@ func (node *Node) Close() {
 	for _, v := range node.components {
 		v.Close()
 	}
-}
-
-func (node *Node) ping() {
-	msg := &protocol.MSG_MGR_PING{}
-	node.Session.SendMsg(uint64(protocol.CMD_MGR_PING), msg)
 }
