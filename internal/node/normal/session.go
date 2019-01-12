@@ -61,8 +61,14 @@ func (sess *Session) registerSelf() {
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
-	//nodecommon.XSESSIONMGR.Register()
 	sess.Ctx.Log.Infoln("one server register. id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
+
+	// 本地保其他存节点信息
+	targetSess := NewSession(sess.Ctx)
+	targetSess.Info = msg.GetData()
+	nodecommon.GetSessionMgr().Register(targetSess.SessionBase)
+
+	// TODO: 开始互连逻辑
 }
 
 // DoVerify : 验证时保存自己的注册消息
@@ -71,8 +77,16 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 
 // DoLose : 节点丢失时处理
 func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
-	//nodecommon.XSESSIONMGR.Lose()
-	sess.Ctx.Log.Infoln("one server lose. id:", utility.ServerID2UUID(msg.GetId()).String())
+	sess.Ctx.Log.Infoln("one server lose. id:", utility.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
+
+	nodecommon.GetSessionMgr().Lose2(msg.GetId(), common.NodeType(msg.GetType()))
+
+	sess.Ctx.Log.Infof("left node in type[%d]:\n", msg.GetType())
+	nodecommon.GetSessionMgr().ForByType(common.NodeType(msg.GetType()), func(sessbase *nodecommon.SessionBase) {
+		sess.Ctx.Log.Infof("\t%s\n", utility.ServerID2UUID(sessbase.GetSID()).String())
+	})
+
+	// TODO: 存在互连关系的，销毁之
 }
 
 // DoClose : 节点关闭时处理

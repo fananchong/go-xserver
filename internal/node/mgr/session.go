@@ -43,13 +43,13 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	sess.Ctx.Log.Infoln("Node register for me, node id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
 	sess.Ctx.Log.Infoln(sess.Info)
 
-	nodecommon.XSESSIONMGR.Register(sess.SessionBase)
-	nodecommon.XSESSIONMGR.ForAll(func(elem *nodecommon.SessionBase) {
+	nodecommon.GetSessionMgr().Register(sess.SessionBase)
+	nodecommon.GetSessionMgr().ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
 			elem.Send(data, flag)
 		}
 	})
-	nodecommon.XSESSIONMGR.ForAll(func(elem *nodecommon.SessionBase) {
+	nodecommon.GetSessionMgr().ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
 			sess.Send(elem.MsgData, elem.MsgFlag)
 		}
@@ -66,10 +66,9 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 		msg := &protocol.MSG_MGR_LOSE_SERVER{}
 		msg.Id = sess.Info.GetId()
 		msg.Type = sess.Info.GetType()
-		nodecommon.XSESSIONMGR.ForAll(func(elem *nodecommon.SessionBase) {
+		nodecommon.GetSessionMgr().ForAll(func(elem *nodecommon.SessionBase) {
 			elem.SendMsg(uint64(protocol.CMD_MGR_LOSE_SERVER), msg)
 		})
 		sess.Ctx.Log.Infoln("lose node, type:", msg.Type, "id:", utility.ServerID2UUID(msg.Id).String())
 	}
 }
-

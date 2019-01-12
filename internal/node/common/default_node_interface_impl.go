@@ -77,13 +77,13 @@ func (impl *DefaultNodeInterfaceImpl) GetSID() *protocol.SERVER_ID {
 
 // GetNodeOne : 根据节点类型，随机选择 1 节点
 func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) common.INode {
-	return XSESSIONMGR.SelectOne(nodeType)
+	return GetSessionMgr().SelectOne(nodeType)
 }
 
 // GetNodeList : 获取某类型节点列表
 func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []common.INode {
 	var ret []common.INode
-	XSESSIONMGR.ForByType(nodeType, func(sess *SessionBase) {
+	GetSessionMgr().ForByType(nodeType, func(sess *SessionBase) {
 		ret = append(ret, sess)
 	})
 	return ret
@@ -92,7 +92,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []co
 // GetNodeAll : 获取所有节点
 func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []common.INode {
 	var ret []common.INode
-	XSESSIONMGR.ForAll(func(sess *SessionBase) {
+	GetSessionMgr().ForAll(func(sess *SessionBase) {
 		ret = append(ret, sess)
 	})
 	return ret
@@ -100,7 +100,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []common.INode {
 
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据
 func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint64, msg proto.Message) bool {
-	if sess := XSESSIONMGR.SelectOne(nodeType); sess != nil {
+	if sess := GetSessionMgr().SelectOne(nodeType); sess != nil {
 		return sess.SendMsg(cmd, msg)
 	}
 	return false
@@ -108,7 +108,7 @@ func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint
 
 // SendByType : 对某类型节点，广播数据
 func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType common.NodeType, cmd uint64, msg proto.Message, excludeSelf bool) {
-	XSESSIONMGR.ForByType(nodeType, func(sess *SessionBase) {
+	GetSessionMgr().ForByType(nodeType, func(sess *SessionBase) {
 		if excludeSelf && utility.EqualNID(sess.GetID(), impl.GetID()) {
 			return
 		}
@@ -118,7 +118,7 @@ func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType common.NodeType, cmd u
 
 // SendByID : 往指定节点，发送数据
 func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID common.NodeID, cmd uint64, msg proto.Message) bool {
-	if sess := XSESSIONMGR.GetByID(nodeID); sess != nil {
+	if sess := GetSessionMgr().GetByID(nodeID); sess != nil {
 		return sess.SendMsg(cmd, msg)
 	}
 	return false
@@ -126,7 +126,7 @@ func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID common.NodeID, cmd uint64,
 
 // SendAll : 对服务器组，广播数据
 func (impl *DefaultNodeInterfaceImpl) SendAll(cmd uint64, msg proto.Message, excludeSelf bool) {
-	XSESSIONMGR.ForAll(func(sess *SessionBase) {
+	GetSessionMgr().ForAll(func(sess *SessionBase) {
 		if excludeSelf && utility.EqualNID(sess.GetID(), impl.GetID()) {
 			return
 		}

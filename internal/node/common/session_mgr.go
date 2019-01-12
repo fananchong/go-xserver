@@ -8,10 +8,7 @@ import (
 	"github.com/fananchong/go-xserver/internal/utility"
 )
 
-var (
-	// XSESSIONMGR : 网络会话管理器
-	XSESSIONMGR = newSessionMgr()
-)
+var sessionMgrObj = newSessionMgr()
 
 // SessionMgr : 网络会话对象管理类
 type SessionMgr struct {
@@ -19,6 +16,11 @@ type SessionMgr struct {
 	ss      map[common.NodeType][]*SessionBase
 	ssByID  map[common.NodeID]*SessionBase
 	counter uint32
+}
+
+// GetSessionMgr : 获取网络会话对象管理类实例
+func GetSessionMgr() *SessionMgr {
+	return sessionMgrObj
 }
 
 func newSessionMgr() *SessionMgr {
@@ -41,16 +43,21 @@ func (sessmgr *SessionMgr) Register(sess *SessionBase) {
 	sessmgr.ssByID[sess.GetID()] = sess
 }
 
-// Lose : 丢失网络会话节点
-func (sessmgr *SessionMgr) Lose(sess *SessionBase) {
+// Lose1 : 丢失网络会话节点
+func (sessmgr *SessionMgr) Lose1(sess *SessionBase) {
 	t := sess.GetType()
 	sid := sess.GetSID()
+	sessmgr.Lose2(sid, t)
+}
+
+// Lose2 : 丢失网络会话节点
+func (sessmgr *SessionMgr) Lose2(sid *protocol.SERVER_ID, t common.NodeType) {
 	sessmgr.m.Lock()
 	defer sessmgr.m.Unlock()
 	for sessmgr.deleteSessInSS(sid, t) {
 		// do nothing
 	}
-	delete(sessmgr.ssByID, sess.GetID())
+	delete(sessmgr.ssByID, utility.ServerID2NodeID(sid))
 }
 
 func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t common.NodeType) bool {
@@ -105,7 +112,7 @@ func (sessmgr *SessionMgr) GetAll() []*SessionBase {
 
 // SelectOne : 选择 1 个某类型的网络会话节点
 func (sessmgr *SessionMgr) SelectOne(t common.NodeType) *SessionBase {
-	lst := XSESSIONMGR.GetByType(t)
+	lst := GetSessionMgr().GetByType(t)
 	n := len(lst)
 	if n > 0 {
 		index := int32(sessmgr.counter % uint32(n))

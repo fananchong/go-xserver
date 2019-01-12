@@ -85,7 +85,7 @@ func (node *Node) register() {
 }
 
 func (node *Node) ping() {
-	nodecommon.XSESSIONMGR.ForAll(func(sess *nodecommon.SessionBase) {
+	nodecommon.GetSessionMgr().ForAll(func(sess *nodecommon.SessionBase) {
 		msg := &protocol.MSG_MGR_PING{}
 		sess.SendMsg(uint64(protocol.CMD_MGR_PING), msg)
 	})
