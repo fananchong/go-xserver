@@ -25,7 +25,8 @@ func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISe
 // DoVerify : 验证时保存自己的注册消息
 func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
 	sess.Info = msg.GetData()
-	sess.MsgData = data
+	sess.MsgData = make([]byte, len(data))
+	copy(sess.MsgData, data)
 	sess.MsgFlag = flag
 }
 
@@ -36,7 +37,8 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		return
 	}
 	sess.Info = msg.GetData()
-	sess.MsgData = data
+	sess.MsgData = make([]byte, len(data))
+	copy(sess.MsgData, data)
 	sess.MsgFlag = flag
 	sess.Ctx.Log.Infoln("Node register for me, node id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
 	sess.Ctx.Log.Infoln(sess.Info)
@@ -70,3 +72,4 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 		sess.Ctx.Log.Infoln("lose node, type:", msg.Type, "id:", utility.ServerID2UUID(msg.Id).String())
 	}
 }
+
