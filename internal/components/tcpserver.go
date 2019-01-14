@@ -27,14 +27,14 @@ func (server *TCPServer) Start() bool {
 		if !startTCPServer(s, utils.GetIPOuter(server.ctx), utils.GetDefaultServicePort(server.ctx)) {
 			return false
 		}
-		server.ctx.Config.Network.Port[0] = s.GetRealPort()
+		server.ctx.Config.Network.Port[common.PORTFORCLIENT] = s.GetRealPort()
 	}
 	s = server.ctx.ServerForIntranet.(*gotcp.Server)
 	if s.GetSessionType() != nil {
 		if !startTCPServer(s, utils.GetIPInner(server.ctx), utils.GetIntranetListenPort(server.ctx)) {
 			return false
 		}
-		server.ctx.Config.Network.Port[1] = s.GetRealPort()
+		server.ctx.Config.Network.Port[common.PORTFORINTRANET] = s.GetRealPort()
 	}
 	return true
 }

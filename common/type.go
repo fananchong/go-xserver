@@ -43,3 +43,14 @@ const (
 	// IPOUTER : 类型 1 ，外网 IP
 	IPOUTER
 )
+
+// PortType : PORT 类型
+type PortType int
+
+const (
+	// PORTFORCLIENT : 端口类型（对客户端）
+	PORTFORCLIENT PortType = iota
+
+	// PORTFORINTRANET : 端口类型（对内网）
+	PORTFORINTRANET
+)

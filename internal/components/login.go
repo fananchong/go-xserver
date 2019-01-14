@@ -12,6 +12,7 @@ type Login struct {
 	verificationFunc common.FuncTypeAccountVerification
 	allocType        []common.NodeType
 	idgen            db.IDGen
+	redisAtomic      db.RedisAtomic
 }
 
 // NewLogin : 实例化登陆模块
@@ -132,5 +133,33 @@ func (login *Login) initRedis() bool {
 	}
 
 	login.idgen.Cli = go_redis_orm.GetDB(login.ctx.Config.DbAccount.Name)
+	login.redisAtomic.Cli = go_redis_orm.GetDB(login.ctx.Config.DbServer.Name)
 	return true
+}
+
+func (login *Login) selectServerList(account string, nodeType []common.NodeType) (addressList []string, portList []int32, ok bool) {
+	dbObj := &db.AccountServers{}
+	for _, v := range nodeType {
+		node := login.ctx.Node.GetNodeOne(v)
+		if node == nil {
+			return
+		}
+		dbObj.TypeList = append(dbObj.TypeList, int32(v))
+		dbObj.AddressList = append(dbObj.AddressList, node.GetIP(common.IPOUTER))
+		dbObj.PortList = append(dbObj.PortList, node.GetPort(int(common.PORTFORCLIENT)))
+	}
+	var data string
+	var err error
+	data, err = dbObj.Marshal()
+	if err != nil {
+		login.ctx.Log.Errorln(err)
+		return
+	}
+	var ret int
+	ret, err = login.redisAtomic.SetX(account, data, 86400)
+	if ret == -1 {
+		// TODO:
+	}
+	ok = true
+	return
 }

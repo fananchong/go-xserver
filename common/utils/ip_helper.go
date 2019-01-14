@@ -86,10 +86,10 @@ func networkCard2IP(name string) (string, error) {
 
 // GetIntranetListenPort : 获取服务器组内监听端口
 func GetIntranetListenPort(ctx *common.Context) int32 {
-	return ctx.Config.Network.Port[1]
+	return ctx.Config.Network.Port[common.PORTFORINTRANET]
 }
 
 // GetDefaultServicePort : 获取缺省的对外端口
 func GetDefaultServicePort(ctx *common.Context) int32 {
-	return ctx.Config.Network.Port[0]
+	return ctx.Config.Network.Port[common.PORTFORCLIENT]
 }

@@ -6,7 +6,7 @@ participant Redis
 participant Gateway
 Client->>LoginServer: 1. 账号登陆
 Note right of LoginServer: 1. 账号相关验证（略）
-Note right of LoginServer: 2. 本地缓存中选取一个Gateway
+Note right of LoginServer: 2. 本地缓存中选取一个 Gateway （以Gateway为例，方便理解；实际上可定制服务列表）
 LoginServer->>Redis: 2.1 SETX { uid, gatewayid } 键值对
 alt 如果设置失败
   LoginServer-->>Redis: GET { uid, gatewayid } 键值对
@@ -15,7 +15,7 @@ end
 LoginServer->>LoginServer: 2.2 检查对应的 gateway 是否失效
 alt gateway 已失效
   LoginServer-->>Redis: DELX { uid, gatewayid } 键值对
-  LoginServer-->>Client: 本次登陆流程失败
+  LoginServer-->>LoginServer: goto 2.1
 end
 LoginServer->>Redis: 3. SET { uid, token } 键值对
 LoginServer->>Client: 4. 返回OK, IP/Port/Token
