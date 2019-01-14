@@ -13,45 +13,49 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
+// MgrServer : 代表 1 个 redis 对象
 type MgrServer struct {
 	Key  uint32
 	addr string
 	port int32
 
-	__dirtyData               map[string]interface{}
-	__dirtyDataForStructFiled map[string]interface{}
-	__isLoad                  bool
-	__dbKey                   string
-	__dbName                  string
-	__expire                  uint
+	dirtyDataInMgrServer               map[string]interface{}
+	dirtyDataForStructFiledInMgrServer map[string]interface{}
+	isLoadInMgrServer                  bool
+	dbKeyInMgrServer                   string
+	ddbNameInMgrServer                 string
+	expireInMgrServer                  uint
 }
 
+// NewMgrServer : NewMgrServer 的构造函数
 func NewMgrServer(dbName string, key uint32) *MgrServer {
 	return &MgrServer{
-		Key:                       key,
-		__dbName:                  dbName,
-		__dbKey:                   "MgrServer:" + fmt.Sprintf("%d", key),
-		__dirtyData:               make(map[string]interface{}),
-		__dirtyDataForStructFiled: make(map[string]interface{}),
+		Key:                                key,
+		ddbNameInMgrServer:                 dbName,
+		dbKeyInMgrServer:                   "MgrServer:" + fmt.Sprintf("%d", key),
+		dirtyDataInMgrServer:               make(map[string]interface{}),
+		dirtyDataForStructFiledInMgrServer: make(map[string]interface{}),
 	}
 }
 
-// 若访问数据库失败返回-1；若 key 存在返回 1 ，否则返回 0 。
-func (this *MgrServer) HasKey() (int, error) {
-	db := go_redis_orm.GetDB(this.__dbName)
-	val, err := redis.Int(db.Do("EXISTS", this.__dbKey))
+// HasKey : 是否存在 KEY
+//          返回值，若访问数据库失败返回-1；若 key 存在返回 1 ，否则返回 0 。
+func (objMgrServer *MgrServer) HasKey() (int, error) {
+	db := go_redis_orm.GetDB(objMgrServer.ddbNameInMgrServer)
+	val, err := redis.Int(db.Do("EXISTS", objMgrServer.dbKeyInMgrServer))
 	if err != nil {
 		return -1, err
 	}
 	return val, nil
 }
 
-func (this *MgrServer) Load() error {
-	if this.__isLoad == true {
-		return errors.New("alreay load!")
+// Load : 从 redis 加载数据
+func (objMgrServer *MgrServer) Load() error {
+	if objMgrServer.isLoadInMgrServer == true {
+		return errors.New("alreay load")
 	}
-	db := go_redis_orm.GetDB(this.__dbName)
-	val, err := redis.Values(db.Do("HGETALL", this.__dbKey))
+	db := go_redis_orm.GetDB(objMgrServer.ddbNameInMgrServer)
+	val, err := redis.Values(db.Do("HGETALL", objMgrServer.dbKeyInMgrServer))
 	if err != nil {
 		return err
 	}
@@ -65,97 +69,107 @@ func (this *MgrServer) Load() error {
 	if err := redis.ScanStruct(val, &data); err != nil {
 		return err
 	}
-	this.addr = data.Addr
-	this.port = data.Port
-	this.__isLoad = true
+	objMgrServer.addr = data.Addr
+	objMgrServer.port = data.Port
+	objMgrServer.isLoadInMgrServer = true
 	return nil
 }
 
-func (this *MgrServer) Save() error {
-	if len(this.__dirtyData) == 0 && len(this.__dirtyDataForStructFiled) == 0 {
+// Save : 保存数据到 redis
+func (objMgrServer *MgrServer) Save() error {
+	if len(objMgrServer.dirtyDataInMgrServer) == 0 && len(objMgrServer.dirtyDataForStructFiledInMgrServer) == 0 {
 		return nil
 	}
-	for k, _ := range this.__dirtyDataForStructFiled {
+	for k := range objMgrServer.dirtyDataForStructFiledInMgrServer {
 		_ = k
 
 	}
-	db := go_redis_orm.GetDB(this.__dbName)
-	if _, err := db.Do("HMSET", redis.Args{}.Add(this.__dbKey).AddFlat(this.__dirtyData)...); err != nil {
+	db := go_redis_orm.GetDB(objMgrServer.ddbNameInMgrServer)
+	if _, err := db.Do("HMSET", redis.Args{}.Add(objMgrServer.dbKeyInMgrServer).AddFlat(objMgrServer.dirtyDataInMgrServer)...); err != nil {
 		return err
 	}
-	if this.__expire != 0 {
-		if _, err := db.Do("EXPIRE", this.__dbKey, this.__expire); err != nil {
+	if objMgrServer.expireInMgrServer != 0 {
+		if _, err := db.Do("EXPIRE", objMgrServer.dbKeyInMgrServer, objMgrServer.expireInMgrServer); err != nil {
 			return err
 		}
 	}
-	this.__dirtyData = make(map[string]interface{})
-	this.__dirtyDataForStructFiled = make(map[string]interface{})
+	objMgrServer.dirtyDataInMgrServer = make(map[string]interface{})
+	objMgrServer.dirtyDataForStructFiledInMgrServer = make(map[string]interface{})
 	return nil
 }
 
-func (this *MgrServer) Delete() error {
-	db := go_redis_orm.GetDB(this.__dbName)
-	_, err := db.Do("DEL", this.__dbKey)
+// Delete : 从 redis 删除数据
+func (objMgrServer *MgrServer) Delete() error {
+	db := go_redis_orm.GetDB(objMgrServer.ddbNameInMgrServer)
+	_, err := db.Do("DEL", objMgrServer.dbKeyInMgrServer)
 	if err == nil {
-		this.__isLoad = false
-		this.__dirtyData = make(map[string]interface{})
-		this.__dirtyDataForStructFiled = make(map[string]interface{})
+		objMgrServer.isLoadInMgrServer = false
+		objMgrServer.dirtyDataInMgrServer = make(map[string]interface{})
+		objMgrServer.dirtyDataForStructFiledInMgrServer = make(map[string]interface{})
 	}
 	return err
 }
 
-func (this *MgrServer) IsLoad() bool {
-	return this.__isLoad
+// IsLoad : 是否已经从 redis 导入数据
+func (objMgrServer *MgrServer) IsLoad() bool {
+	return objMgrServer.isLoadInMgrServer
 }
 
-func (this *MgrServer) Expire(v uint) {
-	this.__expire = v
+// Expire : 向 redis 设置该对象过期时间
+func (objMgrServer *MgrServer) Expire(v uint) {
+	objMgrServer.expireInMgrServer = v
 }
 
-func (this *MgrServer) DirtyData() (map[string]interface{}, error) {
-	for k, _ := range this.__dirtyDataForStructFiled {
+// DirtyData : 获取该对象目前已脏的数据
+func (objMgrServer *MgrServer) DirtyData() (map[string]interface{}, error) {
+	for k := range objMgrServer.dirtyDataForStructFiledInMgrServer {
 		_ = k
 
 	}
 	data := make(map[string]interface{})
-	for k, v := range this.__dirtyData {
+	for k, v := range objMgrServer.dirtyDataInMgrServer {
 		data[k] = v
 	}
-	this.__dirtyData = make(map[string]interface{})
-	this.__dirtyDataForStructFiled = make(map[string]interface{})
+	objMgrServer.dirtyDataInMgrServer = make(map[string]interface{})
+	objMgrServer.dirtyDataForStructFiledInMgrServer = make(map[string]interface{})
 	return data, nil
 }
 
-func (this *MgrServer) Save2(dirtyData map[string]interface{}) error {
+// Save2 : 保存数据到 redis 的第 2 种方法
+func (objMgrServer *MgrServer) Save2(dirtyData map[string]interface{}) error {
 	if len(dirtyData) == 0 {
 		return nil
 	}
-	db := go_redis_orm.GetDB(this.__dbName)
-	if _, err := db.Do("HMSET", redis.Args{}.Add(this.__dbKey).AddFlat(dirtyData)...); err != nil {
+	db := go_redis_orm.GetDB(objMgrServer.ddbNameInMgrServer)
+	if _, err := db.Do("HMSET", redis.Args{}.Add(objMgrServer.dbKeyInMgrServer).AddFlat(dirtyData)...); err != nil {
 		return err
 	}
-	if this.__expire != 0 {
-		if _, err := db.Do("EXPIRE", this.__dbKey, this.__expire); err != nil {
+	if objMgrServer.expireInMgrServer != 0 {
+		if _, err := db.Do("EXPIRE", objMgrServer.dbKeyInMgrServer, objMgrServer.expireInMgrServer); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (this *MgrServer) GetAddr() string {
-	return this.addr
+// GetAddr : 获取字段值
+func (objMgrServer *MgrServer) GetAddr() string {
+	return objMgrServer.addr
 }
 
-func (this *MgrServer) GetPort() int32 {
-	return this.port
+// GetPort : 获取字段值
+func (objMgrServer *MgrServer) GetPort() int32 {
+	return objMgrServer.port
 }
 
-func (this *MgrServer) SetAddr(value string) {
-	this.addr = value
-	this.__dirtyData["addr"] = string([]byte(value))
+// SetAddr : 设置字段值
+func (objMgrServer *MgrServer) SetAddr(value string) {
+	objMgrServer.addr = value
+	objMgrServer.dirtyDataInMgrServer["addr"] = string([]byte(value))
 }
 
-func (this *MgrServer) SetPort(value int32) {
-	this.port = value
-	this.__dirtyData["port"] = value
+// SetPort : 设置字段值
+func (objMgrServer *MgrServer) SetPort(value int32) {
+	objMgrServer.port = value
+	objMgrServer.dirtyDataInMgrServer["port"] = value
 }

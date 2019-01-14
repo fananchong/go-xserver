@@ -34,7 +34,7 @@ func (login *Login) Start() bool {
 	return true
 }
 
-// RegisterCustomAccountVerification : 注册回调
+// RegisterCustomAccountVerification : 注册自定义账号验证处理
 func (login *Login) RegisterCustomAccountVerification(f common.FuncTypeAccountVerification) {
 	login.verificationFunc = f
 }
