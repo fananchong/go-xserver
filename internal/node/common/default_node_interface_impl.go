@@ -98,6 +98,12 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []common.INode {
 	return ret
 }
 
+// HaveNode : 是否有节点
+func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID common.NodeID) bool {
+	node := GetSessionMgr().GetByID(nodeID)
+	return node != nil
+}
+
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据
 func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint64, msg proto.Message) bool {
 	if sess := GetSessionMgr().SelectOne(nodeType); sess != nil {

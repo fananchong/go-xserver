@@ -19,6 +19,7 @@ type INode interface {
 	GetNodeOne(nodeType NodeType) INode                                            // 根据节点类型，随机选择 1 节点
 	GetNodeList(nodeType NodeType) []INode                                         // 获取某类型节点列表
 	GetNodeAll() []INode                                                           // 获取所有节点
+	HaveNode(nodeID NodeID) bool                                                   // 是否有节点
 	SendOne(nodeType NodeType, cmd uint64, msg proto.Message) bool                 // 根据节点类型，随机选择 1 节点，发送数据
 	SendByType(nodeType NodeType, cmd uint64, msg proto.Message, excludeSelf bool) // 对某类型节点，广播数据
 	SendByID(nodeID NodeID, cmd uint64, msg proto.Message) bool                    // 往指定节点，发送数据

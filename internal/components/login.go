@@ -4,6 +4,7 @@ import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/db"
+	uuid "github.com/satori/go.uuid"
 )
 
 // Login : 登陆模块
@@ -45,8 +46,8 @@ func (login *Login) RegisterAllocationNodeType(types []common.NodeType) {
 }
 
 // Login : 登陆处理
-func (login *Login) Login(account, password string, defaultMode bool, userdata []byte) (token string,
-	address []string, port []int32, nodeType []common.NodeType, errcode common.LoginErrCode) {
+func (login *Login) Login(account, password string, defaultMode bool, userdata []byte) (string,
+	[]string, []int32, []common.NodeType, common.LoginErrCode) {
 
 	//账号验证
 	var accountID uint64
@@ -62,9 +63,21 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 
 	login.ctx.Log.Infof("account:%s, account id:%d", account, accountID)
 
-	// TODO: 分配服务器资源给账号
+	// 分配服务资源列表
+	serverList, ok := login.selectServerList(account, login.allocType)
+	if !ok {
+		return "", nil, nil, nil, common.LoginSystemError
+	}
 
-	return
+	//生成 Token
+	tokenObj := db.NewToken(login.ctx.Config.DbToken.Name, account)
+	tokenObj.SetToken(uuid.NewV4().String())
+	tokenObj.SetAccountID(accountID)
+	if err := tokenObj.Save(); err != nil {
+		login.ctx.Log.Errorln(err)
+		return "", nil, nil, nil, common.LoginSystemError
+	}
+	return "", serverList.AddressList, serverList.PortList, serverList.TypeList, common.LoginSuccess
 }
 
 // Close : 关闭
@@ -137,14 +150,17 @@ func (login *Login) initRedis() bool {
 	return true
 }
 
-func (login *Login) selectServerList(account string, nodeType []common.NodeType) (addressList []string, portList []int32, ok bool) {
-	dbObj := &db.AccountServers{}
+func (login *Login) selectServerList(account string, nodeType []common.NodeType) (dbObj *db.AccountServers, ok bool) {
+LOOP:
+	dbObj = &db.AccountServers{}
 	for _, v := range nodeType {
 		node := login.ctx.Node.GetNodeOne(v)
 		if node == nil {
+			login.ctx.Log.Errorln("no find server. type =", v)
 			return
 		}
-		dbObj.TypeList = append(dbObj.TypeList, int32(v))
+		dbObj.UIDList = append(dbObj.UIDList, node.GetID())
+		dbObj.TypeList = append(dbObj.TypeList, v)
 		dbObj.AddressList = append(dbObj.AddressList, node.GetIP(common.IPOUTER))
 		dbObj.PortList = append(dbObj.PortList, node.GetPort(int(common.PORTFORCLIENT)))
 	}
@@ -155,10 +171,24 @@ func (login *Login) selectServerList(account string, nodeType []common.NodeType)
 		login.ctx.Log.Errorln(err)
 		return
 	}
-	var ret int
+	var ret string
 	ret, err = login.redisAtomic.SetX(account, data, 86400)
-	if ret == -1 {
-		// TODO:
+	if err != nil {
+		login.ctx.Log.Errorln(err)
+		return
+	}
+	if ret != "" {
+		dbObj.Unmarshal(ret)
+		for _, id := range dbObj.UIDList {
+			if login.ctx.Node.HaveNode(id) == false {
+				if _, err = login.redisAtomic.DelX(account, data); err != nil {
+					login.ctx.Log.Errorln(err)
+					return
+				}
+				login.ctx.Log.Infoln("try again to get server list")
+				goto LOOP
+			}
+		}
 	}
 	ok = true
 	return
