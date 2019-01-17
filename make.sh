@@ -6,20 +6,10 @@ CUR_DIR=$PWD
 SRC_DIR=$PWD
 BIN_DIR=$PWD/bin
 SERVICE_DIR=$PWD/services/
-PROTO_DIR1=$PWD/internal/protocol/
-PROTO_DIR2=$PWD/services/internal/protocol/
-DB_DIR=$PWD/internal/db/
 FLAGS=-race
 export GOBIN=$BIN_DIR
 
-if [[ $1 == "prebuild" ]]; then
-    cd $PROTO_DIR1
-    ./g.sh
-    cd $PROTO_DIR2
-    ./g.sh
-    cd $DB_DIR
-    ./g.sh
-fi
+go generate ./...
 
 cd $SRC_DIR
 go vet ./...

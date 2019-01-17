@@ -1,3 +1,5 @@
+//go:generate ./g.sh
+
 package db
 
 import (
