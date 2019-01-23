@@ -30,6 +30,11 @@
 - 管理服务器
 - 登陆服务器
 
+## 测试客户端
+
+- pyclient
+  https://github.com/fananchong/go-xclient/tree/master/pyclient
+
 ## 正在制作
 
 - 服务器组内互联
