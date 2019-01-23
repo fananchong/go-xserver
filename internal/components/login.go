@@ -196,7 +196,7 @@ LOOP:
 		dbObj.Unmarshal(ret)
 		for _, id := range dbObj.UIDList {
 			if login.ctx.Node.HaveNode(id) == false {
-				if _, err = login.serverRedis.DelX(account, data); err != nil {
+				if _, err = login.serverRedis.DelX(account, ret); err != nil {
 					login.ctx.Log.Errorln(err)
 					return
 				}

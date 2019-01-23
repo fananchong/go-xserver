@@ -42,7 +42,7 @@ func (user *User) doVerify(cmd proto_login.CMD_LOGIN_ENUM, data []byte, flag byt
 	}
 	user.doLogin(msg.GetAccount(), msg.GetPassword(), msg.GetMode(), msg.GetUserdata())
 	user.Verify()
-	user.Close()
+	user.CloseAfterSending()
 	return true
 }
 
