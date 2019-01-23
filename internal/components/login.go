@@ -4,6 +4,7 @@ import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/db"
+	"github.com/gomodule/redigo/redis"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -13,7 +14,7 @@ type Login struct {
 	verificationFunc common.FuncTypeAccountVerification
 	allocType        []common.NodeType
 	idgen            db.IDGen
-	redisAtomic      db.RedisAtomic
+	serverRedis      db.RedisAtomic
 }
 
 // NewLogin : 实例化登陆模块
@@ -82,7 +83,10 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 
 // Close : 关闭
 func (login *Login) Close() {
-
+	if login.serverRedis.Cli != nil {
+		login.serverRedis.Cli.Close()
+		login.serverRedis.Cli = nil
+	}
 }
 
 func (login *Login) loginByDefault(account, password string) (uint64, common.LoginErrCode) {
@@ -135,18 +139,28 @@ func (login *Login) initRedis() bool {
 	}
 
 	// db server
-	err = go_redis_orm.CreateDB(
-		login.ctx.Config.DbServer.Name,
-		login.ctx.Config.DbServer.Addrs,
-		login.ctx.Config.DbServer.Password,
-		login.ctx.Config.DbServer.DBIndex)
+	c, err := redis.Dial("tcp", login.ctx.Config.DbServer.Addrs[0])
 	if err != nil {
 		login.ctx.Log.Errorln(err)
 		return false
 	}
+	if login.ctx.Config.DbServer.Password != "" {
+		if _, err := c.Do("AUTH", login.ctx.Config.DbServer.Password); err != nil {
+			login.ctx.Log.Errorln(err)
+			c.Close()
+			return false
+		}
+	}
+	if login.ctx.Config.DbToken.DBIndex != 0 {
+		if _, err := c.Do("SELECT", login.ctx.Config.DbServer.DBIndex); err != nil {
+			login.ctx.Log.Errorln(err)
+			c.Close()
+			return false
+		}
+	}
 
 	login.idgen.Cli = go_redis_orm.GetDB(login.ctx.Config.DbAccount.Name)
-	login.redisAtomic.Cli = go_redis_orm.GetDB(login.ctx.Config.DbServer.Name)
+	login.serverRedis.Cli = c
 	return true
 }
 
@@ -171,8 +185,9 @@ LOOP:
 		login.ctx.Log.Errorln(err)
 		return
 	}
+	login.ctx.Log.Info("account: ", account, ", servers: ", data)
 	var ret string
-	ret, err = login.redisAtomic.SetX(account, data, 86400)
+	ret, err = login.serverRedis.SetX(account, data, 86400)
 	if err != nil {
 		login.ctx.Log.Errorln(err)
 		return
@@ -181,7 +196,7 @@ LOOP:
 		dbObj.Unmarshal(ret)
 		for _, id := range dbObj.UIDList {
 			if login.ctx.Node.HaveNode(id) == false {
-				if _, err = login.redisAtomic.DelX(account, data); err != nil {
+				if _, err = login.serverRedis.DelX(account, data); err != nil {
 					login.ctx.Log.Errorln(err)
 					return
 				}
