@@ -78,7 +78,7 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 		login.ctx.Log.Errorln(err)
 		return "", nil, nil, nil, common.LoginSystemError
 	}
-	return "", serverList.AddressList, serverList.PortList, serverList.TypeList, common.LoginSuccess
+	return tokenObj.GetToken(), serverList.AddressList, serverList.PortList, serverList.TypeList, common.LoginSuccess
 }
 
 // Close : 关闭

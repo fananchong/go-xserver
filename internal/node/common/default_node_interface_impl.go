@@ -77,7 +77,11 @@ func (impl *DefaultNodeInterfaceImpl) GetSID() *protocol.SERVER_ID {
 
 // GetNodeOne : 根据节点类型，随机选择 1 节点
 func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) common.INode {
-	return GetSessionMgr().SelectOne(nodeType)
+	node := GetSessionMgr().SelectOne(nodeType)
+	if node != nil {
+		return node
+	}
+	return nil
 }
 
 // GetNodeList : 获取某类型节点列表
