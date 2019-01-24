@@ -1,6 +1,8 @@
 package components
 
 import (
+	"fmt"
+
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/db"
@@ -62,7 +64,7 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	}
 
 	// 分配服务资源列表
-	serverList, ok := login.selectServerList(account, login.allocType)
+	addressList, portList, ok := login.selectServerList(account, login.allocType)
 	if !ok {
 		return "", nil, nil, nil, common.LoginSystemError
 	}
@@ -74,7 +76,7 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 		login.ctx.Log.Errorln(err)
 		return "", nil, nil, nil, common.LoginSystemError
 	}
-	return tokenObj.GetToken(), serverList.AddressList, serverList.PortList, serverList.TypeList, common.LoginSuccess
+	return tokenObj.GetToken(), addressList, portList, login.allocType, common.LoginSuccess
 }
 
 // Close : 关闭
@@ -157,20 +159,32 @@ func (login *Login) initRedis() bool {
 	return true
 }
 
-func (login *Login) selectServerList(account string, nodeType []common.NodeType) (dbObj *db.AccountServers, ok bool) {
-LOOP:
-	dbObj = &db.AccountServers{}
+func (login *Login) selectServerList(account string, nodeType []common.NodeType) (addressList []string, portList []int32, ok bool) {
 	for _, v := range nodeType {
-		node := login.ctx.Node.GetNodeOne(v)
-		if node == nil {
-			login.ctx.Log.Errorln("no find server. type =", v)
+		dbObj, have := login.selectServer(account, v)
+		if !have {
 			return
 		}
-		dbObj.UIDList = append(dbObj.UIDList, node.GetID())
-		dbObj.TypeList = append(dbObj.TypeList, v)
-		dbObj.AddressList = append(dbObj.AddressList, node.GetIP(common.IPOUTER))
-		dbObj.PortList = append(dbObj.PortList, node.GetPort(int(common.PORTFORCLIENT)))
+		addressList = append(addressList, dbObj.Address)
+		portList = append(portList, dbObj.Port)
 	}
+	ok = true
+	return
+}
+
+func (login *Login) selectServer(account string, nodeType common.NodeType) (dbObj *db.AccountServer, ok bool) {
+LOOP:
+	dbObj = &db.AccountServer{}
+	node := login.ctx.Node.GetNodeOne(nodeType)
+	if node == nil {
+		login.ctx.Log.Errorln("no find server. type =", nodeType)
+		return
+	}
+	dbObj.NodeID = node.GetID()
+	dbObj.Type = nodeType
+	dbObj.Address = node.GetIP(common.IPOUTER)
+	dbObj.Port = node.GetPort(int(common.PORTFORCLIENT))
+
 	var data string
 	var err error
 	data, err = dbObj.Marshal()
@@ -178,24 +192,23 @@ LOOP:
 		login.ctx.Log.Errorln(err)
 		return
 	}
-	login.ctx.Log.Info("account: ", account, ", servers: ", data)
+	login.ctx.Log.Info("account: ", account, ", server: ", data)
 	var ret string
-	ret, err = login.serverRedis.SetX(account, data, 86400)
+	key := fmt.Sprintf("srv%d_%s", nodeType, account)
+	ret, err = login.serverRedis.SetX(key, data, 365*86400)
 	if err != nil {
 		login.ctx.Log.Errorln(err)
 		return
 	}
 	if ret != "" {
 		dbObj.Unmarshal(ret)
-		for _, id := range dbObj.UIDList {
-			if login.ctx.Node.HaveNode(id) == false {
-				if _, err = login.serverRedis.DelX(account, ret); err != nil {
-					login.ctx.Log.Errorln(err)
-					return
-				}
-				login.ctx.Log.Infoln("try again to get server list")
-				goto LOOP
+		if login.ctx.Node.HaveNode(dbObj.NodeID) == false {
+			if _, err = login.serverRedis.DelX(key, ret); err != nil {
+				login.ctx.Log.Errorln(err)
+				return
 			}
+			login.ctx.Log.Infoln("try again to get server, type:", nodeType)
+			goto LOOP
 		}
 	}
 	ok = true

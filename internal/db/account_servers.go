@@ -6,17 +6,17 @@ import (
 	"github.com/fananchong/go-xserver/common"
 )
 
-// AccountServers : 账号对应分配的服务资源
-type AccountServers struct {
-	UIDList     []common.NodeID
-	AddressList []string
-	PortList    []int32
-	TypeList    []common.NodeType
+// AccountServer : 账号对应分配的服务资源
+type AccountServer struct {
+	NodeID  common.NodeID
+	Address string
+	Port    int32
+	Type    common.NodeType
 }
 
 // Marshal : 序列化
-func (accountservers *AccountServers) Marshal() (string, error) {
-	data, err := json.Marshal(accountservers)
+func (accountserver *AccountServer) Marshal() (string, error) {
+	data, err := json.Marshal(accountserver)
 	if err != nil {
 		return "", err
 	}
@@ -24,14 +24,6 @@ func (accountservers *AccountServers) Marshal() (string, error) {
 }
 
 // Unmarshal : 反序列化
-func (accountservers *AccountServers) Unmarshal(data string) error {
-	accountservers.reset()
-	return json.Unmarshal([]byte(data), accountservers)
-}
-
-func (accountservers *AccountServers) reset() {
-	accountservers.UIDList = accountservers.UIDList[:0]
-	accountservers.AddressList = accountservers.AddressList[:0]
-	accountservers.PortList = accountservers.PortList[:0]
-	accountservers.TypeList = accountservers.TypeList[:0]
+func (accountserver *AccountServer) Unmarshal(data string) error {
+	return json.Unmarshal([]byte(data), accountserver)
 }
