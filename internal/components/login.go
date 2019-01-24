@@ -73,7 +73,7 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	tokenObj := db.NewToken(login.ctx.Config.DbToken.Name, account)
 	tokenObj.SetToken(uuid.NewV4().String())
 	if err := tokenObj.Save(); err != nil {
-		login.ctx.Log.Errorln(err, ", account: ", account)
+		login.ctx.Log.Errorln(err, "account:", account)
 		return "", nil, nil, nil, common.LoginSystemError
 	}
 	return tokenObj.GetToken(), addressList, portList, login.allocType, common.LoginSuccess
@@ -96,7 +96,7 @@ func (login *Login) loginByDefault(account, password string) common.LoginErrCode
 		}
 		accountObj.SetPasswd(password)
 		if err = accountObj.Save(); err != nil {
-			login.ctx.Log.Errorln(err, ", account: ", account)
+			login.ctx.Log.Errorln(err, "account:", account)
 			return common.LoginSystemError
 		}
 	} else {
@@ -177,7 +177,7 @@ LOOP:
 	dbObj = &db.AccountServer{}
 	node := login.ctx.Node.GetNodeOne(nodeType)
 	if node == nil {
-		login.ctx.Log.Errorln("no find server. type: ", nodeType, ", account: ", account)
+		login.ctx.Log.Errorln("no find server. type:", nodeType, "account:", account)
 		return
 	}
 	dbObj.NodeID = node.GetID()
@@ -189,25 +189,25 @@ LOOP:
 	var err error
 	data, err = dbObj.Marshal()
 	if err != nil {
-		login.ctx.Log.Errorln(err, ", account: ", account)
+		login.ctx.Log.Errorln(err, "account:", account)
 		return
 	}
-	login.ctx.Log.Info("account: ", account, ", server: ", data)
+	login.ctx.Log.Infoln("account:", account, "server:", data)
 	var ret string
 	key := fmt.Sprintf("srv%d_%s", nodeType, account)
 	ret, err = login.serverRedis.SetX(key, data, 365*86400)
 	if err != nil {
-		login.ctx.Log.Errorln(err, ", account: ", account)
+		login.ctx.Log.Errorln(err, "account:", account)
 		return
 	}
 	if ret != "" {
 		dbObj.Unmarshal(ret)
 		if login.ctx.Node.HaveNode(dbObj.NodeID) == false {
 			if _, err = login.serverRedis.DelX(key, ret); err != nil {
-				login.ctx.Log.Errorln(err, ", account: ", account)
+				login.ctx.Log.Errorln(err, "account:", account)
 				return
 			}
-			login.ctx.Log.Infoln("try again to get server, type: ", nodeType, ", account: ", account)
+			login.ctx.Log.Infoln("try again to get server, type:", nodeType, "account:", account)
 			goto LOOP
 		}
 	}

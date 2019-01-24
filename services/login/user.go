@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/fananchong/gotcp"
-
 	"github.com/fananchong/go-xserver/common"
 	proto_login "github.com/fananchong/go-xserver/services/internal/protocol"
+	"github.com/fananchong/gotcp"
 )
 
 // User : 登录玩家类
@@ -50,7 +49,7 @@ func (user *User) doLogin(account, passwd string, mode proto_login.ENUM_LOGIN_MO
 	Ctx.Log.Infoln("account =", account, "password =", passwd, "mode =", mode)
 	token, addrs, ports, nodeTypes, errCode := Ctx.Login.Login(account, passwd, mode == proto_login.ENUM_LOGIN_MODE_DEFAULT, userdata)
 	if errCode == common.LoginSuccess {
-		Ctx.Log.Infoln("token =", token, "addr =", addrs, "port =", ports, "nodeTypes =", nodeTypes)
+		Ctx.Log.Infoln("account =", account, "token =", token, "addr =", addrs, "port =", ports, "nodeTypes =", nodeTypes)
 		msg := &proto_login.MSG_LOGIN_RESULT{}
 		msg.Err = proto_login.ENUM_LOGIN_ERROR_OK
 		msg.Token = token
@@ -61,7 +60,7 @@ func (user *User) doLogin(account, passwd string, mode proto_login.ENUM_LOGIN_MO
 		}
 		user.SendMsg(uint64(proto_login.CMD_LOGIN_LOGIN), msg)
 	} else {
-		Ctx.Log.Errorln("login fail. error =", errCode)
+		Ctx.Log.Errorln("login fail. error =", errCode, "account =", account)
 		msg := &proto_login.MSG_LOGIN_RESULT{}
 		msg.Err = proto_login.ENUM_LOGIN_ERROR_ENUM(errCode)
 		user.SendMsg(uint64(proto_login.CMD_LOGIN_LOGIN), msg)
