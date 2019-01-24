@@ -15,7 +15,6 @@ import (
 // Account : 代表 1 个 redis 对象
 type Account struct {
 	Key    string
-	iD     uint64
 	passwd string
 
 	dirtyDataInAccount               map[string]interface{}
@@ -62,13 +61,11 @@ func (objAccount *Account) Load() error {
 		return go_redis_orm.ERR_ISNOT_EXIST_KEY
 	}
 	var data struct {
-		ID     uint64 `redis:"id"`
 		Passwd string `redis:"passwd"`
 	}
 	if err := redis.ScanStruct(val, &data); err != nil {
 		return err
 	}
-	objAccount.iD = data.ID
 	objAccount.passwd = data.Passwd
 	objAccount.isLoadInAccount = true
 	return nil
@@ -151,20 +148,9 @@ func (objAccount *Account) Save2(dirtyData map[string]interface{}) error {
 	return nil
 }
 
-// GetID : 获取字段值
-func (objAccount *Account) GetID() uint64 {
-	return objAccount.iD
-}
-
 // GetPasswd : 获取字段值
 func (objAccount *Account) GetPasswd() string {
 	return objAccount.passwd
-}
-
-// SetID : 设置字段值
-func (objAccount *Account) SetID(value uint64) {
-	objAccount.iD = value
-	objAccount.dirtyDataInAccount["id"] = value
 }
 
 // SetPasswd : 设置字段值

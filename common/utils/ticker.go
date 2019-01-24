@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"runtime/debug"
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
@@ -41,7 +42,14 @@ func (helper *Ticker) loop() {
 			helper.myctx.Log.Infoln("Ticker close.")
 			return
 		case <-timer.C:
-			helper.f()
+			func() {
+				defer func() {
+					if err := recover(); err != nil {
+						helper.myctx.Log.Errorln("[except] ", err, "\n", string(debug.Stack()))
+					}
+				}()
+				helper.f()
+			}()
 		}
 	}
 }

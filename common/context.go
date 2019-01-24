@@ -12,7 +12,7 @@ type Context struct {
 	Config            *Config         // 常驻功能
 	Log               ILogger         // 常驻功能
 	Node              INode           // 常驻功能
-	ServerForClient   ITCPServer      // 注册相应接口，才会开启
-	ServerForIntranet ITCPServer      // 注册相应接口，才会开启
-	Login             ILogin          // 注册相应接口，才会开启
+	ServerForClient   ITCPServer      // 注册该字段相应接口，才会开启
+	ServerForIntranet ITCPServer      // 注册该字段相应接口，才会开启
+	Login             ILogin          // 注册该字段相应接口，才会开启
 }

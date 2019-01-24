@@ -32,8 +32,7 @@
 
 ## 测试客户端
 
-- pyclient
-  https://github.com/fananchong/go-xclient/tree/master/pyclient
+- [pyclient](https://github.com/fananchong/go-xclient/tree/master/pyclient)
 
 ## 正在制作
 

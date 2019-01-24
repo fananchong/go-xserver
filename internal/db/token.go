@@ -14,9 +14,8 @@ import (
 
 // Token : 代表 1 个 redis 对象
 type Token struct {
-	Key       string
-	accountID uint64
-	token     string
+	Key   string
+	token string
 
 	dirtyDataInToken               map[string]interface{}
 	dirtyDataForStructFiledInToken map[string]interface{}
@@ -62,13 +61,11 @@ func (objToken *Token) Load() error {
 		return go_redis_orm.ERR_ISNOT_EXIST_KEY
 	}
 	var data struct {
-		AccountID uint64 `redis:"accountid"`
-		Token     string `redis:"token"`
+		Token string `redis:"token"`
 	}
 	if err := redis.ScanStruct(val, &data); err != nil {
 		return err
 	}
-	objToken.accountID = data.AccountID
 	objToken.token = data.Token
 	objToken.isLoadInToken = true
 	return nil
@@ -151,20 +148,9 @@ func (objToken *Token) Save2(dirtyData map[string]interface{}) error {
 	return nil
 }
 
-// GetAccountID : 获取字段值
-func (objToken *Token) GetAccountID() uint64 {
-	return objToken.accountID
-}
-
 // GetToken : 获取字段值
 func (objToken *Token) GetToken() string {
 	return objToken.token
-}
-
-// SetAccountID : 设置字段值
-func (objToken *Token) SetAccountID(value uint64) {
-	objToken.accountID = value
-	objToken.dirtyDataInToken["accountid"] = value
 }
 
 // SetToken : 设置字段值

@@ -51,18 +51,15 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	[]string, []int32, []common.NodeType, common.LoginErrCode) {
 
 	//账号验证
-	var accountID uint64
 	var err common.LoginErrCode
 	if defaultMode {
-		accountID, err = login.loginByDefault(account, password)
+		err = login.loginByDefault(account, password)
 	} else {
-		accountID, err = login.verificationFunc(account, password, userdata)
+		err = login.verificationFunc(account, password, userdata)
 	}
 	if err != common.LoginSuccess {
 		return "", nil, nil, nil, err
 	}
-
-	login.ctx.Log.Infof("account:%s, account id:%d", account, accountID)
 
 	// 分配服务资源列表
 	serverList, ok := login.selectServerList(account, login.allocType)
@@ -73,7 +70,6 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	//生成 Token
 	tokenObj := db.NewToken(login.ctx.Config.DbToken.Name, account)
 	tokenObj.SetToken(uuid.NewV4().String())
-	tokenObj.SetAccountID(accountID)
 	if err := tokenObj.Save(); err != nil {
 		login.ctx.Log.Errorln(err)
 		return "", nil, nil, nil, common.LoginSystemError
@@ -89,28 +85,25 @@ func (login *Login) Close() {
 	}
 }
 
-func (login *Login) loginByDefault(account, password string) (uint64, common.LoginErrCode) {
-	var accountID uint64
+func (login *Login) loginByDefault(account, password string) common.LoginErrCode {
 	accountObj := db.NewAccount(login.ctx.Config.DbAccount.Name, account)
 	if err := accountObj.Load(); err != nil {
+		// 新建账号
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {
-			return 0, common.LoginSystemError
+			return common.LoginSystemError
 		}
-		accountID, err = login.idgen.New(db.IDGenTypeAccount)
-		if err != nil {
-			login.ctx.Log.Errorln(err)
-			return 0, common.LoginSystemError
-		}
-		accountObj.SetID(accountID)
 		accountObj.SetPasswd(password)
 		if err = accountObj.Save(); err != nil {
 			login.ctx.Log.Errorln(err)
-			return 0, common.LoginSystemError
+			return common.LoginSystemError
 		}
 	} else {
-		accountID = accountObj.GetID()
+		// 验证密码
+		if accountObj.GetPasswd() != password {
+			return common.LoginVerifyFail
+		}
 	}
-	return accountID, common.LoginSuccess
+	return common.LoginSuccess
 }
 
 func (login *Login) initRedis() bool {

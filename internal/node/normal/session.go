@@ -110,7 +110,7 @@ func getMgrInfoByBlock(ctx *common.Context) (string, int32) {
 		if err := data.Load(); err == nil {
 			break
 		} else {
-			ctx.Log.Debugln(err)
+			ctx.Log.Errorln(err)
 			time.Sleep(1 * time.Second)
 		}
 	}

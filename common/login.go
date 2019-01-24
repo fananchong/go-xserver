@@ -12,7 +12,7 @@ package common
 //    3. 提供自定义验证接口
 
 // 登陆模块逻辑层负责的工作：
-//    1. 自定义协议
+//    1. 自定义登陆协议
 //    2. 自定义客户端交互流程
 //    3. 自定义账号验证过程
 //    4. 自定义分配哪些服务器资源给账号
@@ -37,7 +37,7 @@ const (
 )
 
 // FuncTypeAccountVerification : 账号验证函数声明
-type FuncTypeAccountVerification func(account, password string, userdata []byte) (accountID uint64, errcode LoginErrCode)
+type FuncTypeAccountVerification func(account, password string, userdata []byte) (errcode LoginErrCode)
 
 // ILogin : 登陆模块接口
 type ILogin interface {

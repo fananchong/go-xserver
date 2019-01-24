@@ -4,7 +4,6 @@
   "key": "string",
   "struct_format": "gogo",
   "fields": {
-    "ID": "uint64",
     "passwd": "string"
   }
 }
