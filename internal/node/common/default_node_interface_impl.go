@@ -11,9 +11,10 @@ import (
 
 // DefaultNodeInterfaceImpl : 缺省的节点接口实现
 type DefaultNodeInterfaceImpl struct {
-	Info *protocol.SERVER_INFO
-	nid  common.NodeID
-	once sync.Once
+	Info               *protocol.SERVER_INFO
+	nid                common.NodeID
+	once               sync.Once
+	enableMessageReply bool
 }
 
 // GetID : 获取本节点信息，节点ID
@@ -142,4 +143,14 @@ func (impl *DefaultNodeInterfaceImpl) SendAll(cmd uint64, msg proto.Message, exc
 		}
 		sess.SendMsg(cmd, msg)
 	})
+}
+
+// EnableMessageRelay : 开启消息中继功能。开启该功能的节点，会连接 Gateway 。 C -> Gateway -> Node ; Node1 -> Gateway -> Node2(s)
+func (impl *DefaultNodeInterfaceImpl) EnableMessageRelay(v bool) {
+	impl.enableMessageReply = v
+}
+
+// IsEnableMessageRelay : 是否开启了消息中继功能
+func (impl *DefaultNodeInterfaceImpl) IsEnableMessageRelay() bool {
+	return impl.enableMessageReply
 }

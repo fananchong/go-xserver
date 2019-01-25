@@ -1,6 +1,6 @@
 package main
 
-// Gateway : 登陆服务器
+// Gateway : 网关服务器
 type Gateway struct {
 }
 

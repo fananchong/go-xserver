@@ -25,4 +25,5 @@ type INode interface {
 	SendByID(nodeID NodeID, cmd uint64, msg proto.Message) bool                    // 往指定节点，发送数据
 	SendMsg(cmd uint64, msg proto.Message) bool                                    // 往该节点，发送数据
 	SendAll(cmd uint64, msg proto.Message, excludeSelf bool)                       // 对服务器组，广播数据
+	EnableMessageRelay(v bool)                                                     // 开启消息中继功能。开启该功能的节点，会连接 Gateway 。 C -> Gateway -> Node ; Node1 -> Gateway -> Node2(s)
 }
