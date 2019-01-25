@@ -1,5 +1,5 @@
 //go:generate ./g.sh
 
-package proto_login
+package protocol
 
 func init() {}

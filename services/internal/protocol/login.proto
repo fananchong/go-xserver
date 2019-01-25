@@ -1,42 +1,42 @@
 syntax = "proto3";
 
-package proto_login;
+package protocol;
 
 message CMD_LOGIN {
     enum ENUM {
         INVALID = 0;            // 未定义
-        LOGIN = 1;              // 登录 ( C -> S )
+        LOGIN = 1;              // 登录 ( C -> LOGIN )
     }
 }
 
 
-/// Login (C->S)
+// 登录 ( C -> LOGIN )
 message ENUM_LOGIN_MODE {
     enum ENUM {
-        DEFAULT = 0;            // 缺省登录（框架层提供。本地数据库保存帐号密码。首次登录，没有帐号密码时，直接插入本地数据库）
-        CUSTOM = 1;             // 自定义登录
+        DEFAULT = 0;                        // 缺省登录（框架层提供。本地数据库保存帐号密码。首次登录，没有帐号密码时，直接插入本地数据库）
+        CUSTOM = 1;                         // 自定义登录
     }
 }
 
 message ENUM_LOGIN_ERROR {
     enum ENUM {
-        OK = 0;                 // 没有错误
-        VERIFY_FAIL = 1;        // 验证失败
-        SYSTEM_ERROR = 2;       // 系统错误
+        OK = 0;                             // 没有错误
+        VERIFY_FAIL = 1;                    // 验证失败
+        SYSTEM_ERROR = 2;                   // 系统错误
     }
 }
 
 message MSG_LOGIN {
-    string Account = 1;         // 帐号
-    string Password = 2;        // 密码
-    ENUM_LOGIN_MODE.ENUM Mode = 3;   // 登录模式
-    bytes Userdata = 4;         // 不同登录模式，可能需要携带自定义数据
+    string Account = 1;                     // 帐号
+    string Password = 2;                    // 密码
+    ENUM_LOGIN_MODE.ENUM Mode = 3;          // 登录模式
+    bytes Userdata = 4;                     // 不同登录模式，可能需要携带自定义数据
 }
 
 message MSG_LOGIN_RESULT {
-    ENUM_LOGIN_ERROR.ENUM Err = 1;        // 0:登录成功；非0:错误号
-    string Token = 2;                     // 令牌
-    repeated string Address = 3;          // IP 列表
-    repeated int32 Port = 4;              // 端口列表
-    repeated int32 NodeTyps = 5;          // 服务类型列表
+    ENUM_LOGIN_ERROR.ENUM Err = 1;          // 0:登录成功；非0:错误号
+    string Token = 2;                       // 令牌
+    repeated string Address = 3;            // IP 列表
+    repeated int32 Port = 4;                // 端口列表
+    repeated int32 NodeTyps = 5;            // 服务类型列表
 }

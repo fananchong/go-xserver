@@ -17,16 +17,16 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='login.proto',
-  package='proto_login',
+  package='protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0blogin.proto\x12\x0bproto_login\"+\n\tCMD_LOGIN\"\x1e\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05LOGIN\x10\x01\"2\n\x0f\x45NUM_LOGIN_MODE\"\x1f\n\x04\x45NUM\x12\x0b\n\x07\x44\x45\x46\x41ULT\x10\x00\x12\n\n\x06\x43USTOM\x10\x01\"E\n\x10\x45NUM_LOGIN_ERROR\"1\n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x0f\n\x0bVERIFY_FAIL\x10\x01\x12\x10\n\x0cSYSTEM_ERROR\x10\x02\"q\n\tMSG_LOGIN\x12\x0f\n\x07\x41\x63\x63ount\x18\x01 \x01(\t\x12\x10\n\x08Password\x18\x02 \x01(\t\x12/\n\x04Mode\x18\x03 \x01(\x0e\x32!.proto_login.ENUM_LOGIN_MODE.ENUM\x12\x10\n\x08Userdata\x18\x04 \x01(\x0c\"\x83\x01\n\x10MSG_LOGIN_RESULT\x12/\n\x03\x45rr\x18\x01 \x01(\x0e\x32\".proto_login.ENUM_LOGIN_ERROR.ENUM\x12\r\n\x05Token\x18\x02 \x01(\t\x12\x0f\n\x07\x41\x64\x64ress\x18\x03 \x03(\t\x12\x0c\n\x04Port\x18\x04 \x03(\x05\x12\x10\n\x08NodeTyps\x18\x05 \x03(\x05\x62\x06proto3')
+  serialized_pb=_b('\n\x0blogin.proto\x12\x08protocol\"+\n\tCMD_LOGIN\"\x1e\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05LOGIN\x10\x01\"2\n\x0f\x45NUM_LOGIN_MODE\"\x1f\n\x04\x45NUM\x12\x0b\n\x07\x44\x45\x46\x41ULT\x10\x00\x12\n\n\x06\x43USTOM\x10\x01\"E\n\x10\x45NUM_LOGIN_ERROR\"1\n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x0f\n\x0bVERIFY_FAIL\x10\x01\x12\x10\n\x0cSYSTEM_ERROR\x10\x02\"n\n\tMSG_LOGIN\x12\x0f\n\x07\x41\x63\x63ount\x18\x01 \x01(\t\x12\x10\n\x08Password\x18\x02 \x01(\t\x12,\n\x04Mode\x18\x03 \x01(\x0e\x32\x1e.protocol.ENUM_LOGIN_MODE.ENUM\x12\x10\n\x08Userdata\x18\x04 \x01(\x0c\"\x80\x01\n\x10MSG_LOGIN_RESULT\x12,\n\x03\x45rr\x18\x01 \x01(\x0e\x32\x1f.protocol.ENUM_LOGIN_ERROR.ENUM\x12\r\n\x05Token\x18\x02 \x01(\t\x12\x0f\n\x07\x41\x64\x64ress\x18\x03 \x03(\t\x12\x0c\n\x04Port\x18\x04 \x03(\x05\x12\x10\n\x08NodeTyps\x18\x05 \x03(\x05\x62\x06proto3')
 )
 
 
 
 _CMD_LOGIN_ENUM = _descriptor.EnumDescriptor(
   name='ENUM',
-  full_name='proto_login.CMD_LOGIN.ENUM',
+  full_name='protocol.CMD_LOGIN.ENUM',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -41,14 +41,14 @@ _CMD_LOGIN_ENUM = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=41,
-  serialized_end=71,
+  serialized_start=38,
+  serialized_end=68,
 )
 _sym_db.RegisterEnumDescriptor(_CMD_LOGIN_ENUM)
 
 _ENUM_LOGIN_MODE_ENUM = _descriptor.EnumDescriptor(
   name='ENUM',
-  full_name='proto_login.ENUM_LOGIN_MODE.ENUM',
+  full_name='protocol.ENUM_LOGIN_MODE.ENUM',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -63,14 +63,14 @@ _ENUM_LOGIN_MODE_ENUM = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=92,
-  serialized_end=123,
+  serialized_start=89,
+  serialized_end=120,
 )
 _sym_db.RegisterEnumDescriptor(_ENUM_LOGIN_MODE_ENUM)
 
 _ENUM_LOGIN_ERROR_ENUM = _descriptor.EnumDescriptor(
   name='ENUM',
-  full_name='proto_login.ENUM_LOGIN_ERROR.ENUM',
+  full_name='protocol.ENUM_LOGIN_ERROR.ENUM',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -89,15 +89,15 @@ _ENUM_LOGIN_ERROR_ENUM = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=145,
-  serialized_end=194,
+  serialized_start=142,
+  serialized_end=191,
 )
 _sym_db.RegisterEnumDescriptor(_ENUM_LOGIN_ERROR_ENUM)
 
 
 _CMD_LOGIN = _descriptor.Descriptor(
   name='CMD_LOGIN',
-  full_name='proto_login.CMD_LOGIN',
+  full_name='protocol.CMD_LOGIN',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -115,14 +115,14 @@ _CMD_LOGIN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=28,
-  serialized_end=71,
+  serialized_start=25,
+  serialized_end=68,
 )
 
 
 _ENUM_LOGIN_MODE = _descriptor.Descriptor(
   name='ENUM_LOGIN_MODE',
-  full_name='proto_login.ENUM_LOGIN_MODE',
+  full_name='protocol.ENUM_LOGIN_MODE',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -140,14 +140,14 @@ _ENUM_LOGIN_MODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=73,
-  serialized_end=123,
+  serialized_start=70,
+  serialized_end=120,
 )
 
 
 _ENUM_LOGIN_ERROR = _descriptor.Descriptor(
   name='ENUM_LOGIN_ERROR',
-  full_name='proto_login.ENUM_LOGIN_ERROR',
+  full_name='protocol.ENUM_LOGIN_ERROR',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -165,41 +165,41 @@ _ENUM_LOGIN_ERROR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=125,
-  serialized_end=194,
+  serialized_start=122,
+  serialized_end=191,
 )
 
 
 _MSG_LOGIN = _descriptor.Descriptor(
   name='MSG_LOGIN',
-  full_name='proto_login.MSG_LOGIN',
+  full_name='protocol.MSG_LOGIN',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='Account', full_name='proto_login.MSG_LOGIN.Account', index=0,
+      name='Account', full_name='protocol.MSG_LOGIN.Account', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Password', full_name='proto_login.MSG_LOGIN.Password', index=1,
+      name='Password', full_name='protocol.MSG_LOGIN.Password', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Mode', full_name='proto_login.MSG_LOGIN.Mode', index=2,
+      name='Mode', full_name='protocol.MSG_LOGIN.Mode', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Userdata', full_name='proto_login.MSG_LOGIN.Userdata', index=3,
+      name='Userdata', full_name='protocol.MSG_LOGIN.Userdata', index=3,
       number=4, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -217,48 +217,48 @@ _MSG_LOGIN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=196,
-  serialized_end=309,
+  serialized_start=193,
+  serialized_end=303,
 )
 
 
 _MSG_LOGIN_RESULT = _descriptor.Descriptor(
   name='MSG_LOGIN_RESULT',
-  full_name='proto_login.MSG_LOGIN_RESULT',
+  full_name='protocol.MSG_LOGIN_RESULT',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='Err', full_name='proto_login.MSG_LOGIN_RESULT.Err', index=0,
+      name='Err', full_name='protocol.MSG_LOGIN_RESULT.Err', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Token', full_name='proto_login.MSG_LOGIN_RESULT.Token', index=1,
+      name='Token', full_name='protocol.MSG_LOGIN_RESULT.Token', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Address', full_name='proto_login.MSG_LOGIN_RESULT.Address', index=2,
+      name='Address', full_name='protocol.MSG_LOGIN_RESULT.Address', index=2,
       number=3, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Port', full_name='proto_login.MSG_LOGIN_RESULT.Port', index=3,
+      name='Port', full_name='protocol.MSG_LOGIN_RESULT.Port', index=3,
       number=4, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='NodeTyps', full_name='proto_login.MSG_LOGIN_RESULT.NodeTyps', index=4,
+      name='NodeTyps', full_name='protocol.MSG_LOGIN_RESULT.NodeTyps', index=4,
       number=5, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -276,8 +276,8 @@ _MSG_LOGIN_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=312,
-  serialized_end=443,
+  serialized_start=306,
+  serialized_end=434,
 )
 
 _CMD_LOGIN_ENUM.containing_type = _CMD_LOGIN
@@ -295,35 +295,35 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 CMD_LOGIN = _reflection.GeneratedProtocolMessageType('CMD_LOGIN', (_message.Message,), dict(
   DESCRIPTOR = _CMD_LOGIN,
   __module__ = 'login_pb2'
-  # @@protoc_insertion_point(class_scope:proto_login.CMD_LOGIN)
+  # @@protoc_insertion_point(class_scope:protocol.CMD_LOGIN)
   ))
 _sym_db.RegisterMessage(CMD_LOGIN)
 
 ENUM_LOGIN_MODE = _reflection.GeneratedProtocolMessageType('ENUM_LOGIN_MODE', (_message.Message,), dict(
   DESCRIPTOR = _ENUM_LOGIN_MODE,
   __module__ = 'login_pb2'
-  # @@protoc_insertion_point(class_scope:proto_login.ENUM_LOGIN_MODE)
+  # @@protoc_insertion_point(class_scope:protocol.ENUM_LOGIN_MODE)
   ))
 _sym_db.RegisterMessage(ENUM_LOGIN_MODE)
 
 ENUM_LOGIN_ERROR = _reflection.GeneratedProtocolMessageType('ENUM_LOGIN_ERROR', (_message.Message,), dict(
   DESCRIPTOR = _ENUM_LOGIN_ERROR,
   __module__ = 'login_pb2'
-  # @@protoc_insertion_point(class_scope:proto_login.ENUM_LOGIN_ERROR)
+  # @@protoc_insertion_point(class_scope:protocol.ENUM_LOGIN_ERROR)
   ))
 _sym_db.RegisterMessage(ENUM_LOGIN_ERROR)
 
 MSG_LOGIN = _reflection.GeneratedProtocolMessageType('MSG_LOGIN', (_message.Message,), dict(
   DESCRIPTOR = _MSG_LOGIN,
   __module__ = 'login_pb2'
-  # @@protoc_insertion_point(class_scope:proto_login.MSG_LOGIN)
+  # @@protoc_insertion_point(class_scope:protocol.MSG_LOGIN)
   ))
 _sym_db.RegisterMessage(MSG_LOGIN)
 
 MSG_LOGIN_RESULT = _reflection.GeneratedProtocolMessageType('MSG_LOGIN_RESULT', (_message.Message,), dict(
   DESCRIPTOR = _MSG_LOGIN_RESULT,
   __module__ = 'login_pb2'
-  # @@protoc_insertion_point(class_scope:proto_login.MSG_LOGIN_RESULT)
+  # @@protoc_insertion_point(class_scope:protocol.MSG_LOGIN_RESULT)
   ))
 _sym_db.RegisterMessage(MSG_LOGIN_RESULT)
 
