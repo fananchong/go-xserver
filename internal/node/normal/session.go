@@ -68,15 +68,9 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	targetSess.Info = msg.GetData()
 	nodecommon.GetSessionMgr().Register(targetSess.SessionBase)
 
-	// 开始互连逻辑。
-	if sess.IsEnableMessageRelay() &&
-		targetSess.Info.GetType() == uint32(common.Gateway) {
-		address := fmt.Sprintf("%s:%d", targetSess.Info.GetAddrs()[common.IPINNER], targetSess.Info.GetPorts()[common.PORTFORINTRANET])
-		sess.Ctx.Log.Infoln("start connect gateway, address:", address)
-		// TODO:
-		// if ok := targetSess.Connect(address, targetSess); !ok {
-
-		// }
+	// 如果存在互连关系的，开始互连逻辑。
+	if sess.IsEnableMessageRelay() && targetSess.Info.GetType() == uint32(common.Gateway) {
+		targetSess.Start()
 	}
 }
 
@@ -88,14 +82,20 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
 	sess.Ctx.Log.Infoln("one server lose. id:", utility.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
 
+	// 如果存在互连关系的，关闭 TCP 连接
+	if sess.IsEnableMessageRelay() && msg.GetType() == uint32(common.Gateway) {
+		targetSess := nodecommon.GetSessionMgr().GetByID(utility.ServerID2NodeID(msg.GetId()))
+		if targetSess != nil {
+			targetSess.Close()
+		}
+	}
+
 	nodecommon.GetSessionMgr().Lose2(msg.GetId(), common.NodeType(msg.GetType()))
 
 	sess.Ctx.Log.Infof("left node in type[%d]:\n", msg.GetType())
 	nodecommon.GetSessionMgr().ForByType(common.NodeType(msg.GetType()), func(sessbase *nodecommon.SessionBase) {
 		sess.Ctx.Log.Infof("\t%s\n", utility.ServerID2UUID(sessbase.GetSID()).String())
 	})
-
-	// TODO: 存在互连关系的，销毁之
 }
 
 // DoClose : 节点关闭时处理
