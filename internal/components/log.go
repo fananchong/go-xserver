@@ -15,11 +15,18 @@ type Log struct {
 
 // NewLog : 实例化
 func NewLog(ctx *common.Context) *Log {
-	return &Log{ctx: ctx}
+	log := &Log{ctx: ctx}
+	log.init()
+	return log
 }
 
 // Start : 实例化组件
 func (log *Log) Start() bool {
+	// do nothing
+	return true
+}
+
+func (log *Log) init() {
 	log.ctx.Log = glog.GetLogger()
 	logDir := log.ctx.Config.Common.LogDir
 	if logDir != "" {
@@ -30,7 +37,6 @@ func (log *Log) Start() bool {
 
 	// TODO : gotcp 需要支持非全局LOG类实例
 	gotcp.SetLogger(log.ctx.Log)
-	return true
 }
 
 // Close : 关闭组件

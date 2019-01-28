@@ -32,10 +32,10 @@ func (app *App) Run() {
 		components.NewLog(app.ctx),
 		components.NewPprof(app.ctx),
 		components.NewRedis(app.ctx),
-		components.NewLogin(app.ctx),
 		components.NewPlugin(app.ctx),
-		components.NewTCPServer(app.ctx),
 		components.NewNode(app.ctx),
+		components.NewLogin(app.ctx),
+		components.NewTCPServer(app.ctx),
 		components.NewSignal(app.ctx),
 	}
 

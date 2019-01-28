@@ -14,13 +14,19 @@ type Rand struct {
 
 // NewRand : 实例化
 func NewRand(ctx *common.Context) *Rand {
-	return &Rand{ctx: ctx}
+	r := &Rand{ctx: ctx}
+	r.init()
+	return r
 }
 
 // Start : 实例化组件
 func (r *Rand) Start() bool {
-	r.ctx.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	// do nothing
 	return true
+}
+
+func (r *Rand) init() {
+	r.ctx.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
 // Close : 关闭组件

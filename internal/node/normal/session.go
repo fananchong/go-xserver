@@ -64,12 +64,12 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	sess.Ctx.Log.Infoln("one server register. id:", utility.ServerID2UUID(msg.GetData().GetId()).String())
 
 	// 本地保其他存节点信息
-	targetSess := NewSession(sess.Ctx) // TODO: 新做 1 个回话类
+	targetSess := NewIntranetSession(sess.Ctx)
 	targetSess.Info = msg.GetData()
 	nodecommon.GetSessionMgr().Register(targetSess.SessionBase)
 
 	// 开始互连逻辑。
-	if sess.DefaultNodeInterfaceImpl.IsEnableMessageRelay() &&
+	if sess.IsEnableMessageRelay() &&
 		targetSess.Info.GetType() == uint32(common.Gateway) {
 		address := fmt.Sprintf("%s:%d", targetSess.Info.GetAddrs()[common.IPINNER], targetSess.Info.GetPorts()[common.PORTFORINTRANET])
 		sess.Ctx.Log.Infoln("start connect gateway, address:", address)

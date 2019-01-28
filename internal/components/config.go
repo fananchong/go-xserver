@@ -22,13 +22,18 @@ type Config struct {
 
 // NewConfig : 实例化
 func NewConfig(ctx *common.Context) *Config {
-	return &Config{ctx: ctx}
+	cfg := &Config{ctx: ctx}
+	if err := loadConfig(ctx); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return cfg
 }
 
 // Start : 实例化组件
 func (confing *Config) Start() bool {
-	err := loadConfig(confing.ctx)
-	return err == nil
+	// do nothing
+	return true
 }
 
 // Close : 关闭组件
