@@ -5,6 +5,8 @@ import (
 	"github.com/fananchong/gotcp"
 )
 
+// TODO: 移植框架层
+
 // IntranetNode : 登录玩家类
 type IntranetNode struct {
 	gotcp.Session
