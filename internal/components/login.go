@@ -35,6 +35,7 @@ func (login *Login) Start() bool {
 			return false
 		}
 	}
+	OneComponentOK(login.ctx.Ctx)
 	return true
 }
 

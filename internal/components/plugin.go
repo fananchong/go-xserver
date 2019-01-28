@@ -25,10 +25,12 @@ func NewPlugin(ctx *common.Context) *Plugin {
 
 // Start : 实例化组件
 func (p *Plugin) Start() bool {
+	var ret bool
 	if pluginObj != nil {
-		return pluginObj.Start()
+		ret = pluginObj.Start()
 	}
-	return false
+	OneComponentOK(p.ctx.Ctx)
+	return ret
 }
 
 // Close : 关闭组件

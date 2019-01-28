@@ -21,6 +21,7 @@ func NewSignal(ctx *common.Context) *Signal {
 
 // Start : 实例化组件
 func (s *Signal) Start() bool {
+	OneComponentOK(s.ctx.Ctx)
 	s.sig = make(chan os.Signal)
 	signal.Notify(s.sig,
 		syscall.SIGINT,

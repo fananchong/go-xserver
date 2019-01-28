@@ -21,7 +21,7 @@ func NewRand(ctx *common.Context) *Rand {
 
 // Start : 实例化组件
 func (r *Rand) Start() bool {
-	// do nothing
+	OneComponentOK(r.ctx.Ctx)
 	return true
 }
 

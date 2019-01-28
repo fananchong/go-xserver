@@ -1,6 +1,8 @@
 package components
 
 import (
+	"os"
+
 	"github.com/fananchong/go-xserver/common"
 	nodemgr "github.com/fananchong/go-xserver/internal/node/mgr"
 	nodenormal "github.com/fananchong/go-xserver/internal/node/normal"
@@ -33,13 +35,21 @@ func NewNode(ctx *common.Context) *Node {
 
 // Start : 实例化组件
 func (node *Node) Start() bool {
-	if node.node0 != nil {
-		return node.node0.Start()
-	}
-	if node.node1 != nil {
-		return node.node1.Start()
-	}
-	return false
+	go func() {
+		WaitComponent(node.ctx.Ctx)
+		var err int
+		if node.node0 != nil {
+			err |= btoi(node.node0.Start())
+		}
+		if node.node1 != nil {
+			err |= btoi(node.node1.Start())
+		}
+		if err != 0 {
+			node.ctx.Log.Errorln("node start fail")
+			os.Exit(1)
+		}
+	}()
+	return true
 }
 
 // Close : 关闭组件
@@ -52,4 +62,11 @@ func (node *Node) Close() {
 		node.node1.Close()
 		node.node1 = nil
 	}
+}
+
+func btoi(b bool) int {
+	if b {
+		return 0
+	}
+	return 1
 }

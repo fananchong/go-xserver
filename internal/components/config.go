@@ -32,7 +32,7 @@ func NewConfig(ctx *common.Context) *Config {
 
 // Start : 实例化组件
 func (confing *Config) Start() bool {
-	// do nothing
+	OneComponentOK(confing.ctx.Ctx)
 	return true
 }
 

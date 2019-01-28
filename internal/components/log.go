@@ -22,7 +22,7 @@ func NewLog(ctx *common.Context) *Log {
 
 // Start : 实例化组件
 func (log *Log) Start() bool {
-	// do nothing
+	OneComponentOK(log.ctx.Ctx)
 	return true
 }
 

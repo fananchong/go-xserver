@@ -28,6 +28,7 @@ func (pprof *Pprof) Start() bool {
 			pprof.web.ListenAndServe()
 		}()
 	}
+	OneComponentOK(pprof.ctx.Ctx)
 	return true
 }
 

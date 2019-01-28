@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"os"
 
 	"github.com/fananchong/go-xserver/common"
@@ -18,7 +17,7 @@ type App struct {
 // NewApp : 应用程序类的构造函数
 func NewApp() *App {
 	app := &App{
-		ctx: &common.Context{Ctx: context.Background()},
+		ctx: &common.Context{Ctx: components.CreateContext()},
 	}
 	return app
 }
@@ -45,10 +44,11 @@ func (app *App) Run() {
 }
 
 func (app *App) onAppReady() {
+	components.SetComponentCount(app.ctx.Ctx, len(app.components))
 	for i := 0; i < len(app.components); i++ {
 		c := app.components[i]
 		if !c.Start() {
-			os.Exit(-1)
+			os.Exit(1)
 		}
 	}
 }
