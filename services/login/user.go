@@ -32,11 +32,13 @@ func (user *User) OnClose() {
 
 func (user *User) doVerify(cmd protocol.CMD_LOGIN_ENUM, data []byte, flag byte) bool {
 	if cmd != protocol.CMD_LOGIN_LOGIN {
+		Ctx.Log.Errorln("The expected message number is `protocol.CMD_LOGIN_LOGIN`(", protocol.CMD_LOGIN_LOGIN, ")")
 		user.Close()
 		return false
 	}
 	msg := &protocol.MSG_LOGIN{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
+		Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_LOGIN_LOGIN`(", protocol.CMD_LOGIN_LOGIN, ")")
 		user.Close()
 		return false
 	}

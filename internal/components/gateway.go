@@ -3,6 +3,7 @@ package components
 import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/components/gateway"
+	"github.com/fananchong/gotcp"
 )
 
 // Gateway : 网关服务器
@@ -22,7 +23,8 @@ func NewGateway(ctx *common.Context) *Gateway {
 // Start : 启动
 func (gw *Gateway) Start() bool {
 	if getPluginType(gw.ctx) == common.Gateway {
-		gw.ctx.ServerForIntranet.RegisterSessType(gateway.IntranetNode{})
+		gw.ctx.ServerForIntranet.(*gotcp.Server).SetUserData(gw.ctx)
+		gw.ctx.ServerForIntranet.RegisterSessType(gateway.IntranetSession{})
 	}
 	return true
 }
