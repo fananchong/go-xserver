@@ -35,7 +35,7 @@ func (s *Signal) Start() bool {
 			switch sig {
 			case syscall.SIGPIPE:
 			default:
-				s.ctx.Log.Infoln("[app] recive signal:", sig)
+				s.ctx.Log.Infoln("Received signal:", sig)
 				return true
 			}
 		}
@@ -44,5 +44,5 @@ func (s *Signal) Start() bool {
 
 // Close : 关闭组件
 func (s *Signal) Close() {
-	// do nothing
+	// No need to do anything
 }

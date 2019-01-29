@@ -18,7 +18,7 @@ func (user *User) OnRecv(data []byte, flag byte) {
 	}
 	switch protocol.CMD_GATEWAY_ENUM(cmd) {
 	default:
-		Ctx.Log.Errorln("unknow cmd, cmd =", cmd)
+		Ctx.Log.Errorln("Unknown message number, message number is", cmd)
 	}
 }
 

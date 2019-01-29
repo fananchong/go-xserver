@@ -32,7 +32,7 @@ func (sess *IntranetSession) Start() {
 				break
 			}
 			address := fmt.Sprintf("%s:%d", sess.Info.GetAddrs()[common.IPINNER], sess.Info.GetPorts()[common.PORTFORINTRANET])
-			sess.Ctx.Log.Infoln("try connect gateway, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
+			sess.Ctx.Log.Infoln("Try to connect to the gateway server, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
 			if sess.Connect(address, sess) == false {
 				time.Sleep(1 * time.Second)
 				continue
@@ -45,7 +45,7 @@ func (sess *IntranetSession) Start() {
 			msg.Token = sess.Ctx.Config.Common.IntranetToken
 			sess.SendMsg(uint64(protocol.CMD_GW_VERIFY_TOKEN), msg)
 
-			sess.Ctx.Log.Infoln("connect gateway success, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
+			sess.Ctx.Log.Infoln("Successfully connected to the gateway server, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
 			break
 		}
 	}()

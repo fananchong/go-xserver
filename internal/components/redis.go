@@ -32,5 +32,5 @@ func (redis *Redis) Start() bool {
 
 // Close : 关闭组件
 func (*Redis) Close() {
-	// do nothing
+	// No need to do anything
 }

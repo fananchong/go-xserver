@@ -177,7 +177,7 @@ LOOP:
 	dbObj = &db.AccountServer{}
 	node := login.ctx.Node.GetNodeOne(nodeType)
 	if node == nil {
-		login.ctx.Log.Errorln("no find server. type:", nodeType, "account:", account)
+		login.ctx.Log.Errorln("Did not find the server. type:", nodeType, "account:", account)
 		return
 	}
 	dbObj.NodeID = node.GetID()
@@ -207,7 +207,7 @@ LOOP:
 				login.ctx.Log.Errorln(err, "account:", account)
 				return
 			}
-			login.ctx.Log.Infoln("try again to get server, type:", nodeType, "account:", account)
+			login.ctx.Log.Infoln("Try again to get one server, type:", nodeType, "account:", account)
 			goto LOOP
 		}
 	}

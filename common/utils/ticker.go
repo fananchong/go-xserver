@@ -15,14 +15,16 @@ type Ticker struct {
 	ctxCancel context.CancelFunc
 	interval  time.Duration
 	f         func()
+	name      string
 }
 
 // NewTickerHelper : 定时器帮助类的构造函数
-func NewTickerHelper(ctx *common.Context, interval time.Duration, f func()) *Ticker {
+func NewTickerHelper(name string, ctx *common.Context, interval time.Duration, f func()) *Ticker {
 	return &Ticker{
 		myctx:    ctx,
 		interval: interval,
 		f:        f,
+		name:     name,
 	}
 }
 
@@ -39,13 +41,13 @@ func (helper *Ticker) loop() {
 	for {
 		select {
 		case <-helper.ctx.Done():
-			helper.myctx.Log.Infoln("Ticker close.")
+			helper.myctx.Log.Infoln("Ticker[", helper.name, "], off")
 			return
 		case <-timer.C:
 			func() {
 				defer func() {
 					if err := recover(); err != nil {
-						helper.myctx.Log.Errorln("[except] ", err, "\n", string(debug.Stack()))
+						helper.myctx.Log.Errorln("Ticker[", helper.name, "] except:", err, "\n", string(debug.Stack()))
 					}
 				}()
 				helper.f()

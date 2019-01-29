@@ -45,7 +45,7 @@ func (node *Node) Start() bool {
 			err |= btoi(node.node1.Start())
 		}
 		if err != 0 {
-			node.ctx.Log.Errorln("node start fail")
+			node.ctx.Log.Errorln("Service node failed to start")
 			os.Exit(1)
 		}
 	}()

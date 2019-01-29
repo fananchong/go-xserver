@@ -30,5 +30,5 @@ func (r *Rand) init() {
 
 // Close : 关闭组件
 func (*Rand) Close() {
-	// do nothing
+	// No need to do anything
 }

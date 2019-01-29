@@ -37,7 +37,7 @@ func (sessmgr *SessionMgr) Register(sess *SessionBase) {
 	sessmgr.m.Lock()
 	defer sessmgr.m.Unlock()
 	for sessmgr.deleteSessInSS(sid, t) {
-		// do nothing
+		// No need to do anything
 	}
 	sessmgr.ss[t] = append(sessmgr.ss[t], sess)
 	sessmgr.ssByID[sess.GetID()] = sess
@@ -55,7 +55,7 @@ func (sessmgr *SessionMgr) Lose2(sid *protocol.SERVER_ID, t common.NodeType) {
 	sessmgr.m.Lock()
 	defer sessmgr.m.Unlock()
 	for sessmgr.deleteSessInSS(sid, t) {
-		// do nothing
+		// No need to do anything
 	}
 	delete(sessmgr.ssByID, utility.ServerID2NodeID(sid))
 }

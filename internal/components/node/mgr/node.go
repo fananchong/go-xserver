@@ -5,8 +5,8 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
-	"github.com/fananchong/go-xserver/internal/db"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
+	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
@@ -44,10 +44,10 @@ func (node *Node) Init() bool {
 	server.SetUserData(node.ctx)
 
 	// register ticker
-	registerTicker := utils.NewTickerHelper(node.ctx, 1*time.Second, node.register)
+	registerTicker := utils.NewTickerHelper("REGISTER", node.ctx, 1*time.Second, node.register)
 
 	// ping ticker
-	pingTicker := utils.NewTickerHelper(node.ctx, 5*time.Second, node.ping)
+	pingTicker := utils.NewTickerHelper("PING", node.ctx, 5*time.Second, node.ping)
 
 	// bind components
 	node.components = []utils.IComponent{

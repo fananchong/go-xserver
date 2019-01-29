@@ -35,7 +35,7 @@ func NewNode(ctx *common.Context, nodeType common.NodeType) *Node {
 // Init : 初始化节点
 func (node *Node) Init() bool {
 	// ping ticker
-	pingTicker := utils.NewTickerHelper(node.Ctx, 5*time.Second, node.Ping)
+	pingTicker := utils.NewTickerHelper("PING", node.Ctx, 5*time.Second, node.Ping)
 
 	// bind components
 	node.components = []utils.IComponent{

@@ -30,8 +30,10 @@ func (sess *IntranetSession) OnRecv(data []byte, flag byte) {
 		return
 	}
 	switch protocol.CMD_GW_ENUM(cmd) {
+	case protocol.CMD_GW_VERIFY_TOKEN:
+		// No need to do anything
 	default:
-		sess.ctx.Log.Errorln("unknow cmd, cmd =", cmd)
+		sess.ctx.Log.Errorln("Unknown message number, message number is", cmd)
 	}
 }
 
@@ -42,7 +44,7 @@ func (sess *IntranetSession) OnClose() {
 
 func (sess *IntranetSession) doVerify(cmd protocol.CMD_GW_ENUM, data []byte, flag byte) bool {
 	if cmd != protocol.CMD_GW_VERIFY_TOKEN {
-		sess.ctx.Log.Errorln("The expected message number is `protocol.CMD_GW_VERIFY_TOKEN`(", protocol.CMD_GW_VERIFY_TOKEN, ")")
+		sess.ctx.Log.Errorln("The expected message number is `protocol.CMD_GW_VERIFY_TOKEN`(", protocol.CMD_GW_VERIFY_TOKEN, "), but", cmd)
 		sess.Close()
 		return false
 	}

@@ -45,9 +45,9 @@ func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
 	case protocol.CMD_MGR_LOSE_SERVER:
 		sessbase.doLose(data, flag)
 	case protocol.CMD_MGR_PING:
-		// do nothing
+		// No need to do anything
 	default:
-		sessbase.Ctx.Log.Errorln("unknow cmd, cmd =", cmd)
+		sessbase.Ctx.Log.Errorln("Unknown message number, message number is", cmd)
 	}
 }
 
@@ -67,7 +67,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 			return false
 		}
 		if msg.GetToken() != sessbase.Ctx.Config.Common.IntranetToken {
-			sessbase.Ctx.Log.Errorln("IntranetToken error!",
+			sessbase.Ctx.Log.Errorln("Token verification failed.",
 				"Msg token:", msg.GetToken(),
 				"Expect token:", sessbase.Ctx.Config.Common.IntranetToken)
 			sessbase.Close()
@@ -77,7 +77,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 		sessbase.Verify()
 		return true
 	}
-	sessbase.Ctx.Log.Errorln("Before message[CMD_MGR_REGISTER_SERVER], recv cmd:", cmd)
+	sessbase.Ctx.Log.Errorln("The expected message number is `protocol.CMD_MGR_REGISTER_SERVER`(", protocol.CMD_MGR_REGISTER_SERVER, "), but", cmd)
 	sessbase.Close()
 	return false
 }

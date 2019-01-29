@@ -37,7 +37,7 @@ func (confing *Config) Start() bool {
 
 // Close : 关闭组件
 func (*Config) Close() {
-	// do nothing
+	// No need to do anything
 }
 
 var (
@@ -73,23 +73,23 @@ func loadConfig(ctx *common.Context) error {
 		viper.SetConfigFile(configPath + "/config.toml")
 		viper.AutomaticEnv()
 		if err := viper.ReadInConfig(); err != nil {
-			fmt.Println("viper.ReadInConfig fail, err =", err)
+			fmt.Println("Failed to read configuration file, err =", err)
 			os.Exit(1)
 		}
 		ctx.Config = &common.Config{}
 		if err := viper.Unmarshal(ctx.Config); err != nil {
-			fmt.Println("viper.Unmarshal fail, err =", err)
+			fmt.Println("Parsing the configuration file failed, err =", err)
 			os.Exit(1)
 		}
 		viper.WatchConfig()
 		viper.OnConfigChange(func(e fsnotify.Event) {
 			c := common.Config{}
 			if err := viper.Unmarshal(&c); err != nil {
-				ctx.Log.Errorln("viper.Unmarshal fail, err =", err)
+				ctx.Log.Errorln("Parsing the configuration file failed, err =", err)
 			} else {
 				if c.Common.Version != "" {
 					ctx.Config = &c
-					ctx.Log.Printf("config: %#v\n", ctx.Config)
+					ctx.Log.Printf("Configuration information is: %#v\n", ctx.Config)
 				}
 			}
 		})

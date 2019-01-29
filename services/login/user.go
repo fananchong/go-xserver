@@ -19,9 +19,9 @@ func (user *User) OnRecv(data []byte, flag byte) {
 	}
 	switch protocol.CMD_LOGIN_ENUM(cmd) {
 	case protocol.CMD_LOGIN_LOGIN:
-		// do nothing
+		// No need to do anything
 	default:
-		Ctx.Log.Errorln("unknow cmd, cmd =", cmd)
+		Ctx.Log.Errorln("Unknown message number, message number is", cmd)
 	}
 }
 
@@ -32,7 +32,7 @@ func (user *User) OnClose() {
 
 func (user *User) doVerify(cmd protocol.CMD_LOGIN_ENUM, data []byte, flag byte) bool {
 	if cmd != protocol.CMD_LOGIN_LOGIN {
-		Ctx.Log.Errorln("The expected message number is `protocol.CMD_LOGIN_LOGIN`(", protocol.CMD_LOGIN_LOGIN, ")")
+		Ctx.Log.Errorln("The expected message number is `protocol.CMD_LOGIN_LOGIN`(", protocol.CMD_LOGIN_LOGIN, "), but", cmd)
 		user.Close()
 		return false
 	}
@@ -63,7 +63,7 @@ func (user *User) doLogin(account, passwd string, mode protocol.ENUM_LOGIN_MODE_
 		}
 		user.SendMsg(uint64(protocol.CMD_LOGIN_LOGIN), msg)
 	} else {
-		Ctx.Log.Errorln("login fail. error =", errCode, "account =", account)
+		Ctx.Log.Errorln("Login failed. error =", errCode, "account =", account)
 		msg := &protocol.MSG_LOGIN_RESULT{}
 		msg.Err = protocol.ENUM_LOGIN_ERROR_ENUM(errCode)
 		user.SendMsg(uint64(protocol.CMD_LOGIN_LOGIN), msg)
