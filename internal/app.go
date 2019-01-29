@@ -34,6 +34,7 @@ func (app *App) Run() {
 		components.NewPlugin(app.ctx),
 		components.NewNode(app.ctx),
 		components.NewLogin(app.ctx),
+		components.NewGateway(app.ctx),
 		components.NewTCPServer(app.ctx),
 		components.NewSignal(app.ctx),
 	}

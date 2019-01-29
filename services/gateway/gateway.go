@@ -12,7 +12,6 @@ func NewGateway() *Gateway {
 // Start : 启动
 func (gateway *Gateway) Start() bool {
 	Ctx.ServerForClient.RegisterSessType(User{})
-	Ctx.ServerForIntranet.RegisterSessType(IntranetNode{})
 	return true
 }
 
