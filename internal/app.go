@@ -47,6 +47,7 @@ func (app *App) Run() {
 func (app *App) onAppReady() {
 	components.SetComponentCount(app.ctx.Ctx, len(app.components))
 	for i := 0; i < len(app.components); i++ {
+		components.OneComponentOK(app.ctx.Ctx)
 		c := app.components[i]
 		if !c.Start() {
 			os.Exit(1)

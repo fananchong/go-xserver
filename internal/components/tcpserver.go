@@ -36,7 +36,6 @@ func (server *TCPServer) Start() bool {
 		}
 		server.ctx.Config.Network.Port[common.PORTFORINTRANET] = s.GetRealPort()
 	}
-	OneComponentOK(server.ctx.Ctx)
 	return true
 }
 

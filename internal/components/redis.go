@@ -27,7 +27,6 @@ func (redis *Redis) Start() bool {
 		redis.ctx.Log.Errorln(err)
 		return false
 	}
-	OneComponentOK(redis.ctx.Ctx)
 	return true
 }
 

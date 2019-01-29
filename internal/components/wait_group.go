@@ -20,7 +20,7 @@ func CreateContext() context.Context {
 
 // SetComponentCount : 设置组件数量
 func SetComponentCount(ctx context.Context, count int) {
-	ctx.Value(WAITGROUP).(*sync.WaitGroup).Add(count - 1) // node 组件最后初始化，不计在里面
+	ctx.Value(WAITGROUP).(*sync.WaitGroup).Add(count)
 }
 
 // OneComponentOK : 某组件初始化完毕

@@ -29,7 +29,6 @@ func (p *Plugin) Start() bool {
 	if pluginObj != nil {
 		ret = pluginObj.Start()
 	}
-	OneComponentOK(p.ctx.Ctx)
 	return ret
 }
 

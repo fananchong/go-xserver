@@ -24,7 +24,6 @@ func (gw *Gateway) Start() bool {
 	if getPluginType(gw.ctx) == common.Gateway {
 		gw.ctx.ServerForIntranet.RegisterSessType(gateway.IntranetNode{})
 	}
-	OneComponentOK(gw.ctx.Ctx)
 	return true
 }
 
