@@ -3,23 +3,14 @@ syntax = "proto3";
 package protocol;
 import "common.proto";
 
-message CMD_GATEWAY {
+message CMD_GW {
     enum ENUM {
         INVALID = 0;                        // 未定义
         VERIFY_TOKEN = 1;                   // 验证令牌 ( S -> GATEWAY )
     }
 }
 
-// 验证令牌 ( C -> GATEWAY )
-message ENUM_GATEWAY_VERIFY_TOKEN_ERROR {
-    enum ENUM {
-        OK = 0;                             // 没有错误
-        VERIFY_FAIL = 1;                    // 验证失败
-        SYSTEM_ERROR = 2;                   // 系统错误
-    }
-}
-
-message MSG_GATEWAY_VERIFY_TOKEN {
+message MSG_GW_VERIFY_TOKEN {
     SERVER_ID Id = 1;                       // 服务ID
     string Token = 2;                       // 令牌
 }

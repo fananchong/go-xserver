@@ -26,10 +26,10 @@ func (sess *IntranetSession) Init(root context.Context, conn net.Conn, derived g
 // OnRecv : 接收到网络数据包，被触发
 func (sess *IntranetSession) OnRecv(data []byte, flag byte) {
 	cmd := gotcp.GetCmd(data)
-	if sess.IsVerified() == false && sess.doVerify(protocol.CMD_GATEWAY_ENUM(cmd), data, flag) == false {
+	if sess.IsVerified() == false && sess.doVerify(protocol.CMD_GW_ENUM(cmd), data, flag) == false {
 		return
 	}
-	switch protocol.CMD_GATEWAY_ENUM(cmd) {
+	switch protocol.CMD_GW_ENUM(cmd) {
 	default:
 		sess.ctx.Log.Errorln("unknow cmd, cmd =", cmd)
 	}
@@ -40,15 +40,15 @@ func (sess *IntranetSession) OnClose() {
 
 }
 
-func (sess *IntranetSession) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte) bool {
-	if cmd != protocol.CMD_GATEWAY_VERIFY_TOKEN {
-		sess.ctx.Log.Errorln("The expected message number is `protocol.CMD_GATEWAY_VERIFY_TOKEN`(", protocol.CMD_GATEWAY_VERIFY_TOKEN, ")")
+func (sess *IntranetSession) doVerify(cmd protocol.CMD_GW_ENUM, data []byte, flag byte) bool {
+	if cmd != protocol.CMD_GW_VERIFY_TOKEN {
+		sess.ctx.Log.Errorln("The expected message number is `protocol.CMD_GW_VERIFY_TOKEN`(", protocol.CMD_GW_VERIFY_TOKEN, ")")
 		sess.Close()
 		return false
 	}
-	msg := &protocol.MSG_GATEWAY_VERIFY_TOKEN{}
+	msg := &protocol.MSG_GW_VERIFY_TOKEN{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
-		sess.ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GATEWAY_VERIFY_TOKEN`(", protocol.CMD_GATEWAY_VERIFY_TOKEN, ")")
+		sess.ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_VERIFY_TOKEN`(", protocol.CMD_GW_VERIFY_TOKEN, ")")
 		sess.Close()
 		return false
 	}

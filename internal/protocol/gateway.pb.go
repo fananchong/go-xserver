@@ -14,90 +14,53 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-type CMD_GATEWAY_ENUM int32
+type CMD_GW_ENUM int32
 
 const (
-	CMD_GATEWAY_INVALID      CMD_GATEWAY_ENUM = 0
-	CMD_GATEWAY_VERIFY_TOKEN CMD_GATEWAY_ENUM = 1
+	CMD_GW_INVALID      CMD_GW_ENUM = 0
+	CMD_GW_VERIFY_TOKEN CMD_GW_ENUM = 1
 )
 
-var CMD_GATEWAY_ENUM_name = map[int32]string{
+var CMD_GW_ENUM_name = map[int32]string{
 	0: "INVALID",
 	1: "VERIFY_TOKEN",
 }
-var CMD_GATEWAY_ENUM_value = map[string]int32{
+var CMD_GW_ENUM_value = map[string]int32{
 	"INVALID":      0,
 	"VERIFY_TOKEN": 1,
 }
 
-func (x CMD_GATEWAY_ENUM) String() string {
-	return proto.EnumName(CMD_GATEWAY_ENUM_name, int32(x))
+func (x CMD_GW_ENUM) String() string {
+	return proto.EnumName(CMD_GW_ENUM_name, int32(x))
 }
-func (CMD_GATEWAY_ENUM) EnumDescriptor() ([]byte, []int) { return fileDescriptorGateway, []int{0, 0} }
+func (CMD_GW_ENUM) EnumDescriptor() ([]byte, []int) { return fileDescriptorGateway, []int{0, 0} }
 
-type ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM int32
-
-const (
-	ENUM_GATEWAY_VERIFY_TOKEN_ERROR_OK           ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM = 0
-	ENUM_GATEWAY_VERIFY_TOKEN_ERROR_VERIFY_FAIL  ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM = 1
-	ENUM_GATEWAY_VERIFY_TOKEN_ERROR_SYSTEM_ERROR ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM = 2
-)
-
-var ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM_name = map[int32]string{
-	0: "OK",
-	1: "VERIFY_FAIL",
-	2: "SYSTEM_ERROR",
-}
-var ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM_value = map[string]int32{
-	"OK":           0,
-	"VERIFY_FAIL":  1,
-	"SYSTEM_ERROR": 2,
+type CMD_GW struct {
 }
 
-func (x ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM) String() string {
-	return proto.EnumName(ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM_name, int32(x))
-}
-func (ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptorGateway, []int{1, 0}
-}
+func (m *CMD_GW) Reset()                    { *m = CMD_GW{} }
+func (m *CMD_GW) String() string            { return proto.CompactTextString(m) }
+func (*CMD_GW) ProtoMessage()               {}
+func (*CMD_GW) Descriptor() ([]byte, []int) { return fileDescriptorGateway, []int{0} }
 
-type CMD_GATEWAY struct {
-}
-
-func (m *CMD_GATEWAY) Reset()                    { *m = CMD_GATEWAY{} }
-func (m *CMD_GATEWAY) String() string            { return proto.CompactTextString(m) }
-func (*CMD_GATEWAY) ProtoMessage()               {}
-func (*CMD_GATEWAY) Descriptor() ([]byte, []int) { return fileDescriptorGateway, []int{0} }
-
-// 验证令牌 ( C -> GATEWAY )
-type ENUM_GATEWAY_VERIFY_TOKEN_ERROR struct {
-}
-
-func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) Reset()         { *m = ENUM_GATEWAY_VERIFY_TOKEN_ERROR{} }
-func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) String() string { return proto.CompactTextString(m) }
-func (*ENUM_GATEWAY_VERIFY_TOKEN_ERROR) ProtoMessage()    {}
-func (*ENUM_GATEWAY_VERIFY_TOKEN_ERROR) Descriptor() ([]byte, []int) {
-	return fileDescriptorGateway, []int{1}
-}
-
-type MSG_GATEWAY_VERIFY_TOKEN struct {
+type MSG_GW_VERIFY_TOKEN struct {
 	Id    *SERVER_ID `protobuf:"bytes,1,opt,name=Id" json:"Id,omitempty"`
 	Token string     `protobuf:"bytes,2,opt,name=Token,proto3" json:"Token,omitempty"`
 }
 
-func (m *MSG_GATEWAY_VERIFY_TOKEN) Reset()                    { *m = MSG_GATEWAY_VERIFY_TOKEN{} }
-func (m *MSG_GATEWAY_VERIFY_TOKEN) String() string            { return proto.CompactTextString(m) }
-func (*MSG_GATEWAY_VERIFY_TOKEN) ProtoMessage()               {}
-func (*MSG_GATEWAY_VERIFY_TOKEN) Descriptor() ([]byte, []int) { return fileDescriptorGateway, []int{2} }
+func (m *MSG_GW_VERIFY_TOKEN) Reset()                    { *m = MSG_GW_VERIFY_TOKEN{} }
+func (m *MSG_GW_VERIFY_TOKEN) String() string            { return proto.CompactTextString(m) }
+func (*MSG_GW_VERIFY_TOKEN) ProtoMessage()               {}
+func (*MSG_GW_VERIFY_TOKEN) Descriptor() ([]byte, []int) { return fileDescriptorGateway, []int{1} }
 
-func (m *MSG_GATEWAY_VERIFY_TOKEN) GetId() *SERVER_ID {
+func (m *MSG_GW_VERIFY_TOKEN) GetId() *SERVER_ID {
 	if m != nil {
 		return m.Id
 	}
 	return nil
 }
 
-func (m *MSG_GATEWAY_VERIFY_TOKEN) GetToken() string {
+func (m *MSG_GW_VERIFY_TOKEN) GetToken() string {
 	if m != nil {
 		return m.Token
 	}
@@ -105,13 +68,11 @@ func (m *MSG_GATEWAY_VERIFY_TOKEN) GetToken() string {
 }
 
 func init() {
-	proto.RegisterType((*CMD_GATEWAY)(nil), "protocol.CMD_GATEWAY")
-	proto.RegisterType((*ENUM_GATEWAY_VERIFY_TOKEN_ERROR)(nil), "protocol.ENUM_GATEWAY_VERIFY_TOKEN_ERROR")
-	proto.RegisterType((*MSG_GATEWAY_VERIFY_TOKEN)(nil), "protocol.MSG_GATEWAY_VERIFY_TOKEN")
-	proto.RegisterEnum("protocol.CMD_GATEWAY_ENUM", CMD_GATEWAY_ENUM_name, CMD_GATEWAY_ENUM_value)
-	proto.RegisterEnum("protocol.ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM", ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM_name, ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM_value)
+	proto.RegisterType((*CMD_GW)(nil), "protocol.CMD_GW")
+	proto.RegisterType((*MSG_GW_VERIFY_TOKEN)(nil), "protocol.MSG_GW_VERIFY_TOKEN")
+	proto.RegisterEnum("protocol.CMD_GW_ENUM", CMD_GW_ENUM_name, CMD_GW_ENUM_value)
 }
-func (m *CMD_GATEWAY) Marshal() (dAtA []byte, err error) {
+func (m *CMD_GW) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -121,7 +82,7 @@ func (m *CMD_GATEWAY) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CMD_GATEWAY) MarshalTo(dAtA []byte) (int, error) {
+func (m *CMD_GW) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -129,7 +90,7 @@ func (m *CMD_GATEWAY) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
-func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) Marshal() (dAtA []byte, err error) {
+func (m *MSG_GW_VERIFY_TOKEN) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -139,25 +100,7 @@ func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) MarshalTo(dAtA []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	return i, nil
-}
-
-func (m *MSG_GATEWAY_VERIFY_TOKEN) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MSG_GATEWAY_VERIFY_TOKEN) MarshalTo(dAtA []byte) (int, error) {
+func (m *MSG_GW_VERIFY_TOKEN) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -208,19 +151,13 @@ func encodeVarintGateway(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func (m *CMD_GATEWAY) Size() (n int) {
+func (m *CMD_GW) Size() (n int) {
 	var l int
 	_ = l
 	return n
 }
 
-func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) Size() (n int) {
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MSG_GATEWAY_VERIFY_TOKEN) Size() (n int) {
+func (m *MSG_GW_VERIFY_TOKEN) Size() (n int) {
 	var l int
 	_ = l
 	if m.Id != nil {
@@ -247,7 +184,7 @@ func sovGateway(x uint64) (n int) {
 func sozGateway(x uint64) (n int) {
 	return sovGateway(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *CMD_GATEWAY) Unmarshal(dAtA []byte) error {
+func (m *CMD_GW) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -270,10 +207,10 @@ func (m *CMD_GATEWAY) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CMD_GATEWAY: wiretype end group for non-group")
+			return fmt.Errorf("proto: CMD_GW: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CMD_GATEWAY: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: CMD_GW: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -297,7 +234,7 @@ func (m *CMD_GATEWAY) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) Unmarshal(dAtA []byte) error {
+func (m *MSG_GW_VERIFY_TOKEN) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -320,60 +257,10 @@ func (m *ENUM_GATEWAY_VERIFY_TOKEN_ERROR) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ENUM_GATEWAY_VERIFY_TOKEN_ERROR: wiretype end group for non-group")
+			return fmt.Errorf("proto: MSG_GW_VERIFY_TOKEN: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ENUM_GATEWAY_VERIFY_TOKEN_ERROR: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGateway(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthGateway
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MSG_GATEWAY_VERIFY_TOKEN) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGateway
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MSG_GATEWAY_VERIFY_TOKEN: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MSG_GATEWAY_VERIFY_TOKEN: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MSG_GW_VERIFY_TOKEN: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -567,21 +454,17 @@ var (
 func init() { proto.RegisterFile("gateway.proto", fileDescriptorGateway) }
 
 var fileDescriptorGateway = []byte{
-	// 244 bytes of a gzipped FileDescriptorProto
+	// 190 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0x4f, 0x2c, 0x49,
 	0x2d, 0x4f, 0xac, 0xd4, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x00, 0x53, 0xc9, 0xf9, 0x39,
-	0x52, 0x3c, 0xc9, 0xf9, 0xb9, 0xb9, 0xf9, 0x79, 0x10, 0x71, 0x25, 0x13, 0x2e, 0x6e, 0x67, 0x5f,
-	0x97, 0x78, 0x77, 0xc7, 0x10, 0xd7, 0x70, 0xc7, 0x48, 0x25, 0x55, 0x2e, 0x16, 0x57, 0xbf, 0x50,
-	0x5f, 0x21, 0x6e, 0x2e, 0x76, 0x4f, 0xbf, 0x30, 0x47, 0x1f, 0x4f, 0x17, 0x01, 0x06, 0x21, 0x01,
-	0x2e, 0x9e, 0x30, 0xd7, 0x20, 0x4f, 0xb7, 0xc8, 0xf8, 0x10, 0x7f, 0x6f, 0x57, 0x3f, 0x01, 0x46,
-	0xa5, 0x10, 0x2e, 0x79, 0x90, 0x32, 0x98, 0xb6, 0x78, 0x64, 0xe9, 0x78, 0xd7, 0xa0, 0x20, 0xff,
-	0x20, 0x25, 0x43, 0xa8, 0x49, 0x6c, 0x5c, 0x4c, 0xfe, 0xde, 0x02, 0x0c, 0x42, 0xfc, 0x5c, 0xdc,
-	0x50, 0x55, 0x6e, 0x8e, 0x9e, 0x3e, 0x02, 0x8c, 0x20, 0x53, 0x83, 0x23, 0x83, 0x43, 0x5c, 0x7d,
-	0x21, 0x1a, 0x04, 0x98, 0x94, 0x42, 0xb9, 0x24, 0x7c, 0x83, 0xdd, 0xb1, 0x1a, 0x2a, 0xa4, 0xcc,
-	0xc5, 0xe4, 0x99, 0x22, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x6d, 0x24, 0xac, 0x07, 0xf3, 0x8c, 0x5e,
-	0xb0, 0x6b, 0x50, 0x98, 0x6b, 0x50, 0xbc, 0xa7, 0x4b, 0x10, 0x93, 0x67, 0x8a, 0x90, 0x08, 0x17,
-	0x6b, 0x48, 0x7e, 0x76, 0x6a, 0x9e, 0x04, 0x93, 0x02, 0xa3, 0x06, 0x67, 0x10, 0x84, 0xe3, 0x24,
-	0x70, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c,
-	0xc7, 0x90, 0xc4, 0x06, 0xd6, 0x6f, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0x5d, 0x25, 0xcd, 0x7a,
-	0x24, 0x01, 0x00, 0x00,
+	0x52, 0x3c, 0xc9, 0xf9, 0xb9, 0xb9, 0xf9, 0x79, 0x10, 0x71, 0x25, 0x7d, 0x2e, 0x36, 0x67, 0x5f,
+	0x97, 0x78, 0xf7, 0x70, 0x25, 0x55, 0x2e, 0x16, 0x57, 0xbf, 0x50, 0x5f, 0x21, 0x6e, 0x2e, 0x76,
+	0x4f, 0xbf, 0x30, 0x47, 0x1f, 0x4f, 0x17, 0x01, 0x06, 0x21, 0x01, 0x2e, 0x9e, 0x30, 0xd7, 0x20,
+	0x4f, 0xb7, 0xc8, 0xf8, 0x10, 0x7f, 0x6f, 0x57, 0x3f, 0x01, 0x46, 0xa5, 0x00, 0x2e, 0x61, 0xdf,
+	0x60, 0xf7, 0x78, 0xf7, 0xf0, 0x78, 0x64, 0x09, 0x21, 0x65, 0x2e, 0x26, 0xcf, 0x14, 0x09, 0x46,
+	0x05, 0x46, 0x0d, 0x6e, 0x23, 0x61, 0x3d, 0x98, 0x65, 0x7a, 0xc1, 0xae, 0x41, 0x61, 0xae, 0x41,
+	0xf1, 0x9e, 0x2e, 0x41, 0x4c, 0x9e, 0x29, 0x42, 0x22, 0x5c, 0xac, 0x21, 0xf9, 0xd9, 0xa9, 0x79,
+	0x12, 0x4c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x10, 0x8e, 0x93, 0xc0, 0x89, 0x47, 0x72, 0x8c, 0x17,
+	0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0x43, 0x12, 0x1b, 0x58, 0xbf,
+	0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xfb, 0x00, 0xd3, 0x8e, 0xc4, 0x00, 0x00, 0x00,
 }

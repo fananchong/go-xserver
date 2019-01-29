@@ -6,10 +6,13 @@
 
 	It is generated from these files:
 		common.proto
+		gateway.proto
 		mgr.proto
 
 	It has these top-level messages:
 		SERVER_ID
+		CMD_GW
+		MSG_GW_VERIFY_TOKEN
 		CMD_MGR
 		SERVER_INFO
 		MSG_MGR_PING

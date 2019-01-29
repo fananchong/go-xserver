@@ -40,10 +40,10 @@ func (sess *IntranetSession) Start() {
 			sess.Verify()
 
 			// 发送 TOKEN 验证
-			msg := &protocol.MSG_GATEWAY_VERIFY_TOKEN{}
+			msg := &protocol.MSG_GW_VERIFY_TOKEN{}
 			msg.Id = sess.Info.GetId()
 			msg.Token = sess.Ctx.Config.Common.IntranetToken
-			sess.SendMsg(uint64(protocol.CMD_GATEWAY_VERIFY_TOKEN), msg)
+			sess.SendMsg(uint64(protocol.CMD_GW_VERIFY_TOKEN), msg)
 
 			sess.Ctx.Log.Infoln("connect gateway success, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
 			break
