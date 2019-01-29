@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/fananchong/go-xserver/common"
-	nodemgr "github.com/fananchong/go-xserver/internal/node/mgr"
-	nodenormal "github.com/fananchong/go-xserver/internal/node/normal"
+	nodemgr "github.com/fananchong/go-xserver/internal/components/node/mgr"
+	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 )
 
 // Node : 节点组件

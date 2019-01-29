@@ -7,7 +7,7 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/db"
-	nodecommon "github.com/fananchong/go-xserver/internal/node/common"
+	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 )
