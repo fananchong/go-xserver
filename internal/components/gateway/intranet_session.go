@@ -4,10 +4,9 @@ import (
 	"context"
 	"net"
 
-	"github.com/fananchong/go-xserver/internal/utility"
-
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -44,13 +43,13 @@ func (sess *IntranetSession) OnClose() {
 
 func (sess *IntranetSession) doVerify(cmd protocol.CMD_GW_ENUM, data []byte, flag byte) bool {
 	if cmd != protocol.CMD_GW_VERIFY_TOKEN {
-		sess.ctx.Log.Errorln("The expected message number is `protocol.CMD_GW_VERIFY_TOKEN`(", protocol.CMD_GW_VERIFY_TOKEN, "), but", cmd)
+		sess.ctx.Log.Errorln("The expected message number is `protocol.CMD_GW_VERIFY_TOKEN`(", int(protocol.CMD_GW_VERIFY_TOKEN), "), but", cmd)
 		sess.Close()
 		return false
 	}
 	msg := &protocol.MSG_GW_VERIFY_TOKEN{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
-		sess.ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_VERIFY_TOKEN`(", protocol.CMD_GW_VERIFY_TOKEN, ")")
+		sess.ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_VERIFY_TOKEN`(", int(protocol.CMD_GW_VERIFY_TOKEN), ")")
 		sess.Close()
 		return false
 	}

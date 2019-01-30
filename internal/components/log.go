@@ -2,10 +2,12 @@ package components
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/fananchong/glog"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/gotcp"
+	"github.com/spf13/viper"
 )
 
 // Log : 日志组件
@@ -26,13 +28,15 @@ func (log *Log) Start() bool {
 }
 
 func (log *Log) init() {
-	log.ctx.Log = glog.GetLogger()
+	tmpLog := glog.GetLogger()
+	tmpLog.SetAppName(filepath.Base(os.Args[0]) + "_" + viper.GetString("app"))
 	logDir := log.ctx.Config.Common.LogDir
 	if logDir != "" {
 		os.MkdirAll(logDir, os.ModePerm)
 	}
-	log.ctx.Log.SetLogDir(logDir)
-	log.ctx.Log.SetLogLevel(log.ctx.Config.Common.LogLevel - 1)
+	tmpLog.SetLogDir(logDir)
+	tmpLog.SetLogLevel(log.ctx.Config.Common.LogLevel - 1)
+	log.ctx.Log = tmpLog
 
 	// TODO : gotcp 需要支持非全局LOG类实例
 	gotcp.SetLogger(log.ctx.Log)

@@ -14,7 +14,7 @@ func NewLogin() *Login {
 // Start : 启动
 func (login *Login) Start() bool {
 	Ctx.Login.RegisterCustomAccountVerification(login.customVerify)
-	Ctx.Login.RegisterAllocationNodeType([]common.NodeType{common.Gateway})
+	Ctx.Login.RegisterAllocationNodeType([]common.NodeType{common.Gateway, common.Lobby})
 	Ctx.ServerForClient.RegisterSessType(User{})
 	return true
 }

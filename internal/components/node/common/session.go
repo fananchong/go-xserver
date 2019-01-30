@@ -63,6 +63,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 	if cmd == protocol.CMD_MGR_REGISTER_SERVER {
 		msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sessbase.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
 			sessbase.Close()
 			return false
 		}
@@ -77,7 +78,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 		sessbase.Verify()
 		return true
 	}
-	sessbase.Ctx.Log.Errorln("The expected message number is `protocol.CMD_MGR_REGISTER_SERVER`(", protocol.CMD_MGR_REGISTER_SERVER, "), but", cmd)
+	sessbase.Ctx.Log.Errorln("The expected message number is `protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), "), but", cmd)
 	sessbase.Close()
 	return false
 }
