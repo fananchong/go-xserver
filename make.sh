@@ -36,7 +36,9 @@ case $1 in
         cd $BIN_DIR
         mkdir -p $BIN_DIR/logs
         mkdir -p $BIN_DIR/logs.back
-        mv $BIN_DIR/logs/* $BIN_DIR/logs.back/
+        if [[ `ls -l ./logs | wc -l` > 1  ]]; then
+            mv -f ./logs/* ./logs.back/
+        fi
         for plugin_name in $plugins; do
             nohup ./go-xserver --app $plugin_name > /dev/null 2>&1 &
         done
