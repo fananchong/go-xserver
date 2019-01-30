@@ -29,7 +29,7 @@ func (log *Log) Start() bool {
 
 func (log *Log) init() {
 	tmpLog := glog.GetLogger()
-	tmpLog.SetAppName(filepath.Base(os.Args[0]) + "_" + viper.GetString("app"))
+	tmpLog.SetAppName(filepath.Base(os.Args[0]) + "_" + viper.GetString("app") + viper.GetString("suffix"))
 	logDir := log.ctx.Config.Common.LogDir
 	if logDir != "" {
 		os.MkdirAll(logDir, os.ModePerm)

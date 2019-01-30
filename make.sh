@@ -45,7 +45,7 @@ case $1 in
                 c=3
             fi
             for (( i=1; i<=$c; i++ )); do
-                nohup ./go-xserver --app $plugin_name > /dev/null 2>&1 &
+                nohup ./go-xserver --app $plugin_name --suffix $i > /dev/null 2>&1 &
             done
         done
         ps -ux | grep go-xserver

@@ -43,6 +43,7 @@ func (*Config) Close() {
 var (
 	configPath string
 	app        string
+	suffix     string
 	rootCmd    *cobra.Command
 )
 
@@ -67,6 +68,7 @@ func loadConfig(ctx *common.Context) error {
 	flags := rootCmd.PersistentFlags()
 	flags.StringVarP(&configPath, "config", "c", "../config", "配置目录路径")
 	flags.StringVarP(&app, "app", "a", "", "应用名（插件，必填）")
+	flags.StringVarP(&suffix, "suffix", "s", "", "Log 文件名后缀，多开时可以通过它，避免多个进程共用 1 个 Log 文件")
 	viper.BindPFlags(rootCmd.PersistentFlags())
 	bindConfig(rootCmd, common.Config{})
 	cobra.OnInitialize(func() {
