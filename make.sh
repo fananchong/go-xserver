@@ -17,6 +17,7 @@ SERVICE_DIR=$PWD/services/
 FLAGS=-race
 export GOBIN=$BIN_DIR
 
+cd $SRC_DIR
 go generate ./...
 
 cd $SRC_DIR
@@ -31,7 +32,6 @@ cd $SRC_DIR
 go install $FLAGS .
 
 case $1 in
-    "docker") docker build -t go-xserver . ;;
     "start")
         cd $BIN_DIR
         mkdir -p $BIN_DIR/logs
@@ -40,7 +40,13 @@ case $1 in
             mv -f ./logs/* ./logs.back/
         fi
         for plugin_name in $plugins; do
-            nohup ./go-xserver --app $plugin_name > /dev/null 2>&1 &
+            c=1
+            if [[ $plugin_name != "mgr" ]]; then
+                c=3
+            fi
+            for (( i=1; i<=$c; i++ )); do
+                nohup ./go-xserver --app $plugin_name > /dev/null 2>&1 &
+            done
         done
         ps -ux | grep go-xserver
         ;;
