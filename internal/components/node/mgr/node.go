@@ -64,6 +64,10 @@ func (node *Node) Start() bool {
 		if v != nil && v.Start() == false {
 			panic("")
 		}
+		switch v.(type) {
+		case *gotcp.Server:
+			node.ctx.Config.Network.Port[common.PORTFORINTRANET] = v.(*gotcp.Server).GetRealPort()
+		}
 	}
 	return true
 }
