@@ -10,6 +10,8 @@ FLAGS=-race
 
 case $1 in
     "start")
+        cd $SERVICE_DIR
+        plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
         cd $BIN_DIR
         mkdir -p $BIN_DIR/logs
         mkdir -p $BIN_DIR/logs.back
