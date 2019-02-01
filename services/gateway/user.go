@@ -17,6 +17,8 @@ func (user *User) OnRecv(data []byte, flag byte) {
 		return
 	}
 	switch protocol.CMD_GATEWAY_ENUM(cmd) {
+	case protocol.CMD_GATEWAY_VERIFY_TOKEN:
+		// No need to do anything
 	default:
 		Ctx.Log.Errorln("Unknown message number, message number is", cmd)
 	}
@@ -28,5 +30,32 @@ func (user *User) OnClose() {
 }
 
 func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte) bool {
+	if cmd != protocol.CMD_GATEWAY_VERIFY_TOKEN {
+		Ctx.Log.Errorln("The expected message number is `protocol.CMD_GATEWAY_VERIFY_TOKEN`(", int(protocol.CMD_GATEWAY_VERIFY_TOKEN), "), but", cmd)
+		user.Close()
+		return false
+	}
+	msg := &protocol.MSG_GATEWAY_VERIFY_TOKEN{}
+	if gotcp.DecodeCmd(data, flag, msg) == nil {
+		Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GATEWAY_VERIFY_TOKEN`(", int(protocol.CMD_GATEWAY_VERIFY_TOKEN), ")")
+		user.Close()
+		return false
+	}
+	errcode := Ctx.Gateway.VerifyToken(msg.GetAccount(), msg.GetToken())
+	repmsg := &protocol.MSG_GATEWAY_VERIFY_TOKEN_RESULT{}
+	repmsg.Err = protocol.ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM(errcode)
+	if errcode != 0 {
+		Ctx.Log.Errorln("Token verification failed, account:", msg.GetAccount(), "errcode:", errcode)
+		user.SendMsg(uint64(protocol.CMD_GATEWAY_VERIFY_TOKEN), repmsg)
+		user.Close()
+		return false
+	}
+	user.Verify()
+	if user.SendMsg(uint64(protocol.CMD_GATEWAY_VERIFY_TOKEN), repmsg) == false {
+		Ctx.Log.Errorln("Failed to send data, account:", msg.GetAccount())
+		user.Close()
+		return false
+	}
+	Ctx.Log.Infoln("Token verification succeeded, account:", msg.GetAccount())
 	return true
 }

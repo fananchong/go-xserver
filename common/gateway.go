@@ -26,6 +26,7 @@ type FuncTypeSendToClient func(data []byte) bool
 
 // IGateway : 网关模块接口
 type IGateway interface {
+	VerifyToken(account, token string) uint32    // 令牌验证。返回值： 0 成功；1 令牌错误； 2 系统错误
 	OnRecvFromClient(data []byte) (done bool)    // 可自定义客户端交互协议。data 格式需转化为框架层可理解的格式。done 为 true ，表示框架层接管处理该消息
 	RegisterSendToClient(f FuncTypeSendToClient) // 可自定义客户端交互协议
 	RegisterEncodeFunc(f FuncTypeEncode)         // 可自定义加解密算法

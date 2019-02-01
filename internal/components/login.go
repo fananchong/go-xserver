@@ -109,8 +109,6 @@ func (login *Login) loginByDefault(account, password string) common.LoginErrCode
 }
 
 func (login *Login) initRedis() bool {
-	go_redis_orm.SetNewRedisHandler(go_redis_orm.NewDefaultRedisClient)
-
 	// db account
 	err := go_redis_orm.CreateDB(
 		login.ctx.Config.DbAccount.Name,
@@ -146,7 +144,7 @@ func (login *Login) initRedis() bool {
 			return false
 		}
 	}
-	if login.ctx.Config.DbToken.DBIndex != 0 {
+	if login.ctx.Config.DbServer.DBIndex != 0 {
 		if _, err := c.Do("SELECT", login.ctx.Config.DbServer.DBIndex); err != nil {
 			login.ctx.Log.Errorln(err)
 			c.Close()
