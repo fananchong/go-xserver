@@ -130,46 +130,13 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 			v, _ := strconv.ParseUint(defaultValue, 10, 32)
 			flags.Uint(name, uint(v), desc)
 		case reflect.Slice:
-			switch ssf := sf.Type.Elem(); ssf.Kind() {
-			case reflect.Bool:
-				var v []bool
-				if defaultValue != "" {
-					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						tmp2, _ := strconv.ParseBool(strings.Trim(tmp, " "))
-						v = append(v, tmp2)
-					}
+			var v []string
+			if defaultValue != "" {
+				for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
+					v = append(v, strings.Trim(tmp, " "))
 				}
-				flags.BoolSlice(name, v, desc)
-			case reflect.String:
-				var v []string
-				if defaultValue != "" {
-					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						v = append(v, strings.Trim(tmp, " "))
-					}
-				}
-				flags.StringSlice(name, v, desc)
-			case reflect.Int, reflect.Int32:
-				var v []int
-				if defaultValue != "" {
-					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						tmp2, _ := strconv.ParseInt(strings.Trim(tmp, " "), 10, 32)
-						v = append(v, int(tmp2))
-					}
-				}
-				flags.IntSlice(name, v, desc)
-			case reflect.Uint, reflect.Uint32:
-				var v []uint
-				if defaultValue != "" {
-					for _, tmp := range strings.Split(strings.Trim(defaultValue, "[]"), ",") {
-						tmp2, _ := strconv.ParseUint(strings.Trim(tmp, " "), 10, 32)
-						v = append(v, uint(tmp2))
-					}
-				}
-				flags.UintSlice(name, v, desc)
-			default:
-				fmt.Println("bindConfig fail, err = unsupported field: ", rawName)
-				os.Exit(1)
 			}
+			flags.StringSlice(name, v, desc)
 		default:
 			fmt.Println("bindConfig fail, err = unsupported field: ", rawName)
 			os.Exit(1)
