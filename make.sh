@@ -1,35 +1,12 @@
 #!/bin/bash
 
-set -ex
-
-
-if [[ $1 == "stop" ]]; then
-    pkill go-xserver
-    ps -ux | grep go-xserver
-    exit 0 
-fi
-
+set -e
 
 CUR_DIR=$PWD
 SRC_DIR=$PWD
 BIN_DIR=$PWD/bin
 SERVICE_DIR=$PWD/services/
 FLAGS=-race
-export GOBIN=$BIN_DIR
-
-cd $SRC_DIR
-go generate ./...
-
-cd $SRC_DIR
-go vet ./...
-
-cd $SERVICE_DIR
-plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
-for plugin_name in $plugins; do
-    go build $FLAGS -buildmode=plugin -o $BIN_DIR/$plugin_name.so ./$plugin_name;
-done
-cd $SRC_DIR
-go install $FLAGS .
 
 case $1 in
     "start")
@@ -48,10 +25,36 @@ case $1 in
                 nohup ./go-xserver --app $plugin_name --suffix $i > /dev/null 2>&1 &
             done
         done
+        sleep 1s
         ps -ux | grep go-xserver
+        exit 0
         ;;
-    ?);;
+    "stop")
+        pkill go-xserver
+        sleep 5s
+        ps -ux | grep go-xserver
+        exit 0
+        ;;
+    "")
+        cd $SRC_DIR
+        go generate ./...
+        cd $SRC_DIR
+        go vet ./...
+        cd $SERVICE_DIR
+        plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
+        for plugin_name in $plugins; do
+            go build $FLAGS -buildmode=plugin -o $BIN_DIR/$plugin_name.so ./$plugin_name;
+        done
+        cd $SRC_DIR
+        go build $FLAGS -o $BIN_DIR/go-xserver .
+        exit 0
+        ;;
 esac
+
+echo "Usage:"
+echo "    make.sh"
+echo "    make.sh start"
+echo "    make.sh stop"
 
 cd $CUR_DIR
 

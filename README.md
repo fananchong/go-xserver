@@ -18,11 +18,26 @@
 
 - Windows 10 下开发，请参考[在Win10中Linux环境搭建](doc/编译-在Win10中Linux环境搭建.md)
 
-- 运行
+
+## 运行
+
+- All In One 例子
   ```shell
   ./make.sh start
   ./make.sh stop
   ```
+
+- Run In WSL 例子
+  ```shell
+  ./wsl.sh start
+  ./wsl.sh stop
+  ```
+
+   wsl 目前`监听同一个端口不报错`，详细请参考 issue ： https://github.com/Microsoft/WSL/issues/2915
+
+   因此具体指定下 --network-port 参数
+
+
 
 ## 已完成功能
 

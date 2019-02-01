@@ -1,35 +1,9 @@
 #!/bin/bash
 
-set -ex
-
-
-if [[ $1 == "stop" ]]; then
-    pkill go-xserver
-    ps -ux | grep go-xserver
-    exit 0 
-fi
-
+set -e
 
 CUR_DIR=$PWD
-SRC_DIR=$PWD
 BIN_DIR=$PWD/bin
-SERVICE_DIR=$PWD/services/
-FLAGS=-race
-export GOBIN=$BIN_DIR
-
-cd $SRC_DIR
-go generate ./...
-
-cd $SRC_DIR
-go vet ./...
-
-cd $SERVICE_DIR
-plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
-for plugin_name in $plugins; do
-    go build $FLAGS -buildmode=plugin -o $BIN_DIR/$plugin_name.so ./$plugin_name;
-done
-cd $SRC_DIR
-go install $FLAGS .
 
 case $1 in
     "start")
@@ -41,12 +15,29 @@ case $1 in
         fi
         nohup ./go-xserver --app mgr --network-port '0,30000' > /dev/null 2>&1 &
         nohup ./go-xserver --app login --network-port '7500,0' > /dev/null 2>&1 &
-        nohup ./go-xserver --app gateway --network-port '7501,30001' > /dev/null 2>&1 &
-        nohup ./go-xserver --app lobby --network-port '7502,0' > /dev/null 2>&1 &
+        nohup ./go-xserver --app login --network-port '7501,0' > /dev/null 2>&1 &
+        nohup ./go-xserver --app login --network-port '7502,0' > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7600,36001' > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7601,36002' > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7602,36003' > /dev/null 2>&1 &
+        nohup ./go-xserver --app lobby --network-port '7700,0' > /dev/null 2>&1 &
+        nohup ./go-xserver --app lobby --network-port '7701,0' > /dev/null 2>&1 &
+        nohup ./go-xserver --app lobby --network-port '7702,0' > /dev/null 2>&1 &
+        sleep 1s
         ps -ux | grep go-xserver
+        exit 0
         ;;
-    ?);;
+    "stop")
+        pkill go-xserver
+        sleep 5s
+        ps -ux | grep go-xserver
+        exit 0
+        ;;
 esac
+
+echo "Usage:"
+echo "    wsl.sh start"
+echo "    wsl.sh stop"
 
 cd $CUR_DIR
 
