@@ -42,6 +42,7 @@ case $1 in
         go generate ./...
         cd $SRC_DIR
         go vet ./...
+        echo "start build ..."
         cd $SERVICE_DIR
         plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
         for plugin_name in $plugins; do
@@ -49,6 +50,7 @@ case $1 in
         done
         cd $SRC_DIR
         go build $FLAGS -o $BIN_DIR/go-xserver .
+        echo "done"
         exit 0
         ;;
 esac

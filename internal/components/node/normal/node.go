@@ -1,6 +1,7 @@
 package nodenormal
 
 import (
+	"sync"
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
@@ -13,6 +14,7 @@ import (
 type Node struct {
 	*Session
 	components []utils.IComponent
+	mtx        sync.Mutex
 }
 
 // NewNode : 普通节点实现类的构造函数
@@ -47,6 +49,8 @@ func (node *Node) Init() bool {
 
 // Start : 节点开始工作
 func (node *Node) Start() bool {
+	node.mtx.Lock()
+	defer node.mtx.Unlock()
 	for _, v := range node.components {
 		if v != nil && v.Start() == false {
 			panic("")
@@ -57,6 +61,8 @@ func (node *Node) Start() bool {
 
 // Close : 关闭节点
 func (node *Node) Close() {
+	node.mtx.Lock()
+	defer node.mtx.Unlock()
 	for _, v := range node.components {
 		v.Close()
 	}
