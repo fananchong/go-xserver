@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package protocol;
+
+// 角色基本信息
+message ROLE_BASE_INFO {
+    uint64 RoleID = 1;                                  // 角色ID
+    string RoleName = 2;                                // 角色名
+}
+
+
+// 角色详细信息（不是角色所有数据！一般主界面上的角色数据就放这里，比如游戏币、体力等等。）
+message ROLE_DETAIL_INFO {
+    ROLE_BASE_INFO BaseInfo = 1;                        // 角色基本信息
+}
