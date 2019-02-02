@@ -53,9 +53,6 @@ func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
 
 // OnClose : 断开连接，被触发
 func (sessbase *SessionBase) OnClose() {
-	if sessbase.Info != nil {
-		GetSessionMgr().Lose1(sessbase)
-	}
 	sessbase.derived.DoClose(sessbase)
 }
 

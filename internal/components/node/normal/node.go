@@ -66,4 +66,5 @@ func (node *Node) Close() {
 	for _, v := range node.components {
 		v.Close()
 	}
+	node.Session.Shutdown()
 }

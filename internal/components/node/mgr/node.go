@@ -25,6 +25,7 @@ type Node struct {
 // NewNode : 管理节点实现类的构造函数
 func NewNode(ctx *common.Context) *Node {
 	node := &Node{ctx: ctx}
+	node.SessMgr = nodecommon.NewSessionMgr()
 	node.Info = &protocol.SERVER_INFO{}
 	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
 	node.Info.Type = uint32(common.Mgr)
@@ -43,7 +44,7 @@ func (node *Node) Init() bool {
 	server.RegisterSessType(Session{})
 	server.SetAddress(utils.GetIPInner(node.ctx), utils.GetIntranetListenPort(node.ctx))
 	server.SetUnfixedPort(true)
-	server.SetUserData(node.ctx)
+	server.SetUserData(&nodecommon.UserData{Ctx: node.ctx, SessMgr: node.SessMgr})
 
 	// register ticker
 	registerTicker := utils.NewTickerHelper("REGISTER", node.ctx, 1*time.Second, node.register)
@@ -95,7 +96,7 @@ func (node *Node) register() {
 }
 
 func (node *Node) ping() {
-	nodecommon.GetSessionMgr().ForAll(func(sess *nodecommon.SessionBase) {
+	node.SessMgr.ForAll(func(sess *nodecommon.SessionBase) {
 		msg := &protocol.MSG_MGR_PING{}
 		sess.SendMsg(uint64(protocol.CMD_MGR_PING), msg)
 	})

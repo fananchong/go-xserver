@@ -15,6 +15,7 @@ type DefaultNodeInterfaceImpl struct {
 	nid                common.NodeID
 	once               sync.Once
 	enableMessageReply bool
+	SessMgr            *SessionMgr
 }
 
 // GetID : 获取本节点信息，节点ID
@@ -78,7 +79,7 @@ func (impl *DefaultNodeInterfaceImpl) GetSID() *protocol.SERVER_ID {
 
 // GetNodeOne : 根据节点类型，随机选择 1 节点
 func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) common.INode {
-	node := GetSessionMgr().SelectOne(nodeType)
+	node := impl.SessMgr.SelectOne(nodeType)
 	if node != nil {
 		return node
 	}
@@ -88,7 +89,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) commo
 // GetNodeList : 获取某类型节点列表
 func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []common.INode {
 	var ret []common.INode
-	GetSessionMgr().ForByType(nodeType, func(sess *SessionBase) {
+	impl.SessMgr.ForByType(nodeType, func(sess *SessionBase) {
 		ret = append(ret, sess)
 	})
 	return ret
@@ -97,7 +98,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []co
 // GetNodeAll : 获取所有节点
 func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []common.INode {
 	var ret []common.INode
-	GetSessionMgr().ForAll(func(sess *SessionBase) {
+	impl.SessMgr.ForAll(func(sess *SessionBase) {
 		ret = append(ret, sess)
 	})
 	return ret
@@ -105,13 +106,13 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []common.INode {
 
 // HaveNode : 是否有节点
 func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID common.NodeID) bool {
-	node := GetSessionMgr().GetByID(nodeID)
+	node := impl.SessMgr.GetByID(nodeID)
 	return node != nil
 }
 
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据
 func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint64, msg proto.Message) bool {
-	if sess := GetSessionMgr().SelectOne(nodeType); sess != nil {
+	if sess := impl.SessMgr.SelectOne(nodeType); sess != nil {
 		return sess.SendMsg(cmd, msg)
 	}
 	return false
@@ -119,7 +120,7 @@ func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint
 
 // SendByType : 对某类型节点，广播数据
 func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType common.NodeType, cmd uint64, msg proto.Message, excludeSelf bool) {
-	GetSessionMgr().ForByType(nodeType, func(sess *SessionBase) {
+	impl.SessMgr.ForByType(nodeType, func(sess *SessionBase) {
 		if excludeSelf && utility.EqualNID(sess.GetID(), impl.GetID()) {
 			return
 		}
@@ -129,7 +130,7 @@ func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType common.NodeType, cmd u
 
 // SendByID : 往指定节点，发送数据
 func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID common.NodeID, cmd uint64, msg proto.Message) bool {
-	if sess := GetSessionMgr().GetByID(nodeID); sess != nil {
+	if sess := impl.SessMgr.GetByID(nodeID); sess != nil {
 		return sess.SendMsg(cmd, msg)
 	}
 	return false
@@ -137,7 +138,7 @@ func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID common.NodeID, cmd uint64,
 
 // SendAll : 对服务器组，广播数据
 func (impl *DefaultNodeInterfaceImpl) SendAll(cmd uint64, msg proto.Message, excludeSelf bool) {
-	GetSessionMgr().ForAll(func(sess *SessionBase) {
+	impl.SessMgr.ForAll(func(sess *SessionBase) {
 		if excludeSelf && utility.EqualNID(sess.GetID(), impl.GetID()) {
 			return
 		}

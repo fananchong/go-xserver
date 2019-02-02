@@ -8,8 +8,6 @@ import (
 	"github.com/fananchong/go-xserver/internal/utility"
 )
 
-var sessionMgrObj = newSessionMgr()
-
 // SessionMgr : 网络会话对象管理类
 type SessionMgr struct {
 	m       sync.RWMutex
@@ -18,12 +16,8 @@ type SessionMgr struct {
 	counter uint32
 }
 
-// GetSessionMgr : 获取网络会话对象管理类实例
-func GetSessionMgr() *SessionMgr {
-	return sessionMgrObj
-}
-
-func newSessionMgr() *SessionMgr {
+// NewSessionMgr : 实例化网络会话对象管理类
+func NewSessionMgr() *SessionMgr {
 	return &SessionMgr{
 		ss:     make(map[common.NodeType][]*SessionBase),
 		ssByID: make(map[common.NodeID]*SessionBase),
@@ -112,7 +106,7 @@ func (sessmgr *SessionMgr) GetAll() []*SessionBase {
 
 // SelectOne : 选择 1 个某类型的网络会话节点
 func (sessmgr *SessionMgr) SelectOne(t common.NodeType) *SessionBase {
-	lst := GetSessionMgr().GetByType(t)
+	lst := sessmgr.GetByType(t)
 	n := len(lst)
 	if n > 0 {
 		index := int32(sessmgr.counter % uint32(n))

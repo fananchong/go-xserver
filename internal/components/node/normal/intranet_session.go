@@ -16,9 +16,10 @@ type IntranetSession struct {
 }
 
 // NewIntranetSession : 网络会话类的构造函数
-func NewIntranetSession(ctx *common.Context) *IntranetSession {
+func NewIntranetSession(ctx *common.Context, sessMgr *nodecommon.SessionMgr) *IntranetSession {
 	sess := &IntranetSession{}
 	sess.SessionBase = nodecommon.NewSessionBase(ctx, sess)
+	sess.SessMgr = sessMgr
 	return sess
 }
 
@@ -26,7 +27,7 @@ func NewIntranetSession(ctx *common.Context) *IntranetSession {
 func (sess *IntranetSession) Start() {
 	go func() {
 		for {
-			node := nodecommon.GetSessionMgr().GetByID(utility.ServerID2NodeID(sess.Info.GetId()))
+			node := sess.SessMgr.GetByID(utility.ServerID2NodeID(sess.Info.GetId()))
 			if node == nil {
 				// 目标节点已丢失，不用试图去连接啦
 				break

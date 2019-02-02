@@ -4,7 +4,6 @@ import (
 	"context"
 	"net"
 
-	"github.com/fananchong/go-xserver/common"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
@@ -18,8 +17,10 @@ type Session struct {
 
 // Init : 初始化网络会话节点
 func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISession, userdata interface{}) {
-	sess.SessionBase = nodecommon.NewSessionBase(userdata.(*common.Context), sess)
+	ud := userdata.(*nodecommon.UserData)
+	sess.SessionBase = nodecommon.NewSessionBase(ud.Ctx, sess)
 	sess.SessionBase.Init(root, conn, derived)
+	sess.SessMgr = ud.SessMgr
 }
 
 // DoVerify : 验证时保存自己的注册消息
@@ -43,13 +44,13 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	sess.Ctx.Log.Infoln("The service node registers with me, the node ID is ", utility.ServerID2UUID(msg.GetData().GetId()).String())
 	sess.Ctx.Log.Infoln(sess.Info)
 
-	nodecommon.GetSessionMgr().Register(sess.SessionBase)
-	nodecommon.GetSessionMgr().ForAll(func(elem *nodecommon.SessionBase) {
+	sess.SessMgr.Register(sess.SessionBase)
+	sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
 			elem.Send(data, flag)
 		}
 	})
-	nodecommon.GetSessionMgr().ForAll(func(elem *nodecommon.SessionBase) {
+	sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
 			sess.Send(elem.MsgData, elem.MsgFlag)
 		}
@@ -63,10 +64,11 @@ func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag
 // DoClose : 节点关闭时处理
 func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 	if sess.SessionBase == sessbase && sessbase.Info != nil {
+		sess.SessMgr.Lose1(sessbase)
 		msg := &protocol.MSG_MGR_LOSE_SERVER{}
 		msg.Id = sess.Info.GetId()
 		msg.Type = sess.Info.GetType()
-		nodecommon.GetSessionMgr().ForAll(func(elem *nodecommon.SessionBase) {
+		sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 			elem.SendMsg(uint64(protocol.CMD_MGR_LOSE_SERVER), msg)
 		})
 		sess.Ctx.Log.Infoln("Service node loses connection, type:", msg.Type, "id:", utility.ServerID2UUID(msg.Id).String())
