@@ -54,7 +54,16 @@ func (gw *Gateway) VerifyToken(account, token string) uint32 {
 }
 
 // OnRecvFromClient : 可自定义客户端交互协议。data 格式需转化为框架层可理解的格式。done 为 true ，表示框架层接管处理该消息
-func (gw *Gateway) OnRecvFromClient(data []byte) (done bool) {
+func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (done bool) {
+	nodeType := common.NodeType(int(cmd) / gw.ctx.Config.Common.MsgCmdOffset)
+	if nodeType >= common.NodeTypeSize || nodeType <= common.Gateway {
+		gw.ctx.Log.Errorln("Wrong message number. cmd:", cmd, "account:", account)
+		return
+	}
+
+	// TODO: 中继消息
+
+	done = true
 	return
 }
 

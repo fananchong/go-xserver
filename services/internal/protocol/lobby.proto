@@ -8,6 +8,7 @@ message CMD_LOBBY {
         INVALID = 0;                                    // 未定义
         QUERY_ROLELIST = 1;                             // 获取角色信息 ( C -> LOBBY )
         ENTER_GAME = 2;                                 // 进入游戏 ( C -> LOBBY )
+        MSGCMDOFFSET = 4000;                            // 消息号偏移量。如发送 `MSG_LOBBY_QUERY_ROLELIST` 消息时，实际发送消息号为： MSGCMDOFFSET + QUERY_ROLELIST
     }
 }
 

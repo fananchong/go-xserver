@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='lobby.proto',
   package='protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0blobby.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"D\n\tCMD_LOBBY\"7\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\x12\n\x0eQUERY_ROLELIST\x10\x01\x12\x0e\n\nENTER_GAME\x10\x02\";\n\x17\x45NUM_LOBBY_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"\x1a\n\x18MSG_LOBBY_QUERY_ROLELIST\"\x7f\n\x1fMSG_LOBBY_QUERY_ROLELIST_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFO\"&\n\x14MSG_LOBBY_ENTER_GAME\x12\x0e\n\x06RoleID\x18\x01 \x01(\x04\"\x82\x01\n\x1bMSG_LOBBY_ENTER_GAME_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12.\n\nDetailInfo\x18\x02 \x01(\x0b\x32\x1a.protocol.ROLE_DETAIL_INFOb\x06proto3')
+  serialized_pb=_b('\n\x0blobby.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"W\n\tCMD_LOBBY\"J\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\x12\n\x0eQUERY_ROLELIST\x10\x01\x12\x0e\n\nENTER_GAME\x10\x02\x12\x11\n\x0cMSGCMDOFFSET\x10\xa0\x1f\";\n\x17\x45NUM_LOBBY_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"\x1a\n\x18MSG_LOBBY_QUERY_ROLELIST\"\x7f\n\x1fMSG_LOBBY_QUERY_ROLELIST_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFO\"&\n\x14MSG_LOBBY_ENTER_GAME\x12\x0e\n\x06RoleID\x18\x01 \x01(\x04\"\x82\x01\n\x1bMSG_LOBBY_ENTER_GAME_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12.\n\nDetailInfo\x18\x02 \x01(\x0b\x32\x1a.protocol.ROLE_DETAIL_INFOb\x06proto3')
   ,
   dependencies=[lobby__custom__pb2.DESCRIPTOR,])
 
@@ -44,11 +44,15 @@ _CMD_LOBBY_ENUM = _descriptor.EnumDescriptor(
       name='ENTER_GAME', index=2, number=2,
       options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='MSGCMDOFFSET', index=3, number=4000,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=58,
-  serialized_end=113,
+  serialized_end=132,
 )
 _sym_db.RegisterEnumDescriptor(_CMD_LOBBY_ENUM)
 
@@ -69,8 +73,8 @@ _ENUM_LOBBY_COMMON_ERROR_ENUM = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=142,
-  serialized_end=174,
+  serialized_start=161,
+  serialized_end=193,
 )
 _sym_db.RegisterEnumDescriptor(_ENUM_LOBBY_COMMON_ERROR_ENUM)
 
@@ -96,7 +100,7 @@ _CMD_LOBBY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=45,
-  serialized_end=113,
+  serialized_end=132,
 )
 
 
@@ -120,8 +124,8 @@ _ENUM_LOBBY_COMMON_ERROR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=115,
-  serialized_end=174,
+  serialized_start=134,
+  serialized_end=193,
 )
 
 
@@ -144,8 +148,8 @@ _MSG_LOBBY_QUERY_ROLELIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=176,
-  serialized_end=202,
+  serialized_start=195,
+  serialized_end=221,
 )
 
 
@@ -182,8 +186,8 @@ _MSG_LOBBY_QUERY_ROLELIST_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=204,
-  serialized_end=331,
+  serialized_start=223,
+  serialized_end=350,
 )
 
 
@@ -213,8 +217,8 @@ _MSG_LOBBY_ENTER_GAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=333,
-  serialized_end=371,
+  serialized_start=352,
+  serialized_end=390,
 )
 
 
@@ -251,8 +255,8 @@ _MSG_LOBBY_ENTER_GAME_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=374,
-  serialized_end=504,
+  serialized_start=393,
+  serialized_end=523,
 )
 
 _CMD_LOBBY_ENUM.containing_type = _CMD_LOBBY

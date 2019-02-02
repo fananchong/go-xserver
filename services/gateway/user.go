@@ -8,10 +8,16 @@ import (
 // User : 登录玩家类
 type User struct {
 	gotcp.Session
+	account string
 }
 
 // OnRecv : 接收到网络数据包，被触发
 func (user *User) OnRecv(data []byte, flag byte) {
+	if flag != 0 {
+		Ctx.Log.Errorln("Packet flag field error. account:", user.account)
+		user.Close()
+		return
+	}
 	cmd := gotcp.GetCmd(data)
 	if user.IsVerified() == false && user.doVerify(protocol.CMD_GATEWAY_ENUM(cmd), data, flag) == false {
 		return
@@ -20,7 +26,10 @@ func (user *User) OnRecv(data []byte, flag byte) {
 	case protocol.CMD_GATEWAY_VERIFY_TOKEN:
 		// No need to do anything
 	default:
-		Ctx.Log.Errorln("Unknown message number, message number is", cmd)
+		if Ctx.Gateway.OnRecvFromClient(user.account, uint32(cmd), data) == false {
+			Ctx.Log.Errorln("Unknown message number, message number is", cmd, "account:", user.account)
+			user.Close()
+		}
 	}
 }
 
@@ -56,6 +65,7 @@ func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte
 		user.Close()
 		return false
 	}
+	user.account = msg.GetAccount()
 	Ctx.Log.Infoln("Token verification succeeded, account:", msg.GetAccount())
 	return true
 }

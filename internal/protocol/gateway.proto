@@ -7,10 +7,19 @@ message CMD_GW {
     enum ENUM {
         INVALID = 0;                        // 未定义
         VERIFY_TOKEN = 1;                   // 验证令牌 ( S -> GATEWAY )
+        RELAY_CLIENT_MSG = 2;               // 中继客户端消息 ( GATEWAY -> S )
     }
 }
 
+// 验证令牌 ( S -> GATEWAY )
 message MSG_GW_VERIFY_TOKEN {
     SERVER_ID Id = 1;                       // 服务ID
     string Token = 2;                       // 令牌
+}
+
+// 中继客户端消息 ( GATEWAY -> S )
+message MSG_GW_RELAY_CLIENT_MSG {
+    string Account = 1;                     // 账号
+    uint32 CMD = 2;                         // 消息号（真实消息号，已脱掉消息偏移量）
+    bytes Data = 3;                         // 数据
 }
