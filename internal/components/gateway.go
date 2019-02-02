@@ -10,7 +10,10 @@ import (
 
 // Gateway : 网关服务器
 type Gateway struct {
-	ctx *common.Context
+	ctx              *common.Context
+	funcSendToClient common.FuncTypeSendToClient
+	funcEncodeFunc   common.FuncTypeEncode
+	funcDecodeFunc   common.FuncTypeDecode
 }
 
 // NewGateway : 构造函数
@@ -69,17 +72,17 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 
 // RegisterSendToClient : 可自定义客户端交互协议
 func (gw *Gateway) RegisterSendToClient(f common.FuncTypeSendToClient) {
-
+	gw.funcSendToClient = f
 }
 
 // RegisterEncodeFunc : 可自定义加解密算法
 func (gw *Gateway) RegisterEncodeFunc(f common.FuncTypeEncode) {
-
+	gw.funcEncodeFunc = f
 }
 
 // RegisterDecodeFunc : 可自定义加解密算法
 func (gw *Gateway) RegisterDecodeFunc(f common.FuncTypeDecode) {
-
+	gw.funcDecodeFunc = f
 }
 
 func (gw *Gateway) initRedis() bool {

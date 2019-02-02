@@ -10,7 +10,7 @@ import (
 	"github.com/fananchong/gotcp"
 )
 
-// IntranetSession : 登录玩家类
+// IntranetSession : Gateway 内网服务。TODO：该类将会被取缔。将复用管理服务器代码
 type IntranetSession struct {
 	gotcp.Session
 	ctx *common.Context
