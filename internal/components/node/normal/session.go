@@ -69,14 +69,19 @@ func (sess *Session) registerSelf() {
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
 	sess.Ctx.Log.Infoln("The service node registers information with me with ID ", utility.ServerID2UUID(msg.GetData().GetId()).String())
 
-	// 本地保其他存节点信息
-	targetSess := NewIntranetSession(sess.Ctx, sess.SessMgr)
-	targetSess.Info = msg.GetData()
-	sess.SessMgr.Register(targetSess.SessionBase)
+	tempSess := sess.SessMgr.GetByID(utility.ServerID2NodeID(msg.GetData().GetId()))
+	if tempSess == nil {
+		// 本地保其他存节点信息
+		targetSess := NewIntranetSession(sess.Ctx, sess.SessMgr)
+		targetSess.Info = msg.GetData()
+		sess.SessMgr.Register(targetSess.SessionBase)
 
-	// 如果存在互连关系的，开始互连逻辑。
-	if sess.IsEnableMessageRelay() && targetSess.Info.GetType() == uint32(common.Gateway) {
-		targetSess.Start()
+		// 如果存在互连关系的，开始互连逻辑。
+		if sess.IsEnableMessageRelay() && targetSess.Info.GetType() == uint32(common.Gateway) {
+			targetSess.Start()
+		}
+	} else {
+		tempSess.Info = msg.GetData()
 	}
 }
 
