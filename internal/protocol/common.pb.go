@@ -12,7 +12,6 @@
 	It has these top-level messages:
 		SERVER_ID
 		CMD_GW
-		MSG_GW_VERIFY_TOKEN
 		MSG_GW_RELAY_CLIENT_MSG
 		CMD_MGR
 		SERVER_INFO

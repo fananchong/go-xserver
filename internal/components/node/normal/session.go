@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -43,26 +42,8 @@ func (sess *Session) connectMgrServer() {
 			goto TRY_AGAIN
 		}
 		sess.Verify()
-		sess.registerSelf()
+		sess.RegisterSelf()
 	}
-}
-
-func (sess *Session) registerSelf() {
-	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
-	msg.Data = &protocol.SERVER_INFO{}
-	msg.Data.Id = utility.NodeID2ServerID(sess.GetID())
-	msg.Data.Type = uint32(sess.Ctx.Node.GetType())
-	msg.Data.Addrs = []string{utils.GetIPInner(sess.Ctx), utils.GetIPOuter(sess.Ctx)}
-	msg.Data.Ports = sess.Ctx.Config.Network.Port
-
-	// TODO: 后续支持
-	// msg.Data.Overload
-	// msg.Data.Version
-
-	msg.Token = sess.Ctx.Config.Common.IntranetToken
-	sess.Info = msg.GetData()
-	sess.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
-	sess.Ctx.Log.Infoln("Register your information with the management server, info:", msg.GetData())
 }
 
 // DoRegister : 某节点注册时处理

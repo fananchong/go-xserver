@@ -15,7 +15,6 @@ type TCPServer struct {
 func NewTCPServer(ctx *common.Context) *TCPServer {
 	server := &TCPServer{ctx: ctx}
 	server.ctx.ServerForClient = &gotcp.Server{}
-	server.ctx.ServerForIntranet = &gotcp.Server{}
 	return server
 }
 
@@ -29,13 +28,6 @@ func (server *TCPServer) Start() bool {
 		}
 		server.ctx.Config.Network.Port[common.PORTFORCLIENT] = s.GetRealPort()
 	}
-	s = server.ctx.ServerForIntranet.(*gotcp.Server)
-	if s.GetSessionType() != nil {
-		if !startTCPServer(s, utils.GetIPInner(server.ctx), utils.GetIntranetListenPort(server.ctx)) {
-			return false
-		}
-		server.ctx.Config.Network.Port[common.PORTFORINTRANET] = s.GetRealPort()
-	}
 	return true
 }
 
@@ -44,10 +36,6 @@ func (server *TCPServer) Close() {
 	if server.ctx.ServerForClient != nil {
 		server.ctx.ServerForClient.(*gotcp.Server).Close()
 		server.ctx.ServerForClient = nil
-	}
-	if server.ctx.ServerForIntranet != nil {
-		server.ctx.ServerForIntranet.(*gotcp.Server).Close()
-		server.ctx.ServerForIntranet = nil
 	}
 }
 

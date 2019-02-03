@@ -3,13 +3,13 @@ package components
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/components/gateway"
+	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	"github.com/fananchong/go-xserver/internal/db"
-	"github.com/fananchong/gotcp"
 )
 
 // Gateway : 网关服务器
 type Gateway struct {
+	*nodegateway.Node
 	ctx              *common.Context
 	funcSendToClient common.FuncTypeSendToClient
 	funcEncodeFunc   common.FuncTypeEncode
@@ -21,6 +21,7 @@ func NewGateway(ctx *common.Context) *Gateway {
 	gw := &Gateway{
 		ctx: ctx,
 	}
+	gw.Node = nodegateway.NewNode(ctx)
 	gw.ctx.Gateway = gw
 	return gw
 }
@@ -31,15 +32,22 @@ func (gw *Gateway) Start() bool {
 		if gw.initRedis() == false {
 			return false
 		}
-		gw.ctx.ServerForIntranet.(*gotcp.Server).SetUserData(gw.ctx)
-		gw.ctx.ServerForIntranet.RegisterSessType(gateway.IntranetSession{})
+		if gw.Node.Init() == false {
+			return false
+		}
+		if gw.Node.Start() == false {
+			return false
+		}
 	}
 	return true
 }
 
 // Close : 关闭
 func (gw *Gateway) Close() {
-
+	if gw.Node != nil {
+		gw.Node.Close()
+		gw.Node = nil
+	}
 }
 
 // VerifyToken : // 令牌验证。返回值： 0 成功；1 令牌错误； 2 系统错误

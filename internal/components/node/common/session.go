@@ -2,7 +2,9 @@ package nodecommon
 
 import (
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -75,7 +77,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 		sessbase.Verify()
 		return true
 	}
-	sessbase.Ctx.Log.Errorln("The expected message number is `protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), "), but", cmd)
+	sessbase.Ctx.Log.Errorln("The expected message number is `protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), "), but", cmd, "(", int(cmd), ")")
 	sessbase.Close()
 	return false
 }
@@ -95,4 +97,23 @@ func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 		return
 	}
 	sessbase.derived.DoLose(msg, data, flag)
+}
+
+// RegisterSelf : 注册自己
+func (sessbase *SessionBase) RegisterSelf() {
+	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
+	msg.Data = &protocol.SERVER_INFO{}
+	msg.Data.Id = utility.NodeID2ServerID(sessbase.GetID())
+	msg.Data.Type = uint32(sessbase.Ctx.Node.GetType())
+	msg.Data.Addrs = []string{utils.GetIPInner(sessbase.Ctx), utils.GetIPOuter(sessbase.Ctx)}
+	msg.Data.Ports = sessbase.Ctx.Config.Network.Port
+
+	// TODO: 后续支持
+	// msg.Data.Overload
+	// msg.Data.Version
+
+	msg.Token = sessbase.Ctx.Config.Common.IntranetToken
+	sessbase.Info = msg.GetData()
+	sessbase.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
+	sessbase.Ctx.Log.Infoln("Register your information with the management server, info:", msg.GetData())
 }
