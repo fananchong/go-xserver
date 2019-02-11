@@ -4,15 +4,15 @@ import (
 	"os"
 
 	"github.com/fananchong/go-xserver/common"
-	nodemgr "github.com/fananchong/go-xserver/internal/components/node/mgr"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 )
 
+// 服务节点通过该组件加入服务器组
+
 // Node : 节点组件
 type Node struct {
-	ctx   *common.Context
-	node0 *nodemgr.Node
-	node1 *nodenormal.Node
+	ctx  *common.Context
+	node *nodenormal.Node
 }
 
 // NewNode : 实例化
@@ -20,14 +20,11 @@ func NewNode(ctx *common.Context) *Node {
 	node := &Node{ctx: ctx}
 	switch getPluginType(node.ctx) {
 	case common.Mgr:
-		node.node0 = nodemgr.NewNode(node.ctx)
-		if node.node0.Init() {
-			node.ctx.Node = node.node0
-		}
+		node.node = nil
 	default:
-		node.node1 = nodenormal.NewNode(node.ctx, pluginType)
-		if node.node1.Init() {
-			node.ctx.Node = node.node1
+		node.node = nodenormal.NewNode(node.ctx, pluginType)
+		if node.node.Init() {
+			node.ctx.Node = node.node
 		}
 	}
 	return node
@@ -37,14 +34,8 @@ func NewNode(ctx *common.Context) *Node {
 func (node *Node) Start() bool {
 	go func() {
 		WaitComponent(node.ctx.Ctx)
-		var err int
-		if node.node0 != nil {
-			err |= btoi(node.node0.Start())
-		}
-		if node.node1 != nil {
-			err |= btoi(node.node1.Start())
-		}
-		if err != 0 {
+		node.ctx.Log.Infoln("Service node start ...")
+		if node.node != nil && node.node.Start() == false {
 			node.ctx.Log.Errorln("Service node failed to start")
 			os.Exit(1)
 		}
@@ -54,19 +45,8 @@ func (node *Node) Start() bool {
 
 // Close : 关闭组件
 func (node *Node) Close() {
-	if node.node0 != nil {
-		node.node0.Close()
-		node.node0 = nil
+	if node.node != nil {
+		node.node.Close()
+		node.node = nil
 	}
-	if node.node1 != nil {
-		node.node1.Close()
-		node.node1 = nil
-	}
-}
-
-func btoi(b bool) int {
-	if b {
-		return 0
-	}
-	return 1
 }

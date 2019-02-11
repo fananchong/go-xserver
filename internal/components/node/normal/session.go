@@ -48,7 +48,7 @@ func (sess *Session) connectMgrServer() {
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
-	sess.Ctx.Log.Infoln("The service node registers information with me with ID ", utility.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Log.Infoln("The service node registers information with me with ID", utility.ServerID2UUID(msg.GetData().GetId()).String())
 
 	tempSess := sess.SessMgr.GetByID(utility.ServerID2NodeID(msg.GetData().GetId()))
 	if tempSess == nil {

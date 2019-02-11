@@ -33,6 +33,7 @@ func (app *App) Run() {
 		components.NewRedis(app.ctx),
 		components.NewPlugin(app.ctx),
 		components.NewNode(app.ctx),
+		components.NewMgr(app.ctx),
 		components.NewLogin(app.ctx),
 		components.NewGateway(app.ctx),
 		components.NewTCPServer(app.ctx),

@@ -6,7 +6,11 @@ import (
 	"github.com/fananchong/go-xserver/common"
 )
 
-// AccountServer : 账号对应分配的服务资源
+// 账号对应分配的服务资源
+// Login Server 会负责分配
+// 可以分配多个服务器资源
+
+// AccountServer : 分配的服务资源信息（单个）
 type AccountServer struct {
 	NodeID  common.NodeID
 	Address string

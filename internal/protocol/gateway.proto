@@ -5,10 +5,21 @@ package protocol;
 message CMD_GW {
     enum ENUM {
         INVALID = 0;                        // 未定义
-        RELAY_CLIENT_MSG = 1;               // 中继客户端消息 ( GATEWAY -> S )
-        REGISTER_SERVER = 2;                // 注册服务。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
+        PING = 1;                           // PING ( GATEWAY -> S )。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
+        REGISTER_SERVER = 2;                // 注册服务器信息 ( S -> GATEWAY -> S )。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
+        LOSE_SERVER = 3;                    // 丢失服务器信息( GATEWAY -> S )。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
+        RELAY_CLIENT_MSG = 4;               // 中继客户端消息 ( GATEWAY -> S )
     }
 }
+
+// PING ( GATEWAY -> S )
+// 参见 mgr.proto
+
+// 注册服务器信息 ( S -> GATEWAY -> S )
+// 参见 mgr.proto
+
+// 丢失服务器信息( GATEWAY -> S )
+// 参见 mgr.proto
 
 // 中继客户端消息 ( GATEWAY -> S )
 message MSG_GW_RELAY_CLIENT_MSG {

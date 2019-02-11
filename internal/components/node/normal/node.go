@@ -30,7 +30,7 @@ func NewNode(ctx *common.Context, nodeType common.NodeType) *Node {
 	// TODO: 后续支持
 	// node.Info.Overload
 	// node.Info.Version
-	ctx.Log.Infoln("NODE ID:", utility.NodeID2UUID(node.GetID()).String())
+	ctx.Log.Infoln("NODE ID:", utility.NodeID2UUID(node.GetID()).String(), ", NODE TYPE:", nodeType)
 	return node
 }
 
