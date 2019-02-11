@@ -30,6 +30,7 @@ message MSG_MGR_PING {
 message MSG_MGR_REGISTER_SERVER {
     SERVER_INFO Data = 1;               // 服务器信息
     string Token = 2;                   // 令牌，注册验证用
+    uint32 TargetServerType = 3;        // 目标服务器类型，避免连接错误
 }
 
 // 丢失服务器信息( MGR -> S )

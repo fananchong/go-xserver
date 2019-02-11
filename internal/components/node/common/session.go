@@ -100,7 +100,7 @@ func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 }
 
 // RegisterSelf : 注册自己
-func (sessbase *SessionBase) RegisterSelf() {
+func (sessbase *SessionBase) RegisterSelf(targetServerType common.NodeType) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = utility.NodeID2ServerID(sessbase.GetID())
@@ -113,6 +113,7 @@ func (sessbase *SessionBase) RegisterSelf() {
 	// msg.Data.Version
 
 	msg.Token = sessbase.Ctx.Config.Common.IntranetToken
+	msg.TargetServerType = uint32(targetServerType)
 	sessbase.Info = msg.GetData()
 	sessbase.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
 	sessbase.Ctx.Log.Infoln("Register your information with the management server, info:", msg.GetData())

@@ -6,6 +6,7 @@ message CMD_GW {
     enum ENUM {
         INVALID = 0;                        // 未定义
         RELAY_CLIENT_MSG = 1;               // 中继客户端消息 ( GATEWAY -> S )
+        REGISTER_SERVER = 2;                // 注册服务。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
     }
 }
 

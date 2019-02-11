@@ -4,6 +4,7 @@ import (
 	"context"
 	"net"
 
+	"github.com/fananchong/go-xserver/common"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
@@ -31,6 +32,10 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
 	if utility.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
+		sess.Close()
+		return
+	}
+	if msg.GetTargetServerType() != uint32(common.Gateway) {
 		sess.Close()
 		return
 	}
