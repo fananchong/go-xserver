@@ -116,5 +116,12 @@ func (sessbase *SessionBase) RegisterSelf(targetServerType common.NodeType) {
 	msg.TargetServerType = uint32(targetServerType)
 	sessbase.Info = msg.GetData()
 	sessbase.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
-	sessbase.Ctx.Log.Infoln("Register your information with the management server, info:", msg.GetData())
+
+	if targetServerType == common.Mgr {
+		sessbase.Ctx.Log.Infoln("Register your information with the management server, info:", msg.GetData())
+	} else if targetServerType == common.Gateway {
+		sessbase.Ctx.Log.Infoln("Register your information with the gateway server, info:", msg.GetData())
+	} else {
+		sessbase.Ctx.Log.Errorln("Register your information with the server(", targetServerType, "), info:", msg.GetData())
+	}
 }
