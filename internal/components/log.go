@@ -3,6 +3,7 @@ package components
 import (
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/fananchong/glog"
 	"github.com/fananchong/go-xserver/common"
@@ -36,6 +37,7 @@ func (log *Log) init() {
 	}
 	tmpLog.SetLogDir(logDir)
 	tmpLog.SetLogLevel(log.ctx.Config.Common.LogLevel - 1)
+	tmpLog.SetFlushInterval(time.Duration(log.ctx.Config.Common.LogFlushInterval) * time.Millisecond)
 	log.ctx.Log = tmpLog
 
 	// TODO : gotcp 需要支持非全局LOG类实例

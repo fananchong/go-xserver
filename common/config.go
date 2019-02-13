@@ -12,13 +12,14 @@ type Config struct {
 
 // ConfigCommon : 配置 common 节
 type ConfigCommon struct {
-	Version       string `default:"0.0.1" desc:"版本号"`
-	LogDir        string `default:"./logs" desc:"Log 路径"`
-	LogLevel      int    `default:"1" desc:"Log 等级， 1 infoLog; 2 warningLog; 3 errorLog; 4 fatalLog"`
-	Debug         bool   `default:"true" desc:"Debug 版本标志"`
-	IntranetToken string `default:"6d8f1f3a-739f-47fe-9ed1-ea39276cd10d" desc:"内部服务器验证 TOKEN"`
-	MsgCmdOffset  int    `default:"1000" desc:"消息号 = 服务类型 * MsgCmdOffset + 数字"`
-	Pprof         string `default:"" desc:"Http pprof 地址"`
+	Version          string `default:"0.0.1" desc:"版本号"`
+	LogDir           string `default:"./logs" desc:"Log 路径"`
+	LogLevel         int    `default:"1" desc:"Log 等级， 1 infoLog; 2 warningLog; 3 errorLog; 4 fatalLog"`
+	LogFlushInterval int    `default:"1000" desc:"Log 写入到文件的时间间隔，单位：毫秒"`
+	Debug            bool   `default:"true" desc:"Debug 版本标志"`
+	IntranetToken    string `default:"6d8f1f3a-739f-47fe-9ed1-ea39276cd10d" desc:"内部服务器验证 TOKEN"`
+	MsgCmdOffset     int    `default:"1000" desc:"消息号 = 服务类型 * MsgCmdOffset + 数字"`
+	Pprof            string `default:"" desc:"Http pprof 地址"`
 }
 
 // ConfigNetwork : 配置 network 节
