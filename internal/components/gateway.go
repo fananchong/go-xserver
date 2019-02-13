@@ -5,6 +5,7 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	"github.com/fananchong/go-xserver/internal/db"
+	"github.com/fananchong/go-xserver/internal/protocol"
 )
 
 // Gateway : 网关服务器
@@ -66,15 +67,31 @@ func (gw *Gateway) VerifyToken(account, token string) uint32 {
 
 // OnRecvFromClient : 可自定义客户端交互协议。data 格式需转化为框架层可理解的格式。done 为 true ，表示框架层接管处理该消息
 func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (done bool) {
-	nodeType := common.NodeType(int(cmd) / gw.ctx.Config.Common.MsgCmdOffset)
+	nodeType := common.NodeType(cmd / uint32(gw.ctx.Config.Common.MsgCmdOffset))
 	if nodeType >= common.NodeTypeSize || nodeType <= common.Gateway {
 		gw.ctx.Log.Errorln("Wrong message number. cmd:", cmd, "account:", account)
 		return
 	}
 
-	// TODO: 中继消息
+	// TODO: 先调通消息，实际上要根据该账号是否有分配对应的目标类型服务，来决定是定向中继（即状态中继）、还是随机中继
+	//       调通消息后，会出文档，并在这里实现。暂随机中继
+	target := gw.ctx.Node.GetNodeOne(nodeType)
+	if target == nil {
+		gw.ctx.Log.Errorln("Target server not found. cmd:", cmd, "account:", account, "nodeType", nodeType)
+		return
+	}
 
+	// Gateway 接管该消息，并开始中继
 	done = true
+
+	msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
+	msg.Account = account
+	msg.CMD = cmd % uint32(gw.ctx.Config.Common.MsgCmdOffset)
+	msg.Data = append(msg.Data, data...)
+	if target.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msg) == false {
+		gw.ctx.Log.Errorln("Sending a message to the target server failed. cmd:", cmd, "account:", account, "nodeType", nodeType)
+		return
+	}
 	return
 }
 
