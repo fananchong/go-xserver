@@ -127,3 +127,8 @@ func getMgrInfoByBlock(ctx *common.Context) (string, int32) {
 func (sess *Session) Shutdown() {
 	atomic.StoreInt32(&sess.shutdown, 1)
 }
+
+// DoRecv : 节点收到消息处理
+func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
+	return
+}

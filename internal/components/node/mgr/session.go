@@ -80,3 +80,8 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 		sess.Ctx.Log.Infoln("Service node loses connection, type:", msg.Type, "id:", utility.ServerID2UUID(msg.Id).String())
 	}
 }
+
+// DoRecv : 节点收到消息处理
+func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
+	return
+}

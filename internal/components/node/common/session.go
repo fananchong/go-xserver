@@ -14,6 +14,7 @@ type ISessionDerived interface {
 	DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte)
 	DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte)
 	DoClose(sessbase *SessionBase)
+	DoRecv(cmd uint64, data []byte, flag byte) (done bool)
 }
 
 // SessionBase : 网络会话类
@@ -49,7 +50,9 @@ func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
 	case protocol.CMD_MGR_PING:
 		// No need to do anything
 	default:
-		sessbase.Ctx.Log.Errorln("Unknown message number, message number is", cmd)
+		if sessbase.derived.DoRecv(uint64(cmd), data, flag) == false {
+			sessbase.Ctx.Log.Errorln("Unknown message number, message number is", cmd)
+		}
 	}
 }
 

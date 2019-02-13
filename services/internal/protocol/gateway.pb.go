@@ -6,8 +6,8 @@
 
 	It is generated from these files:
 		gateway.proto
-		lobby_custom.proto
 		lobby.proto
+		lobby_custom.proto
 		login.proto
 
 	It has these top-level messages:
@@ -15,14 +15,14 @@
 		ENUM_GATEWAY_VERIFY_TOKEN_ERROR
 		MSG_GATEWAY_VERIFY_TOKEN
 		MSG_GATEWAY_VERIFY_TOKEN_RESULT
-		ROLE_BASE_INFO
-		ROLE_DETAIL_INFO
 		CMD_LOBBY
 		ENUM_LOBBY_COMMON_ERROR
 		MSG_LOBBY_QUERY_ROLELIST
 		MSG_LOBBY_QUERY_ROLELIST_RESULT
 		MSG_LOBBY_ENTER_GAME
 		MSG_LOBBY_ENTER_GAME_RESULT
+		ROLE_BASE_INFO
+		ROLE_DETAIL_INFO
 		CMD_LOGIN
 		ENUM_LOGIN_MODE
 		ENUM_LOGIN_ERROR

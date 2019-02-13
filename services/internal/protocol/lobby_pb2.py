@@ -13,7 +13,7 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
-import lobby_custom_pb2 as lobby__custom__pb2
+import protocol.lobby_custom_pb2 as lobby__custom__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(

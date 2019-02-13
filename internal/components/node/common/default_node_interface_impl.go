@@ -16,6 +16,7 @@ type DefaultNodeInterfaceImpl struct {
 	once               sync.Once
 	enableMessageReply bool
 	SessMgr            *SessionMgr
+	funcOnRelayMsg     common.FuncTypeOnRelayMsg
 }
 
 // GetID : 获取本节点信息，节点ID
@@ -154,4 +155,14 @@ func (impl *DefaultNodeInterfaceImpl) EnableMessageRelay(v bool) {
 // IsEnableMessageRelay : 是否开启了消息中继功能
 func (impl *DefaultNodeInterfaceImpl) IsEnableMessageRelay() bool {
 	return impl.enableMessageReply
+}
+
+// RegisterFuncOnRelayMsg : 注册自定义处理Gateway中继过来的消息
+func (impl *DefaultNodeInterfaceImpl) RegisterFuncOnRelayMsg(f common.FuncTypeOnRelayMsg) {
+	impl.funcOnRelayMsg = f
+}
+
+// FuncOnRelayMsg : 获取`自定义处理Gateway中继过来的消息`的函数句柄
+func (impl *DefaultNodeInterfaceImpl) FuncOnRelayMsg() common.FuncTypeOnRelayMsg {
+	return impl.funcOnRelayMsg
 }

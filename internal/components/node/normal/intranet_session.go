@@ -8,6 +8,7 @@ import (
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
+	"github.com/fananchong/gotcp"
 )
 
 // IntranetSession : 网络会话类（ Gateway 客户端会话类 ）
@@ -61,4 +62,26 @@ func (sess *IntranetSession) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []by
 
 // DoClose : 节点关闭时处理
 func (sess *IntranetSession) DoClose(sessbase *nodecommon.SessionBase) {
+}
+
+// DoRecv : 节点收到消息处理
+func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
+	done = true
+	switch cmd {
+	case uint64(protocol.CMD_GW_RELAY_CLIENT_MSG):
+		f := sess.FuncOnRelayMsg()
+		if f == nil {
+			sess.Ctx.Log.Errorln("There is no handler function, the handler function is `FuncOnRelayMsg`")
+			return
+		}
+		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
+			return
+		}
+		f(common.Client, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+	default:
+		done = false
+	}
+	return
 }
