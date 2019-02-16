@@ -32,10 +32,14 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
 	if utility.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
+		sess.Ctx.Log.Errorln("Service ID is different.")
+		sess.Ctx.Log.Errorln("sess.Info.GetId() :", utility.ServerID2UUID(sess.Info.GetId()).String())
+		sess.Ctx.Log.Errorln("msg.GetData().GetId() :", utility.ServerID2UUID(msg.GetData().GetId()).String())
 		sess.Close()
 		return
 	}
 	if msg.GetTargetServerType() != uint32(common.Gateway) {
+		sess.Ctx.Log.Errorln("Target server type different. Expectation is common.Gateway, but it is ", msg.GetTargetServerType())
 		sess.Close()
 		return
 	}

@@ -12,8 +12,8 @@ github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3Ee
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fananchong/cstruct-go v0.0.0-20181223122338-63f62ef81a4d/go.mod h1:aEQm08B/1JRsT1RV/KXqw6EahCMLDanzgWgh6NTLid0=
-github.com/fananchong/glog v0.0.0-20190213020307-142955728b5c h1:AqSJMJqCBCZ39NscRSGiOVr72k0k+fO9Jm9qzKZ3P8s=
-github.com/fananchong/glog v0.0.0-20190213020307-142955728b5c/go.mod h1:GEGZvOvgIeNNhzjxczz39fvYeYwhrRVyfYB+n3GcFeo=
+github.com/fananchong/glog v0.0.0-20190213140225-550b03b255d6 h1:GKBlL27nQ2naC/tQbuHh1hP4cc+KT9i3wvUOUMk9fq0=
+github.com/fananchong/glog v0.0.0-20190213140225-550b03b255d6/go.mod h1:GEGZvOvgIeNNhzjxczz39fvYeYwhrRVyfYB+n3GcFeo=
 github.com/fananchong/go-redis-orm.v2 v0.0.0-20190114143252-fa1e3f867a40 h1:7YP8CwlD8+DijzoQPjX5A+pSKjbL8Li+kc67RROxBSI=
 github.com/fananchong/go-redis-orm.v2 v0.0.0-20190114143252-fa1e3f867a40/go.mod h1:cPWxOL1WsLDTK1ogCKtzAGK5WmJmppQ7Ky7C6imzwNg=
 github.com/fananchong/goredis v0.0.0-20181126144706-9df88e90c48c h1:lrbrf+t7VPd1HklCVZbVYpAAVEjLnGE5tBY75REHtGY=

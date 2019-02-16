@@ -51,7 +51,7 @@ func (gw *Gateway) Close() {
 	}
 }
 
-// VerifyToken : // 令牌验证。返回值： 0 成功；1 令牌错误； 2 系统错误
+// VerifyToken : 令牌验证。返回值： 0 成功；1 令牌错误； 2 系统错误
 func (gw *Gateway) VerifyToken(account, token string) uint32 {
 	tokenObj := db.NewToken(gw.ctx.Config.DbToken.Name, account)
 	if err := tokenObj.Load(); err != nil {
@@ -75,7 +75,7 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 
 	// TODO: 先调通消息，实际上要根据该账号是否有分配对应的目标类型服务，来决定是定向中继（即状态中继）、还是随机中继
 	//       调通消息后，会出文档，并在这里实现。暂随机中继
-	target := gw.ctx.Node.GetNodeOne(nodeType)
+	target := gw.ctx.Gateway.GetNodeOne(nodeType)
 	if target == nil {
 		gw.ctx.Log.Errorln("Target server not found. cmd:", cmd, "account:", account, "nodeType", nodeType)
 		return

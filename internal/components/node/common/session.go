@@ -88,6 +88,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 func (sessbase *SessionBase) doRegister(data []byte, flag byte) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
+		sessbase.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
 		sessbase.Close()
 		return
 	}
@@ -97,6 +98,7 @@ func (sessbase *SessionBase) doRegister(data []byte, flag byte) {
 func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 	msg := &protocol.MSG_MGR_LOSE_SERVER{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
+		sessbase.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_LOSE_SERVER`(", int(protocol.CMD_MGR_LOSE_SERVER), ")")
 		return
 	}
 	sessbase.derived.DoLose(msg, data, flag)

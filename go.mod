@@ -2,7 +2,7 @@ module github.com/fananchong/go-xserver
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
-	github.com/fananchong/glog v0.0.0-20190213020307-142955728b5c
+	github.com/fananchong/glog v0.0.0-20190213140225-550b03b255d6
 	github.com/fananchong/go-redis-orm.v2 v0.0.0-20190114143252-fa1e3f867a40
 	github.com/fananchong/gotcp v0.0.0-20190123091818-cf0db64d5cbf
 	github.com/fsnotify/fsnotify v1.4.7
