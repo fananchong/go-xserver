@@ -79,7 +79,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			sess.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			return
 		}
-		f(common.Client, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+		f(common.Client, sess, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
 	default:
 		done = false
 	}

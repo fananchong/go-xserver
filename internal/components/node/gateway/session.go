@@ -63,5 +63,13 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 
 // DoRecv : 节点收到消息处理
 func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
+	sess.Ctx.Log.Infoln("cmd:", cmd)
+	done = true
+	switch protocol.CMD_GW_ENUM(cmd) {
+	case protocol.CMD_GW_RELAY_CLIENT_MSG:
+
+	default:
+		done = false
+	}
 	return
 }

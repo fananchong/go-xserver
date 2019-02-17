@@ -55,6 +55,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		// 本地保其他存节点信息
 		targetSess := NewIntranetSession(sess.Ctx, sess.SessMgr)
 		targetSess.Info = msg.GetData()
+		targetSess.RegisterFuncOnRelayMsg(sess.FuncOnRelayMsg())
 		sess.SessMgr.Register(targetSess.SessionBase)
 
 		// 如果存在互连关系的，开始互连逻辑。

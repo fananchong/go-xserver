@@ -9,7 +9,7 @@ import (
 type NodeID uuid.UUID
 
 // FuncTypeOnRelayMsg : 处理中继消息的函数声明
-type FuncTypeOnRelayMsg func(source NodeType, account string, cmd uint64, data []byte)
+type FuncTypeOnRelayMsg func(source NodeType, sess INode, account string, cmd uint64, data []byte)
 
 // INode : 节点类接口（其实现，封装自动接入服务器组、服务发现、服务消息传递等细节）
 type INode interface {
