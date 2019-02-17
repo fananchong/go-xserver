@@ -10,6 +10,8 @@ import (
 	"github.com/fananchong/go-xserver/internal/utility"
 )
 
+// 通过该类接入服务器组，该类主要处理与 Mgr Server 的交互
+
 // Node : 普通节点
 type Node struct {
 	*Session

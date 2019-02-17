@@ -11,7 +11,7 @@ import (
 	"github.com/fananchong/gotcp"
 )
 
-// IntranetSession : 网络会话类（ Gateway 客户端会话类 ）
+// IntranetSession : 网络会话类（ 服务器组内 Gateway 客户端会话类 ）
 type IntranetSession struct {
 	*nodecommon.SessionBase
 }

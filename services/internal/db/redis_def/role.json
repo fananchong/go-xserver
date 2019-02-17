@@ -1,0 +1,9 @@
+{
+  "name": "Role",
+  "type": "1-1",
+  "key": "uint64",
+  "struct_format": "gogo",
+  "fields": {
+    "name": "string"
+  }
+}
