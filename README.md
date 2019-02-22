@@ -59,6 +59,8 @@
 ## 正在制作
 
 - 服务器组内通信
+  - Client <-> Gateway <-> Other Node , 代码整理，完善
+  - One Node <-> Gateway <-> Other Node , 待开始
 - INode Send系列接口不干净
   - msg proto.Message 改为 msgdata []byte, userdata []byte 代替，方能支持使用方协议自由
 

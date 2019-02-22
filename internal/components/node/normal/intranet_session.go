@@ -9,6 +9,7 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
+	"github.com/gogo/protobuf/proto"
 )
 
 // IntranetSession : 网络会话类（ 服务器组内 Gateway 客户端会话类 ）
@@ -76,7 +77,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		}
 		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sess.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
+			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			return
 		}
 		f(common.Client, sess, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
@@ -84,4 +85,19 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		done = false
 	}
 	return
+}
+
+// DoSendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
+func (sess *IntranetSession) DoSendClientMsgByRelay(account string, cmd uint64, msg proto.Message) bool {
+	data, flag, err := gotcp.Encode(cmd, msg)
+	if err != nil {
+		sess.Ctx.Log.Errorln("Message encode failed, message number is ", cmd, ". error:", err)
+		return false
+	}
+	data = append(data, flag)
+	msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
+	msgRelay.Account = account
+	msgRelay.CMD = uint32(cmd)
+	msgRelay.Data = data
+	return sess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 }

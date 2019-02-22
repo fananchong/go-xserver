@@ -22,9 +22,8 @@ func (lobby *Lobby) onQueryRoleList(sess common.INode, account string, data []by
 	if err != nil {
 		Ctx.Log.Errorln(err, "account:", account)
 		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		//sess.SendMsg(uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
+		sess.SendClientMsgByRelay(account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
 		return
 	}
-	//sess.SendMsg(uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
-	sess.SendMsg(10, msg)
+	sess.SendClientMsgByRelay(account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
 }

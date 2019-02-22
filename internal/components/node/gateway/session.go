@@ -9,6 +9,7 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
+	"github.com/gogo/protobuf/proto"
 )
 
 // Session : 网络会话类
@@ -63,13 +64,23 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 
 // DoRecv : 节点收到消息处理
 func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
-	sess.Ctx.Log.Infoln("cmd:", cmd)
 	done = true
 	switch protocol.CMD_GW_ENUM(cmd) {
 	case protocol.CMD_GW_RELAY_CLIENT_MSG:
-
+		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
+			done = false
+			return
+		}
+		sess.Ctx.Gateway.GetSendToClient()(msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
 	default:
 		done = false
 	}
 	return
+}
+
+// DoSendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
+func (sess *Session) DoSendClientMsgByRelay(account string, cmd uint64, msg proto.Message) bool {
+	panic("")
 }

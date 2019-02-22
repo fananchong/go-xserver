@@ -75,7 +75,7 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 
 	// TODO: 先调通消息，实际上要根据该账号是否有分配对应的目标类型服务，来决定是定向中继（即状态中继）、还是随机中继
 	//       调通消息后，会出文档，并在这里实现。暂随机中继
-	target := gw.ctx.Gateway.GetNodeOne(nodeType)
+	target := gw.GetNodeOne(nodeType)
 	if target == nil {
 		gw.ctx.Log.Errorln("Target server not found. cmd:", cmd, "account:", account, "nodeType", nodeType)
 		return
@@ -98,6 +98,11 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 // RegisterSendToClient : 可自定义客户端交互协议
 func (gw *Gateway) RegisterSendToClient(f common.FuncTypeSendToClient) {
 	gw.funcSendToClient = f
+}
+
+// GetSendToClient : 可自定义客户端交互协议
+func (gw *Gateway) GetSendToClient() common.FuncTypeSendToClient {
+	return gw.funcSendToClient
 }
 
 // RegisterEncodeFunc : 可自定义加解密算法
