@@ -59,6 +59,8 @@
 ## 正在制作
 
 - 服务器组内通信
+- INode Send系列接口不干净
+  - msg proto.Message 改为 msgdata []byte, userdata []byte 代替，方能支持使用方协议自由
 
 ## 将要实现的功能
 
