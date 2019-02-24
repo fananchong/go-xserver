@@ -63,7 +63,6 @@
   - One Node <-> Gateway <-> Other Node , 待开始
 - INode Send系列接口不干净
   - msg proto.Message 改为 msgdata []byte, userdata []byte 代替，方能支持使用方协议自由
-- Log 初始化一处`竞态`修正
 
 ## 将要实现的功能
 
