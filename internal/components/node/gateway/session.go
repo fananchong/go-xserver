@@ -9,7 +9,6 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
-	"github.com/gogo/protobuf/proto"
 )
 
 // Session : 网络会话类
@@ -83,6 +82,6 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 }
 
 // DoSendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
-func (sess *Session) DoSendClientMsgByRelay(account string, cmd uint64, msg proto.Message) bool {
+func (sess *Session) DoSendClientMsgByRelay(account string, cmd uint64, data []byte) bool {
 	panic("")
 }

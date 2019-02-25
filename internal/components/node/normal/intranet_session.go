@@ -9,7 +9,6 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
-	"github.com/gogo/protobuf/proto"
 )
 
 // IntranetSession : 网络会话类（ 服务器组内 Gateway 客户端会话类 ）
@@ -88,13 +87,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 }
 
 // DoSendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
-func (sess *IntranetSession) DoSendClientMsgByRelay(account string, cmd uint64, msg proto.Message) bool {
-	data, flag, err := gotcp.Encode(cmd, msg)
-	if err != nil {
-		sess.Ctx.Log.Errorln("Message encode failed, message number is ", cmd, ". error:", err)
-		return false
-	}
-	data = append(data, flag)
+func (sess *IntranetSession) DoSendClientMsgByRelay(account string, cmd uint64, data []byte) bool {
 	msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 	msgRelay.Account = account
 	msgRelay.CMD = uint32(cmd)

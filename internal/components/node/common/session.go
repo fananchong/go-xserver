@@ -6,7 +6,6 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
-	"github.com/gogo/protobuf/proto"
 )
 
 // ISessionDerived : SessionBase 派生类接口定义
@@ -16,7 +15,7 @@ type ISessionDerived interface {
 	DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte)
 	DoClose(sessbase *SessionBase)
 	DoRecv(cmd uint64, data []byte, flag byte) (done bool)
-	DoSendClientMsgByRelay(account string, cmd uint64, msg proto.Message) bool
+	DoSendClientMsgByRelay(account string, cmd uint64, data []byte) bool
 }
 
 // SessionBase : 网络会话类
@@ -134,6 +133,6 @@ func (sessbase *SessionBase) RegisterSelf(targetServerType common.NodeType) {
 }
 
 // SendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
-func (sessbase *SessionBase) SendClientMsgByRelay(account string, cmd uint64, msg proto.Message) bool {
-	return sessbase.derived.DoSendClientMsgByRelay(account, cmd, msg)
+func (sessbase *SessionBase) SendClientMsgByRelay(account string, cmd uint64, data []byte) bool {
+	return sessbase.derived.DoSendClientMsgByRelay(account, cmd, data)
 }

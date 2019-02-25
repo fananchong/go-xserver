@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/services/internal/protocol"
+	"github.com/fananchong/go-xserver/services/internal/utility"
 )
 
 func (lobby *Lobby) onClientMsg(sess common.INode, account string, cmd uint64, data []byte) {
@@ -22,8 +23,8 @@ func (lobby *Lobby) onQueryRoleList(sess common.INode, account string, data []by
 	if err != nil {
 		Ctx.Log.Errorln(err, "account:", account)
 		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		sess.SendClientMsgByRelay(account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
+		utility.SendMsgToClient(sess, account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
 		return
 	}
-	sess.SendClientMsgByRelay(account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
+	utility.SendMsgToClient(sess, account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
 }
