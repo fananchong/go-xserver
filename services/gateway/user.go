@@ -35,7 +35,7 @@ func (user *User) OnRecv(data []byte, flag byte) {
 
 // OnClose : 断开连接，被触发
 func (user *User) OnClose() {
-
+	gateway.DelUser(user.account)
 }
 
 func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte) bool {
@@ -66,6 +66,12 @@ func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte
 		return false
 	}
 	user.account = msg.GetAccount()
+	gateway.AddUser(user.account, user)
 	Ctx.Log.Infoln("Token verification succeeded, account:", msg.GetAccount())
 	return true
+}
+
+// GetAccount : 获取账号名
+func (user *User) GetAccount() string {
+	return user.account
 }
