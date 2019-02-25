@@ -8,7 +8,7 @@ type Gateway struct {
 // NewGateway : 构造函数
 func NewGateway() *Gateway {
 	gw := &Gateway{}
-	gw.UserMgr = &UserMgr{}
+	gw.UserMgr = NewUserMgr()
 	return gw
 }
 

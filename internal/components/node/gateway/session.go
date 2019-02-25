@@ -73,7 +73,9 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 			done = false
 			return
 		}
-		sess.Ctx.Gateway.GetSendToClient()(msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+		sess.Ctx.Gateway.GetSendToClient()(msg.GetAccount(),
+			uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config.Common.MsgCmdOffset),
+			msg.GetData())
 	default:
 		done = false
 	}
