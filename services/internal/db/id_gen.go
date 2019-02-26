@@ -1,5 +1,3 @@
-//go:generate ./g.sh
-
 package db
 
 import (
@@ -13,6 +11,8 @@ type IDGenType int
 const (
 	// IDGenTypeAccount :
 	IDGenTypeAccount = iota
+	// IDGenTypeRole :
+	IDGenTypeRole
 )
 
 // IDGen : ID 生成器（服务器组内唯一）
@@ -20,7 +20,7 @@ type IDGen struct {
 	Cli go_redis_orm.IClient
 }
 
-// New : 获取一个 ID
-func (idgen *IDGen) New(typ IDGenType) (uint64, error) {
+// NewID : 获取一个 ID
+func (idgen *IDGen) NewID(typ IDGenType) (uint64, error) {
 	return redis.Uint64(idgen.Cli.Do("HINCRBY", "idgen", typ, 1))
 }

@@ -15,11 +15,11 @@ import (
 // RoleList : 代表 1 个 redis 对象
 type RoleList struct {
 	Key   string
+	slot0 uint64
 	slot1 uint64
 	slot2 uint64
 	slot3 uint64
 	slot4 uint64
-	slot5 uint64
 
 	dirtyDataInRoleList               map[string]interface{}
 	dirtyDataForStructFiledInRoleList map[string]interface{}
@@ -65,20 +65,20 @@ func (objRoleList *RoleList) Load() error {
 		return go_redis_orm.ERR_ISNOT_EXIST_KEY
 	}
 	var data struct {
+		Slot0 uint64 `redis:"slot0"`
 		Slot1 uint64 `redis:"slot1"`
 		Slot2 uint64 `redis:"slot2"`
 		Slot3 uint64 `redis:"slot3"`
 		Slot4 uint64 `redis:"slot4"`
-		Slot5 uint64 `redis:"slot5"`
 	}
 	if err := redis.ScanStruct(val, &data); err != nil {
 		return err
 	}
+	objRoleList.slot0 = data.Slot0
 	objRoleList.slot1 = data.Slot1
 	objRoleList.slot2 = data.Slot2
 	objRoleList.slot3 = data.Slot3
 	objRoleList.slot4 = data.Slot4
-	objRoleList.slot5 = data.Slot5
 	objRoleList.isLoadInRoleList = true
 	return nil
 }
@@ -160,6 +160,11 @@ func (objRoleList *RoleList) Save2(dirtyData map[string]interface{}) error {
 	return nil
 }
 
+// GetSlot0 : 获取字段值
+func (objRoleList *RoleList) GetSlot0() uint64 {
+	return objRoleList.slot0
+}
+
 // GetSlot1 : 获取字段值
 func (objRoleList *RoleList) GetSlot1() uint64 {
 	return objRoleList.slot1
@@ -180,9 +185,10 @@ func (objRoleList *RoleList) GetSlot4() uint64 {
 	return objRoleList.slot4
 }
 
-// GetSlot5 : 获取字段值
-func (objRoleList *RoleList) GetSlot5() uint64 {
-	return objRoleList.slot5
+// SetSlot0 : 设置字段值
+func (objRoleList *RoleList) SetSlot0(value uint64) {
+	objRoleList.slot0 = value
+	objRoleList.dirtyDataInRoleList["slot0"] = value
 }
 
 // SetSlot1 : 设置字段值
@@ -207,10 +213,4 @@ func (objRoleList *RoleList) SetSlot3(value uint64) {
 func (objRoleList *RoleList) SetSlot4(value uint64) {
 	objRoleList.slot4 = value
 	objRoleList.dirtyDataInRoleList["slot4"] = value
-}
-
-// SetSlot5 : 设置字段值
-func (objRoleList *RoleList) SetSlot5(value uint64) {
-	objRoleList.slot5 = value
-	objRoleList.dirtyDataInRoleList["slot5"] = value
 }

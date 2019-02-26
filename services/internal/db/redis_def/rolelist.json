@@ -4,10 +4,10 @@
     "key": "string",
     "struct_format": "gogo",
     "fields": {
+        "slot0": "uint64",
         "slot1": "uint64",
         "slot2": "uint64",
         "slot3": "uint64",
-        "slot4": "uint64",
-        "slot5": "uint64"
+        "slot4": "uint64"
     }
 }

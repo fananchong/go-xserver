@@ -15,7 +15,6 @@ type Login struct {
 	ctx              *common.Context
 	verificationFunc common.FuncTypeAccountVerification
 	allocType        []common.NodeType
-	idgen            db.IDGen
 	serverRedis      db.RedisAtomic
 }
 
@@ -151,8 +150,6 @@ func (login *Login) initRedis() bool {
 			return false
 		}
 	}
-
-	login.idgen.Cli = go_redis_orm.GetDB(login.ctx.Config.DbAccount.Name)
 	login.serverRedis.Cli = c
 	return true
 }
