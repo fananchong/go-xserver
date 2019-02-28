@@ -14,8 +14,10 @@
   - 设置代理
   - 安装 go 插件
   - WSL 嵌入 VSCode
-  - WSL 内安装 go ；设置代理
+  - WSL 内安装 go (参考官网)
+  - WSL 内设置代理 （参考[编译-翻墙设置](编译-翻墙设置.md)）
   - WSL 内安装 docker （参考下节内容）
+  - WSL 内安裝 gcc （ sudo apt-get install gcc ）
   - VSCode 配置默认 TERMINAL 为 WSL
 
 详细请参考：https://blog.csdn.net/u013272009/article/details/84971807
