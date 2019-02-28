@@ -15,26 +15,22 @@
   - 安装 go 插件
   - WSL 嵌入 VSCode
   - WSL 内安装 go ；设置代理
+  - WSL 内安装 docker （参考下节内容）
   - VSCode 配置默认 TERMINAL 为 WSL
 
 详细请参考：https://blog.csdn.net/u013272009/article/details/84971807
 
 
-## 安装 Docker for Windows（非必须）
+## 安装 Docker
 
+- 打开 WSL ，安装 docker.io
+  - 请参考 https://blog.csdn.net/u013272009/article/details/81221661
+
+- 安装 Docker for Windows（非必须）
   - 按照 https://www.docker.com/products/docker-desktop 中提示安装之
-
   - 打开 Docker for Windows - General ，勾选`Expose daemon on tcp://localhost:2375 without TLS`
-
   - 打开 Docker for Windows - Shared Drives ，勾选所有盘符
-
-  - 打开 WSL ，安装 docker.io
-    - 请参考 https://blog.csdn.net/u013272009/article/details/81221661
-
-
   - 修正挂接目录问题
     - 请参考 https://blog.csdn.net/u013272009/article/details/81222689
-
-
   - Docker 容器开启失败
     - 请参考 https://blog.csdn.net/u013272009/article/details/85002613
