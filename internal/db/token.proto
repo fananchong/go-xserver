@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package db;
+import "common.proto";
+
+message DB_TOKEN {
+    string Token = 1;                                   // 令牌
+    map<uint32, protocol.SERVER_ID> AllocServers = 2;   // 已分配的服务
+}

@@ -1,26 +1,33 @@
 package components
 
 import (
+	"fmt"
+	"sync"
+
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utility"
 )
 
 // Gateway : 网关服务器
 type Gateway struct {
 	*nodegateway.Node
-	ctx              *common.Context
-	funcSendToClient common.FuncTypeSendToClient
-	funcEncodeFunc   common.FuncTypeEncode
-	funcDecodeFunc   common.FuncTypeDecode
+	ctx               *common.Context
+	funcSendToClient  common.FuncTypeSendToClient
+	funcEncodeFunc    common.FuncTypeEncode
+	funcDecodeFunc    common.FuncTypeDecode
+	allocServers      map[string]map[uint32]common.NodeID // 给玩家分配的服务器
+	allocServersMutex sync.RWMutex
 }
 
 // NewGateway : 构造函数
 func NewGateway(ctx *common.Context) *Gateway {
 	gw := &Gateway{
-		ctx: ctx,
+		ctx:          ctx,
+		allocServers: make(map[string]map[uint32]common.NodeID),
 	}
 	gw.Node = nodegateway.NewNode(ctx)
 	gw.ctx.Gateway = gw
@@ -58,11 +65,25 @@ func (gw *Gateway) VerifyToken(account, token string) uint32 {
 		gw.ctx.Log.Errorln(err, "account:", account)
 		return 2
 	}
-	if token != tokenObj.GetToken() {
-		gw.ctx.Log.Errorf("Token verification failed, expecting token to be %s, but %s. account: %s\n", tokenObj.GetToken(), token, account)
+	tmpTokenObj := tokenObj.GetToken(false)
+	if token != tmpTokenObj.Token {
+		gw.ctx.Log.Errorf("Token verification failed, expecting token to be %s, but %s. account: %s\n", tmpTokenObj.Token, token, account)
 		return 1
 	}
+	gw.allocServersMutex.Lock()
+	defer gw.allocServersMutex.Unlock()
+	gw.allocServers[account] = make(map[uint32]common.NodeID)
+	for k, v := range tmpTokenObj.GetAllocServers() {
+		gw.allocServers[account][k] = utility.ServerID2NodeID(v)
+	}
 	return 0
+}
+
+// OnLogout : 当客户端连接断开，通知框架层
+func (gw *Gateway) OnLogout(account string) {
+	gw.allocServersMutex.Lock()
+	defer gw.allocServersMutex.Unlock()
+	delete(gw.allocServers, account)
 }
 
 // OnRecvFromClient : 可自定义客户端交互协议。data 格式需转化为框架层可理解的格式。done 为 true ，表示框架层接管处理该消息
@@ -73,9 +94,28 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 		return
 	}
 
-	// TODO: 先调通消息，实际上要根据该账号是否有分配对应的目标类型服务，来决定是定向中继（即状态中继）、还是随机中继
-	//       调通消息后，会出文档，并在这里实现。暂随机中继
-	target := gw.GetNodeOne(nodeType)
+	// 是否需要状态中继
+	nodeID, err := func() (*common.NodeID, error) {
+		gw.allocServersMutex.RLock()
+		defer gw.allocServersMutex.RUnlock()
+		if v, ok := gw.allocServers[account]; ok {
+			if id, ok := v[uint32(nodeType)]; ok {
+				return &id, nil
+			}
+			return nil, nil
+		}
+		return nil, fmt.Errorf("No server information corresponding to the account was found. account:%s, cmd:%d", account, cmd)
+	}()
+	if err != nil {
+		gw.ctx.Log.Errorln(err)
+		return
+	}
+	var target common.INode
+	if nodeID != nil {
+		target = gw.GetNode(*nodeID)
+	} else {
+		target = gw.GetNodeOne(nodeType)
+	}
 	if target == nil {
 		gw.ctx.Log.Errorln("Target server not found. cmd:", cmd, "account:", account, "nodeType", nodeType)
 		return

@@ -6,6 +6,8 @@ import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/db"
+	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/gomodule/redigo/redis"
 	uuid "github.com/satori/go.uuid"
 )
@@ -14,7 +16,7 @@ import (
 type Login struct {
 	ctx              *common.Context
 	verificationFunc common.FuncTypeAccountVerification
-	allocType        []common.NodeType
+	allocServerType  []common.NodeType
 	serverRedis      db.RedisAtomic
 }
 
@@ -44,7 +46,7 @@ func (login *Login) RegisterCustomAccountVerification(f common.FuncTypeAccountVe
 
 // RegisterAllocationNodeType : 注册要分配的服务器资源类型
 func (login *Login) RegisterAllocationNodeType(types []common.NodeType) {
-	login.allocType = append(login.allocType, types...)
+	login.allocServerType = append(login.allocServerType, types...)
 }
 
 // Login : 登陆处理
@@ -63,19 +65,25 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	}
 
 	// 分配服务资源列表
-	addressList, portList, ok := login.selectServerList(account, login.allocType)
+	addressList, portList, ids, ok := login.selectServerList(account, login.allocServerType)
 	if !ok {
 		return "", nil, nil, nil, common.LoginSystemError
 	}
 
 	//生成 Token
+	tempID := uuid.NewV4().String()
 	tokenObj := db.NewToken(login.ctx.Config.DbToken.Name, account)
-	tokenObj.SetToken(uuid.NewV4().String())
+	to := tokenObj.GetToken(true)
+	to.Token = tempID
+	to.AllocServers = make(map[uint32]*protocol.SERVER_ID)
+	for i := 0; i < len(login.allocServerType); i++ {
+		to.AllocServers[uint32(login.allocServerType[i])] = ids[i]
+	}
 	if err := tokenObj.Save(); err != nil {
 		login.ctx.Log.Errorln(err, "account:", account)
 		return "", nil, nil, nil, common.LoginSystemError
 	}
-	return tokenObj.GetToken(), addressList, portList, login.allocType, common.LoginSuccess
+	return tempID, addressList, portList, login.allocServerType, common.LoginSuccess
 }
 
 // Close : 关闭
@@ -154,14 +162,15 @@ func (login *Login) initRedis() bool {
 	return true
 }
 
-func (login *Login) selectServerList(account string, nodeType []common.NodeType) (addressList []string, portList []int32, ok bool) {
-	for _, v := range nodeType {
-		dbObj, have := login.selectServer(account, v)
+func (login *Login) selectServerList(account string, nodeType []common.NodeType) (addressList []string, portList []int32, serverIDs []*protocol.SERVER_ID, ok bool) {
+	for i := 0; i < len(nodeType); i++ {
+		dbObj, have := login.selectServer(account, nodeType[i])
 		if !have {
 			return
 		}
 		addressList = append(addressList, dbObj.Address)
 		portList = append(portList, dbObj.Port)
+		serverIDs = append(serverIDs, dbObj.ServerID)
 	}
 	ok = true
 	return
@@ -175,7 +184,8 @@ LOOP:
 		login.ctx.Log.Errorln("Did not find the server. type:", nodeType, "account:", account)
 		return
 	}
-	dbObj.NodeID = node.GetID()
+	nodeID := node.GetID()
+	dbObj.ServerID = utility.NodeID2ServerID(nodeID)
 	dbObj.Type = nodeType
 	dbObj.Address = node.GetIP(common.IPOUTER)
 	dbObj.Port = node.GetPort(int(common.PORTFORCLIENT))
@@ -197,7 +207,7 @@ LOOP:
 	}
 	if ret != "" {
 		dbObj.Unmarshal(ret)
-		if login.ctx.Node.HaveNode(dbObj.NodeID) == false {
+		if login.ctx.Node.HaveNode(nodeID) == false {
 			if _, err = login.serverRedis.DelX(key, ret); err != nil {
 				login.ctx.Log.Errorln(err, "account:", account)
 				return

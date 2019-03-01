@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/protocol"
 )
 
 // 账号对应分配的服务资源
@@ -12,10 +13,10 @@ import (
 
 // AccountServer : 分配的服务资源信息（单个）
 type AccountServer struct {
-	NodeID  common.NodeID
-	Address string
-	Port    int32
-	Type    common.NodeType
+	ServerID *protocol.SERVER_ID
+	Address  string
+	Port     int32
+	Type     common.NodeType
 }
 
 // Marshal : 序列化

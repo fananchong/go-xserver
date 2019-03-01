@@ -1,6 +1,8 @@
 package components
 
 import (
+	"time"
+
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 )
@@ -17,6 +19,7 @@ func NewRedis(ctx *common.Context) *Redis {
 
 // Start : 实例化组件
 func (redis *Redis) Start() bool {
+LOOP:
 	// TODO: go_redis_orm 可以实例化，而非全局的
 	go_redis_orm.SetNewRedisHandler(go_redis_orm.NewDefaultRedisClient)
 	if err := go_redis_orm.CreateDB(
@@ -25,7 +28,8 @@ func (redis *Redis) Start() bool {
 		redis.ctx.Config.DbMgr.Password,
 		redis.ctx.Config.DbMgr.DBIndex); err != nil {
 		redis.ctx.Log.Errorln(err)
-		return false
+		time.Sleep(5 * time.Second)
+		goto LOOP
 	}
 	return true
 }

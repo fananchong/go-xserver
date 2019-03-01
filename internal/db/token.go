@@ -9,13 +9,14 @@ import (
 	"errors"
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
+	"github.com/gogo/protobuf/proto"
 	"github.com/gomodule/redigo/redis"
 )
 
 // Token : 代表 1 个 redis 对象
 type Token struct {
 	Key   string
-	token string
+	token DB_TOKEN
 
 	dirtyDataInToken               map[string]interface{}
 	dirtyDataForStructFiledInToken map[string]interface{}
@@ -61,12 +62,15 @@ func (objToken *Token) Load() error {
 		return go_redis_orm.ERR_ISNOT_EXIST_KEY
 	}
 	var data struct {
-		Token string `redis:"token"`
+		Token []byte `redis:"token"`
 	}
 	if err := redis.ScanStruct(val, &data); err != nil {
 		return err
 	}
-	objToken.token = data.Token
+	if err := proto.Unmarshal(data.Token, &objToken.token); err != nil {
+		return err
+	}
+
 	objToken.isLoadInToken = true
 	return nil
 }
@@ -78,7 +82,13 @@ func (objToken *Token) Save() error {
 	}
 	for k := range objToken.dirtyDataForStructFiledInToken {
 		_ = k
-
+		if k == "token" {
+			data, err := proto.Marshal(&objToken.token)
+			if err != nil {
+				return err
+			}
+			objToken.dirtyDataInToken["token"] = data
+		}
 	}
 	db := go_redis_orm.GetDB(objToken.ddbNameInToken)
 	if _, err := db.Do("HMSET", redis.Args{}.Add(objToken.dbKeyInToken).AddFlat(objToken.dirtyDataInToken)...); err != nil {
@@ -120,7 +130,13 @@ func (objToken *Token) Expire(v uint) {
 func (objToken *Token) DirtyData() (map[string]interface{}, error) {
 	for k := range objToken.dirtyDataForStructFiledInToken {
 		_ = k
-
+		if k == "token" {
+			data, err := proto.Marshal(&objToken.token)
+			if err != nil {
+				return nil, err
+			}
+			objToken.dirtyDataInToken["token"] = data
+		}
 	}
 	data := make(map[string]interface{})
 	for k, v := range objToken.dirtyDataInToken {
@@ -149,12 +165,9 @@ func (objToken *Token) Save2(dirtyData map[string]interface{}) error {
 }
 
 // GetToken : 获取字段值
-func (objToken *Token) GetToken() string {
-	return objToken.token
-}
-
-// SetToken : 设置字段值
-func (objToken *Token) SetToken(value string) {
-	objToken.token = value
-	objToken.dirtyDataInToken["token"] = string([]byte(value))
+func (objToken *Token) GetToken(mutable bool) *DB_TOKEN {
+	if mutable {
+		objToken.dirtyDataForStructFiledInToken["token"] = nil
+	}
+	return &objToken.token
 }
