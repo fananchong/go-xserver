@@ -14,13 +14,15 @@ import (
 // IntranetSession : 网络会话类（ 服务器组内 Gateway 客户端会话类 ）
 type IntranetSession struct {
 	*nodecommon.SessionBase
+	sourceSess *Session
 }
 
 // NewIntranetSession : 网络会话类的构造函数
-func NewIntranetSession(ctx *common.Context, sessMgr *nodecommon.SessionMgr) *IntranetSession {
+func NewIntranetSession(ctx *common.Context, sessMgr *nodecommon.SessionMgr, sourceSess *Session) *IntranetSession {
 	sess := &IntranetSession{}
 	sess.SessionBase = nodecommon.NewSessionBase(ctx, sess)
 	sess.SessMgr = sessMgr
+	sess.sourceSess = sourceSess
 	return sess
 }
 
@@ -40,7 +42,7 @@ func (sess *IntranetSession) Start() {
 				continue
 			}
 			sess.Verify()
-			sess.RegisterSelf(common.Gateway)
+			sess.RegisterSelf(sess.sourceSess.GetID(), common.Gateway)
 			sess.Ctx.Log.Infoln("Successfully connected to the gateway server, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
 			break
 		}

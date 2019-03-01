@@ -39,13 +39,13 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		return
 	}
 	if msg.GetTargetServerType() != uint32(common.Gateway) {
-		sess.Ctx.Log.Errorln("Target server type different. Expectation is common.Gateway, but it is ", msg.GetTargetServerType())
+		sess.Ctx.Log.Errorln("Target server type different. Expectation is common.Gateway, but it is", msg.GetTargetServerType())
 		sess.Close()
 		return
 	}
 	sess.Info = msg.GetData()
 	sess.SessMgr.Register(sess.SessionBase)
-	sess.Ctx.Log.Infoln("The service node registers with me, the node ID is ", utility.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Log.Infoln("The service node registers with me, the node ID is", utility.ServerID2UUID(msg.GetData().GetId()).String())
 	sess.Ctx.Log.Infoln(sess.Info)
 }
 

@@ -113,7 +113,11 @@ func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID common.NodeID) bool {
 
 // GetNode : 获取节点
 func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID common.NodeID) common.INode {
-	return impl.SessMgr.GetByID(nodeID)
+	node := impl.SessMgr.GetByID(nodeID)
+	if node != nil {
+		return node
+	}
+	return nil
 }
 
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据

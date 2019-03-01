@@ -42,7 +42,7 @@ func (sess *Session) connectMgrServer() {
 			goto TRY_AGAIN
 		}
 		sess.Verify()
-		sess.RegisterSelf(common.Mgr)
+		sess.RegisterSelf(sess.GetID(), common.Mgr)
 	}
 }
 
@@ -53,7 +53,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	tempSess := sess.SessMgr.GetByID(utility.ServerID2NodeID(msg.GetData().GetId()))
 	if tempSess == nil {
 		// 本地保其他存节点信息
-		targetSess := NewIntranetSession(sess.Ctx, sess.SessMgr)
+		targetSess := NewIntranetSession(sess.Ctx, sess.SessMgr, sess)
 		targetSess.Info = msg.GetData()
 		targetSess.RegisterFuncOnRelayMsg(sess.FuncOnRelayMsg())
 		sess.SessMgr.Register(targetSess.SessionBase)
