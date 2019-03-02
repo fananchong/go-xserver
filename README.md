@@ -51,6 +51,10 @@
 
 - 管理服务器
 - 登陆服务器
+- 网关服务器
+  - 客户端消息中继
+- 大厅服务器
+  - 获取角色列表
 
 ## 测试客户端
 
@@ -59,10 +63,15 @@
 ## 正在制作
 
 - 服务器组内通信
-  - Client <-> Gateway <-> Other Node , 代码整理，完善
-  - One Node <-> Gateway <-> Other Node , 待开始
+  - 服务器组内消息中继（One Node <-> Gateway <-> Other Node）
 - INode Send系列接口不干净
   - msg proto.Message 改为 msgdata []byte, userdata []byte 代替，方能支持使用方协议自由
+- 大厅服务器
+  - 创建角色
+  - 角色私聊、世界聊天
+- 已知 BUG
+  - 网关服务器关闭之，账号登录失败。（大致原因：登录服务器的网关信息不正确）
+
 
 ## 将要实现的功能
 

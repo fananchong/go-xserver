@@ -23,7 +23,8 @@ func (server *TCPServer) Start() bool {
 	loadPlugin(server.ctx)
 	s := server.ctx.ServerForClient.(*gotcp.Server)
 	if s.GetSessionType() != nil {
-		if !startTCPServer(s, utils.GetIPOuter(server.ctx), utils.GetDefaultServicePort(server.ctx)) {
+		// 填写 `0.0.0.0` ， 而不是 `utils.GetIPOuter(server.ctx)` 具体外网 IP ，是为了能支持阿里云 ECS 服务器
+		if !startTCPServer(s, "0.0.0.0", utils.GetDefaultServicePort(server.ctx)) {
 			return false
 		}
 		server.ctx.Config.Network.Port[common.PORTFORCLIENT] = s.GetRealPort()

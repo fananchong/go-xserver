@@ -68,7 +68,7 @@ func (accountobj *Account) FirstInitialization() bool {
 	return true
 }
 
-// GetRoleIDs : 获取账号对应的角色列表
+// GetRoles : 获取账号对应的角色列表
 func (accountobj *Account) GetRoles() []*Role {
 	return accountobj.roles
 }
