@@ -48,7 +48,7 @@ func (sess *Session) connectMgrServer() {
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
-	sess.Ctx.Log.Infoln("The service node registers information with me with ID", utility.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Log.Infoln("The service node registers information with me with ID", utility.ServerID2UUID(msg.GetData().GetId()).String(), "type:", msg.GetData().GetType())
 
 	tempSess := sess.SessMgr.GetByID(utility.ServerID2NodeID(msg.GetData().GetId()))
 	if tempSess == nil {
@@ -58,12 +58,15 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		targetSess.RegisterFuncOnRelayMsg(sess.FuncOnRelayMsg())
 		sess.SessMgr.Register(targetSess.SessionBase)
 
+		sess.PrintNodeInfo(sess.Ctx.Log, common.NodeType(msg.GetData().GetType()))
+
 		// 如果存在互连关系的，开始互连逻辑。
 		if sess.IsEnableMessageRelay() && targetSess.Info.GetType() == uint32(common.Gateway) {
 			targetSess.Start()
 		}
 	} else {
 		tempSess.Info = msg.GetData()
+		sess.PrintNodeInfo(sess.Ctx.Log, common.NodeType(msg.GetData().GetType()))
 	}
 }
 
@@ -84,11 +87,7 @@ func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag
 	}
 
 	sess.SessMgr.Lose2(msg.GetId(), common.NodeType(msg.GetType()))
-
-	sess.Ctx.Log.Infof("Remaining list of service nodes of this type[%d]:\n", msg.GetType())
-	sess.SessMgr.ForByType(common.NodeType(msg.GetType()), func(sessbase *nodecommon.SessionBase) {
-		sess.Ctx.Log.Infof("\t%s\n", utility.ServerID2UUID(sessbase.GetSID()).String())
-	})
+	sess.PrintNodeInfo(sess.Ctx.Log, common.NodeType(msg.GetType()))
 }
 
 // DoClose : 节点关闭时处理

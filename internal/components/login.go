@@ -179,6 +179,7 @@ func (login *Login) selectServerList(account string, nodeType []common.NodeType)
 func (login *Login) selectServer(account string, nodeType common.NodeType) (dbObj *db.AccountServer, ok bool) {
 LOOP:
 	dbObj = &db.AccountServer{}
+	login.ctx.Node.PrintNodeInfo(login.ctx.Log, nodeType)
 	node := login.ctx.Node.GetNodeOne(nodeType)
 	if node == nil {
 		login.ctx.Log.Errorln("Did not find the server. type:", nodeType, "account:", account)
@@ -207,7 +208,7 @@ LOOP:
 	}
 	if ret != "" {
 		dbObj.Unmarshal(ret)
-		if login.ctx.Node.HaveNode(nodeID) == false {
+		if login.ctx.Node.HaveNode(utility.ServerID2NodeID(dbObj.ServerID)) == false {
 			if _, err = login.serverRedis.DelX(key, ret); err != nil {
 				login.ctx.Log.Errorln(err, "account:", account)
 				return

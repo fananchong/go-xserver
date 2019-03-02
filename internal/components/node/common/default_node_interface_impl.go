@@ -120,6 +120,28 @@ func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID common.NodeID) common.INode
 	return nil
 }
 
+// PrintNodeInfo : 打印节点信息
+func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log common.ILogger, nodeType common.NodeType) {
+	log.Infoln("==========================================================================================================")
+	for _, v := range impl.GetNodeList(nodeType) {
+		log.Infoln("id:", utility.NodeID2UUID(v.GetID()).String(), "type:",
+			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
+			v.GetIP(common.IPINNER), "ip1:", v.GetIP(common.IPOUTER))
+	}
+	log.Infoln("----------------------------------------------------------------------------------------------------------")
+}
+
+// PrintAllNodeInfo : 打印节点信息
+func (impl *DefaultNodeInterfaceImpl) PrintAllNodeInfo(log common.ILogger) {
+	log.Infoln("==========================================================================================================")
+	for _, v := range impl.GetNodeAll() {
+		log.Infoln("id:", utility.NodeID2UUID(v.GetID()).String(), "type:",
+			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
+			v.GetIP(common.IPINNER), "ip1:", v.GetIP(common.IPOUTER))
+	}
+	log.Infoln("----------------------------------------------------------------------------------------------------------")
+}
+
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据
 func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint64, msg proto.Message) bool {
 	if sess := impl.SessMgr.SelectOne(nodeType); sess != nil {
