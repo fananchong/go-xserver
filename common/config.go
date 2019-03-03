@@ -8,6 +8,7 @@ type Config struct {
 	DbToken   ConfigRedis   // Token 数据库（Redis）
 	DbServer  ConfigRedis   // Server 数据库（Redis）
 	DbMgr     ConfigRedis   // Mgr 数据库（Redis）
+	Role      ConfigRole    // 角色相关配置
 }
 
 // ConfigCommon : 配置 common 节
@@ -36,4 +37,9 @@ type ConfigRedis struct {
 	Addrs    []string `default:"[127.0.0.1:6379]" desc:"Redis 数据库地址"`
 	Password string   `default:"123456" desc:"Redis 数据库密码"`
 	DBIndex  int      `default:"1" desc:"Redis DB 索引"`
+}
+
+// ConfigRole : 配置 role 相关节
+type ConfigRole struct {
+	IdleTime int `default:"300" desc:"角色闲置该时间间隔后账号、角色对象内存中清除。单位：秒"`
 }

@@ -73,6 +73,7 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	//生成 Token
 	tempID := uuid.NewV4().String()
 	tokenObj := db.NewToken(login.ctx.Config.DbToken.Name, account)
+	tokenObj.Expire(7 * 86400) // 令牌过期时间 7 天
 	to := tokenObj.GetToken(true)
 	to.Token = tempID
 	to.AllocServers = make(map[uint32]*protocol.SERVER_ID)
@@ -201,7 +202,7 @@ LOOP:
 	login.ctx.Log.Infoln("account:", account, "server:", data)
 	var ret string
 	key := fmt.Sprintf("srv%d_%s", nodeType, account)
-	ret, err = login.serverRedis.SetX(key, data, 365*86400)
+	ret, err = login.serverRedis.SetGetX(key, data, 365*86400) // 设置账号分配的服务器资源信息，过期时间 1 年
 	if err != nil {
 		login.ctx.Log.Errorln(err, "account:", account)
 		return

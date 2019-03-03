@@ -11,9 +11,9 @@ type RedisAtomic struct {
 	Cli redis.Conn
 }
 
-// SetX : 原子操作，封装 `不管 SETX 有没有设置成功，都重置过期时间为 n`
+// SetGetX : 原子操作，封装 `不管 SetGetX 有没有设置成功，都重置过期时间为 n`
 //        返回值， 空 表示设置成功； 非空 表示设置失败，并返回原先已设置的值
-func (redisatomic *RedisAtomic) SetX(key, value string, expire int) (string, error) {
+func (redisatomic *RedisAtomic) SetGetX(key, value string, expire int) (string, error) {
 	lua := `local r=redis.call('SET',KEYS[1],ARGV[1],'NX');
 redis.call('EXPIRE',KEYS[1],%d);
 if not not r then return "" else local r=redis.call('GET',KEYS[1]); return r end`

@@ -1,34 +1,29 @@
 package components
 
 import (
-	"fmt"
-	"sync"
-
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 )
 
 // Gateway : 网关服务器
 type Gateway struct {
 	*nodegateway.Node
-	ctx               *common.Context
-	funcSendToClient  common.FuncTypeSendToClient
-	funcEncodeFunc    common.FuncTypeEncode
-	funcDecodeFunc    common.FuncTypeDecode
-	allocServers      map[string]map[uint32]common.NodeID // 给玩家分配的服务器
-	allocServersMutex sync.RWMutex
+	ctx              *common.Context
+	funcSendToClient common.FuncTypeSendToClient
+	funcEncodeFunc   common.FuncTypeEncode
+	funcDecodeFunc   common.FuncTypeDecode
+	users            *nodegateway.UserMgr
 }
 
 // NewGateway : 构造函数
 func NewGateway(ctx *common.Context) *Gateway {
 	gw := &Gateway{
-		ctx:          ctx,
-		allocServers: make(map[string]map[uint32]common.NodeID),
-		Node:         nodegateway.NewNode(ctx),
+		ctx:   ctx,
+		users: nodegateway.NewUserMgr(ctx),
+		Node:  nodegateway.NewNode(ctx),
 	}
 	gw.ctx.Gateway = gw
 	return gw
@@ -46,6 +41,7 @@ func (gw *Gateway) Start() bool {
 		if gw.Node.Start() == false {
 			return false
 		}
+		gw.users.Start()
 	}
 	return true
 }
@@ -54,6 +50,7 @@ func (gw *Gateway) Start() bool {
 func (gw *Gateway) Close() {
 	if gw.Node != nil {
 		gw.Node.Close()
+		gw.users.Close()
 		gw.Node = nil
 	}
 }
@@ -70,23 +67,8 @@ func (gw *Gateway) VerifyToken(account, token string) uint32 {
 		gw.ctx.Log.Errorf("Token verification failed, expecting token to be %s, but %s. account: %s\n", tmpTokenObj.Token, token, account)
 		return 1
 	}
-	gw.allocServersMutex.Lock()
-	defer gw.allocServersMutex.Unlock()
-	gw.allocServers[account] = make(map[uint32]common.NodeID)
-	for k, v := range tmpTokenObj.GetAllocServers() {
-		gw.allocServers[account][k] = utility.ServerID2NodeID(v)
-	}
+	gw.users.AddUser(account, tmpTokenObj.GetAllocServers())
 	return 0
-}
-
-// OnLogout : 当客户端连接断开，通知框架层
-func (gw *Gateway) OnLogout(account string) {
-
-	// TODO: 做`处理闲置连接`时，触发这里调用
-
-	gw.allocServersMutex.Lock()
-	defer gw.allocServersMutex.Unlock()
-	delete(gw.allocServers, account)
 }
 
 // OnRecvFromClient : 可自定义客户端交互协议。data 格式需转化为框架层可理解的格式。done 为 true ，表示框架层接管处理该消息
@@ -98,19 +80,9 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 	}
 
 	// 是否需要状态中继
-	nodeID, err := func() (*common.NodeID, error) {
-		gw.allocServersMutex.RLock()
-		defer gw.allocServersMutex.RUnlock()
-		if v, ok := gw.allocServers[account]; ok {
-			if id, ok := v[uint32(nodeType)]; ok {
-				return &id, nil
-			}
-			return nil, nil
-		}
-		return nil, fmt.Errorf("No server information corresponding to the account was found. account:%s, cmd:%d", account, cmd)
-	}()
+	nodeID, err := gw.users.GetServerAndActive(account, nodeType)
 	if err != nil {
-		gw.ctx.Log.Errorln(err)
+		gw.ctx.Log.Errorln(err, "account:", account, "cmd:", cmd)
 		return
 	}
 	var target common.INode
@@ -169,5 +141,17 @@ func (gw *Gateway) initRedis() bool {
 		gw.ctx.Log.Errorln(err)
 		return false
 	}
+
+	// db server
+	err = go_redis_orm.CreateDB(
+		gw.ctx.Config.DbServer.Name,
+		gw.ctx.Config.DbServer.Addrs,
+		gw.ctx.Config.DbServer.Password,
+		gw.ctx.Config.DbServer.DBIndex)
+	if err != nil {
+		gw.ctx.Log.Errorln(err)
+		return false
+	}
+	gw.users.ServerRedisCli = go_redis_orm.GetDB(gw.ctx.Config.DbServer.Name)
 	return true
 }
