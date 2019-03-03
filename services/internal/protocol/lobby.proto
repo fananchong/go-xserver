@@ -6,9 +6,9 @@ import "lobby_custom.proto";
 message CMD_LOBBY {
     enum ENUM {
         INVALID = 0;                                    // 未定义
-        QUERY_ROLELIST = 1;                             // 获取角色信息 ( C -> LOBBY )
+        LOGIN = 1;                                      // 登录，获取角色信息 ( C -> LOBBY )
         ENTER_GAME = 2;                                 // 进入游戏 ( C -> LOBBY )
-        MSGCMDOFFSET = 4000;                            // 消息号偏移量。如发送 `MSG_LOBBY_QUERY_ROLELIST` 消息时，实际发送消息号为： MSGCMDOFFSET + QUERY_ROLELIST
+        MSGCMDOFFSET = 4000;                            // 消息号偏移量。如发送 `MSG_LOBBY_LOGIN` 消息时，实际发送消息号为： MSGCMDOFFSET + LOGIN
     }
 }
 
@@ -19,11 +19,11 @@ message ENUM_LOBBY_COMMON_ERROR {
     }
 }
 
-// 获取角色信息 ( C -> LOBBY )
-message MSG_LOBBY_QUERY_ROLELIST {
+// 登录，获取角色信息 ( C -> LOBBY )
+message MSG_LOBBY_LOGIN {
 }
 
-message MSG_LOBBY_QUERY_ROLELIST_RESULT {
+message MSG_LOBBY_LOGIN_RESULT {
     ENUM_LOBBY_COMMON_ERROR.ENUM Err = 1;               // 0:成功；非0错误号
     repeated ROLE_BASE_INFO Roles = 2;                  // 角色列表
 }
@@ -31,7 +31,8 @@ message MSG_LOBBY_QUERY_ROLELIST_RESULT {
 
 // 进入游戏 ( C -> LOBBY )
 message MSG_LOBBY_ENTER_GAME {
-    uint64 RoleID = 1;                                  // 角色ID
+    uint32 Slot = 1;                                    // 角色所在的槽位。如每个账号共有 3 个角色，则槽位值为 0 1 2
+    uint64 RoleID = 2;                                  // 角色ID。还没创建过角色，则填 0
 }
 
 message MSG_LOBBY_ENTER_GAME_RESULT {

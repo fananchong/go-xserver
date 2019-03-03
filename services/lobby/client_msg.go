@@ -1,30 +1,36 @@
 package main
 
 import (
-	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/services/internal/protocol"
 	"github.com/fananchong/go-xserver/services/internal/utility"
 )
 
-func (lobby *Lobby) onClientMsg(sess common.INode, account string, cmd uint64, data []byte) {
+// ChanMsg : 账号消息
+type ChanMsg struct {
+	Cmd  uint64
+	Data []byte
+}
+
+// PostMsg : 推送消息
+func (accountObj *Account) PostMsg(cmd uint64, data []byte) {
+	datacopy := make([]byte, len(data))
+	copy(datacopy, data)
+	accountObj.chanMsg <- ChanMsg{cmd, datacopy}
+}
+
+// ProcessMsg : 处理消息
+func (accountObj *Account) processMsg(cmd uint64, data []byte) {
 	switch protocol.CMD_LOBBY_ENUM(cmd) {
-	case protocol.CMD_LOBBY_QUERY_ROLELIST:
-		lobby.onQueryRoleList(sess, account, data)
+	case protocol.CMD_LOBBY_LOGIN:
+		accountObj.onQueryRoleList(data)
 	default:
 		Ctx.Log.Errorln("[LOBBY] Unknown cmd, cmd:", cmd)
 	}
 }
 
-func (lobby *Lobby) onQueryRoleList(sess common.INode, account string, data []byte) {
-	Ctx.Log.Infoln("Query role list, account:", account)
-	msg := &protocol.MSG_LOBBY_QUERY_ROLELIST_RESULT{}
-	accountObj, err := NewAccount(account)
-	if err != nil {
-		Ctx.Log.Errorln(err, "account:", account)
-		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		utility.SendMsgToClient(sess, account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
-		return
-	}
+func (accountObj *Account) onQueryRoleList(data []byte) {
+	Ctx.Log.Infoln("Query role list, account:", accountObj.account)
+	msg := &protocol.MSG_LOBBY_LOGIN_RESULT{}
 	for i, role := range accountObj.GetRoles() {
 		info := &protocol.ROLE_BASE_INFO{}
 		info.RoleID = role.Key
@@ -32,5 +38,5 @@ func (lobby *Lobby) onQueryRoleList(sess common.INode, account string, data []by
 		msg.Roles = append(msg.Roles, info)
 		Ctx.Log.Infof("\t[role%d] roleid:%d, rolename:%s\n", i, info.RoleID, info.RoleName)
 	}
-	utility.SendMsgToClient(sess, account, uint64(protocol.CMD_LOBBY_QUERY_ROLELIST), msg)
+	utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
 }

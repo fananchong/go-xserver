@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"runtime/debug"
+	"sync/atomic"
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
+	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/services/internal/db"
 )
 
@@ -14,61 +17,114 @@ const LimitRoleNum = 1
 // Account : 账号类
 type Account struct {
 	*db.RoleList
-	roles []*Role
-	idgen db.IDGen
+	account   string
+	roles     []*Role
+	sess      common.INode
+	chanMsg   chan ChanMsg
+	chanClose chan int
+	closeFlag int32
 }
 
 // NewAccount : 角色列表类构造函数
-func NewAccount(account string) (*Account, error) {
-	accountobj := &Account{}
-	accountobj.RoleList = db.NewRoleList(Ctx.Config.DbAccount.Name, account)
-	if err := accountobj.RoleList.Load(); err != nil {
+func NewAccount(account string) *Account {
+	accountObj := &Account{
+		account:   account,
+		chanMsg:   make(chan ChanMsg, 1024),
+		chanClose: make(chan int, 1),
+		RoleList:  db.NewRoleList(Ctx.Config.DbAccount.Name, account),
+	}
+	return accountObj
+}
+
+// Init : 账号初始化
+func (accountObj *Account) Init() error {
+	account := accountObj.account
+	if err := accountObj.RoleList.Load(); err != nil {
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {
-			return nil, err
+			return err
 		}
-		if accountobj.FirstInitialization() == false {
-			return nil, fmt.Errorf("Account failed to initialize for the first time, account:%s", account)
+		if accountObj.FirstInitialization() == false {
+			return fmt.Errorf("Account failed to initialize for the first time, account:%s", account)
 		}
 	}
-	accountobj.roles = make([]*Role, LimitRoleNum)
+	accountObj.roles = make([]*Role, LimitRoleNum)
 	var ids [256]uint64
-	ids[0] = accountobj.RoleList.GetSlot0()
-	ids[1] = accountobj.RoleList.GetSlot1()
-	ids[2] = accountobj.RoleList.GetSlot2()
-	ids[3] = accountobj.RoleList.GetSlot3()
-	ids[4] = accountobj.RoleList.GetSlot4()
+	ids[0] = accountObj.RoleList.GetSlot0()
+	ids[1] = accountObj.RoleList.GetSlot1()
+	ids[2] = accountObj.RoleList.GetSlot2()
+	ids[3] = accountObj.RoleList.GetSlot3()
+	ids[4] = accountObj.RoleList.GetSlot4()
 	for i := 0; i < LimitRoleNum; i++ {
 		roleID := ids[i]
 		if roleID == 0 {
 			// 没有角色，则生成角色ID
 			id, err := lobby.NewID(db.IDGenTypeRole)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			roleID = id
 			// 角色创建时，这里才用下`反射`。因此不要当心`反射`造成的效率问题
-			v := reflect.ValueOf(accountobj.RoleList)
+			v := reflect.ValueOf(accountObj.RoleList)
 			f := v.MethodByName(fmt.Sprintf("SetSlot%d", i))
 			f.Call([]reflect.Value{reflect.ValueOf(roleID)})
 		}
 		role, err := NewRole(roleID, account)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		accountobj.roles[i] = role
+		accountObj.roles[i] = role
 	}
-	if err := accountobj.Save(); err != nil {
-		return nil, err
+	if err := accountObj.Save(); err != nil {
+		return err
 	}
-	return accountobj, nil
+	return nil
+}
+
+// Start : 开始
+func (accountObj *Account) Start() {
+	Ctx.Log.Infoln("Account work coroutine start, account:", accountObj.account)
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				Ctx.Log.Errorln("[except] ", err, "\n", string(debug.Stack()))
+			}
+		}()
+		for {
+			select {
+			case msg := <-accountObj.chanMsg:
+				accountObj.processMsg(msg.Cmd, msg.Data)
+			case <-accountObj.chanClose:
+				return
+			}
+		}
+	}()
+}
+
+// Close : 结束
+func (accountObj *Account) Close() {
+	Ctx.Log.Infoln("Account work coroutine close#1, account:", accountObj.account)
+	atomic.StoreInt32(&accountObj.closeFlag, 1)
+	accountObj.chanClose <- 1
+	Ctx.Log.Infoln("Account work coroutine close#2, account:", accountObj.account)
 }
 
 // FirstInitialization : 账号首次创建初始化
-func (accountobj *Account) FirstInitialization() bool {
+func (accountObj *Account) FirstInitialization() bool {
 	return true
 }
 
+// IsColse : 是否已经关闭
+func (accountObj *Account) IsColse() bool {
+	flag := atomic.LoadInt32(&accountObj.closeFlag)
+	return flag != 0
+}
+
 // GetRoles : 获取账号对应的角色列表
-func (accountobj *Account) GetRoles() []*Role {
-	return accountobj.roles
+func (accountObj *Account) GetRoles() []*Role {
+	return accountObj.roles
+}
+
+// SetSession : 设置账号对应的网络会话
+func (accountObj *Account) SetSession(sess common.INode) {
+	accountObj.sess = sess
 }

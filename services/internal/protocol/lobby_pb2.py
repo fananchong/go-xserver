@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='lobby.proto',
   package='protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0blobby.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"W\n\tCMD_LOBBY\"J\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\x12\n\x0eQUERY_ROLELIST\x10\x01\x12\x0e\n\nENTER_GAME\x10\x02\x12\x11\n\x0cMSGCMDOFFSET\x10\xa0\x1f\";\n\x17\x45NUM_LOBBY_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"\x1a\n\x18MSG_LOBBY_QUERY_ROLELIST\"\x7f\n\x1fMSG_LOBBY_QUERY_ROLELIST_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFO\"&\n\x14MSG_LOBBY_ENTER_GAME\x12\x0e\n\x06RoleID\x18\x01 \x01(\x04\"\x82\x01\n\x1bMSG_LOBBY_ENTER_GAME_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12.\n\nDetailInfo\x18\x02 \x01(\x0b\x32\x1a.protocol.ROLE_DETAIL_INFOb\x06proto3')
+  serialized_pb=_b('\n\x0blobby.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"N\n\tCMD_LOBBY\"A\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05LOGIN\x10\x01\x12\x0e\n\nENTER_GAME\x10\x02\x12\x11\n\x0cMSGCMDOFFSET\x10\xa0\x1f\";\n\x17\x45NUM_LOBBY_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"\x11\n\x0fMSG_LOBBY_LOGIN\"v\n\x16MSG_LOBBY_LOGIN_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFO\"4\n\x14MSG_LOBBY_ENTER_GAME\x12\x0c\n\x04Slot\x18\x01 \x01(\r\x12\x0e\n\x06RoleID\x18\x02 \x01(\x04\"\x82\x01\n\x1bMSG_LOBBY_ENTER_GAME_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12.\n\nDetailInfo\x18\x02 \x01(\x0b\x32\x1a.protocol.ROLE_DETAIL_INFOb\x06proto3')
   ,
   dependencies=[lobby__custom__pb2.DESCRIPTOR,])
 
@@ -37,7 +37,7 @@ _CMD_LOBBY_ENUM = _descriptor.EnumDescriptor(
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='QUERY_ROLELIST', index=1, number=1,
+      name='LOGIN', index=1, number=1,
       options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
@@ -52,7 +52,7 @@ _CMD_LOBBY_ENUM = _descriptor.EnumDescriptor(
   containing_type=None,
   options=None,
   serialized_start=58,
-  serialized_end=132,
+  serialized_end=123,
 )
 _sym_db.RegisterEnumDescriptor(_CMD_LOBBY_ENUM)
 
@@ -73,8 +73,8 @@ _ENUM_LOBBY_COMMON_ERROR_ENUM = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=161,
-  serialized_end=193,
+  serialized_start=152,
+  serialized_end=184,
 )
 _sym_db.RegisterEnumDescriptor(_ENUM_LOBBY_COMMON_ERROR_ENUM)
 
@@ -100,7 +100,7 @@ _CMD_LOBBY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=45,
-  serialized_end=132,
+  serialized_end=123,
 )
 
 
@@ -124,14 +124,14 @@ _ENUM_LOBBY_COMMON_ERROR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=134,
-  serialized_end=193,
+  serialized_start=125,
+  serialized_end=184,
 )
 
 
-_MSG_LOBBY_QUERY_ROLELIST = _descriptor.Descriptor(
-  name='MSG_LOBBY_QUERY_ROLELIST',
-  full_name='protocol.MSG_LOBBY_QUERY_ROLELIST',
+_MSG_LOBBY_LOGIN = _descriptor.Descriptor(
+  name='MSG_LOBBY_LOGIN',
+  full_name='protocol.MSG_LOBBY_LOGIN',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -148,27 +148,27 @@ _MSG_LOBBY_QUERY_ROLELIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=195,
-  serialized_end=221,
+  serialized_start=186,
+  serialized_end=203,
 )
 
 
-_MSG_LOBBY_QUERY_ROLELIST_RESULT = _descriptor.Descriptor(
-  name='MSG_LOBBY_QUERY_ROLELIST_RESULT',
-  full_name='protocol.MSG_LOBBY_QUERY_ROLELIST_RESULT',
+_MSG_LOBBY_LOGIN_RESULT = _descriptor.Descriptor(
+  name='MSG_LOBBY_LOGIN_RESULT',
+  full_name='protocol.MSG_LOBBY_LOGIN_RESULT',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='Err', full_name='protocol.MSG_LOBBY_QUERY_ROLELIST_RESULT.Err', index=0,
+      name='Err', full_name='protocol.MSG_LOBBY_LOGIN_RESULT.Err', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Roles', full_name='protocol.MSG_LOBBY_QUERY_ROLELIST_RESULT.Roles', index=1,
+      name='Roles', full_name='protocol.MSG_LOBBY_LOGIN_RESULT.Roles', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -186,8 +186,8 @@ _MSG_LOBBY_QUERY_ROLELIST_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=223,
-  serialized_end=350,
+  serialized_start=205,
+  serialized_end=323,
 )
 
 
@@ -199,8 +199,15 @@ _MSG_LOBBY_ENTER_GAME = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='RoleID', full_name='protocol.MSG_LOBBY_ENTER_GAME.RoleID', index=0,
-      number=1, type=4, cpp_type=4, label=1,
+      name='Slot', full_name='protocol.MSG_LOBBY_ENTER_GAME.Slot', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='RoleID', full_name='protocol.MSG_LOBBY_ENTER_GAME.RoleID', index=1,
+      number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -217,8 +224,8 @@ _MSG_LOBBY_ENTER_GAME = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=352,
-  serialized_end=390,
+  serialized_start=325,
+  serialized_end=377,
 )
 
 
@@ -255,20 +262,20 @@ _MSG_LOBBY_ENTER_GAME_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=393,
-  serialized_end=523,
+  serialized_start=380,
+  serialized_end=510,
 )
 
 _CMD_LOBBY_ENUM.containing_type = _CMD_LOBBY
 _ENUM_LOBBY_COMMON_ERROR_ENUM.containing_type = _ENUM_LOBBY_COMMON_ERROR
-_MSG_LOBBY_QUERY_ROLELIST_RESULT.fields_by_name['Err'].enum_type = _ENUM_LOBBY_COMMON_ERROR_ENUM
-_MSG_LOBBY_QUERY_ROLELIST_RESULT.fields_by_name['Roles'].message_type = lobby__custom__pb2._ROLE_BASE_INFO
+_MSG_LOBBY_LOGIN_RESULT.fields_by_name['Err'].enum_type = _ENUM_LOBBY_COMMON_ERROR_ENUM
+_MSG_LOBBY_LOGIN_RESULT.fields_by_name['Roles'].message_type = lobby__custom__pb2._ROLE_BASE_INFO
 _MSG_LOBBY_ENTER_GAME_RESULT.fields_by_name['Err'].enum_type = _ENUM_LOBBY_COMMON_ERROR_ENUM
 _MSG_LOBBY_ENTER_GAME_RESULT.fields_by_name['DetailInfo'].message_type = lobby__custom__pb2._ROLE_DETAIL_INFO
 DESCRIPTOR.message_types_by_name['CMD_LOBBY'] = _CMD_LOBBY
 DESCRIPTOR.message_types_by_name['ENUM_LOBBY_COMMON_ERROR'] = _ENUM_LOBBY_COMMON_ERROR
-DESCRIPTOR.message_types_by_name['MSG_LOBBY_QUERY_ROLELIST'] = _MSG_LOBBY_QUERY_ROLELIST
-DESCRIPTOR.message_types_by_name['MSG_LOBBY_QUERY_ROLELIST_RESULT'] = _MSG_LOBBY_QUERY_ROLELIST_RESULT
+DESCRIPTOR.message_types_by_name['MSG_LOBBY_LOGIN'] = _MSG_LOBBY_LOGIN
+DESCRIPTOR.message_types_by_name['MSG_LOBBY_LOGIN_RESULT'] = _MSG_LOBBY_LOGIN_RESULT
 DESCRIPTOR.message_types_by_name['MSG_LOBBY_ENTER_GAME'] = _MSG_LOBBY_ENTER_GAME
 DESCRIPTOR.message_types_by_name['MSG_LOBBY_ENTER_GAME_RESULT'] = _MSG_LOBBY_ENTER_GAME_RESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -287,19 +294,19 @@ ENUM_LOBBY_COMMON_ERROR = _reflection.GeneratedProtocolMessageType('ENUM_LOBBY_C
   ))
 _sym_db.RegisterMessage(ENUM_LOBBY_COMMON_ERROR)
 
-MSG_LOBBY_QUERY_ROLELIST = _reflection.GeneratedProtocolMessageType('MSG_LOBBY_QUERY_ROLELIST', (_message.Message,), dict(
-  DESCRIPTOR = _MSG_LOBBY_QUERY_ROLELIST,
+MSG_LOBBY_LOGIN = _reflection.GeneratedProtocolMessageType('MSG_LOBBY_LOGIN', (_message.Message,), dict(
+  DESCRIPTOR = _MSG_LOBBY_LOGIN,
   __module__ = 'lobby_pb2'
-  # @@protoc_insertion_point(class_scope:protocol.MSG_LOBBY_QUERY_ROLELIST)
+  # @@protoc_insertion_point(class_scope:protocol.MSG_LOBBY_LOGIN)
   ))
-_sym_db.RegisterMessage(MSG_LOBBY_QUERY_ROLELIST)
+_sym_db.RegisterMessage(MSG_LOBBY_LOGIN)
 
-MSG_LOBBY_QUERY_ROLELIST_RESULT = _reflection.GeneratedProtocolMessageType('MSG_LOBBY_QUERY_ROLELIST_RESULT', (_message.Message,), dict(
-  DESCRIPTOR = _MSG_LOBBY_QUERY_ROLELIST_RESULT,
+MSG_LOBBY_LOGIN_RESULT = _reflection.GeneratedProtocolMessageType('MSG_LOBBY_LOGIN_RESULT', (_message.Message,), dict(
+  DESCRIPTOR = _MSG_LOBBY_LOGIN_RESULT,
   __module__ = 'lobby_pb2'
-  # @@protoc_insertion_point(class_scope:protocol.MSG_LOBBY_QUERY_ROLELIST_RESULT)
+  # @@protoc_insertion_point(class_scope:protocol.MSG_LOBBY_LOGIN_RESULT)
   ))
-_sym_db.RegisterMessage(MSG_LOBBY_QUERY_ROLELIST_RESULT)
+_sym_db.RegisterMessage(MSG_LOBBY_LOGIN_RESULT)
 
 MSG_LOBBY_ENTER_GAME = _reflection.GeneratedProtocolMessageType('MSG_LOBBY_ENTER_GAME', (_message.Message,), dict(
   DESCRIPTOR = _MSG_LOBBY_ENTER_GAME,

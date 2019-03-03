@@ -9,11 +9,14 @@ import (
 // Lobby : 大厅服务器
 type Lobby struct {
 	*db.IDGen
+	accountMgr *AccountMgr
 }
 
 // NewLobby : 构造函数
 func NewLobby() *Lobby {
-	lobby := &Lobby{}
+	lobby := &Lobby{
+		accountMgr: NewAccountMgr(),
+	}
 	lobby.IDGen = &db.IDGen{}
 	return lobby
 }
@@ -36,7 +39,7 @@ func (lobby *Lobby) Close() {
 func (lobby *Lobby) onRelayMsg(source common.NodeType, sess common.INode, account string, cmd uint64, data []byte) {
 	switch source {
 	case common.Client:
-		lobby.onClientMsg(sess, account, cmd, data)
+		lobby.accountMgr.PostMsg(sess, account, cmd, data)
 	default:
 		Ctx.Log.Errorln("Unknown source, type:", source, "(", int(source), ")")
 	}
