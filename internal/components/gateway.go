@@ -28,8 +28,8 @@ func NewGateway(ctx *common.Context) *Gateway {
 	gw := &Gateway{
 		ctx:          ctx,
 		allocServers: make(map[string]map[uint32]common.NodeID),
+		Node:         nodegateway.NewNode(ctx),
 	}
-	gw.Node = nodegateway.NewNode(ctx)
 	gw.ctx.Gateway = gw
 	return gw
 }
@@ -81,6 +81,9 @@ func (gw *Gateway) VerifyToken(account, token string) uint32 {
 
 // OnLogout : 当客户端连接断开，通知框架层
 func (gw *Gateway) OnLogout(account string) {
+
+	// TODO: 做`处理闲置连接`时，触发这里调用
+
 	gw.allocServersMutex.Lock()
 	defer gw.allocServersMutex.Unlock()
 	delete(gw.allocServers, account)

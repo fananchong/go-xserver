@@ -36,7 +36,6 @@ func (user *User) OnRecv(data []byte, flag byte) {
 // OnClose : 断开连接，被触发
 func (user *User) OnClose() {
 	gateway.DelUser(user.account)
-	Ctx.Gateway.OnLogout(user.account)
 }
 
 func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte) bool {
@@ -67,7 +66,10 @@ func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte
 		return false
 	}
 	user.account = msg.GetAccount()
-	gateway.AddUser(user.account, user)
+	kickOldUser := gateway.AddUser(user.account, user)
+	if kickOldUser {
+		Ctx.Log.Infoln("Delete old player object, account:", user.account)
+	}
 	Ctx.Log.Infoln("Token verification succeeded, account:", msg.GetAccount())
 	return true
 }

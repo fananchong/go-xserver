@@ -15,8 +15,8 @@ github.com/fananchong/go-redis-orm.v2 v0.0.0-20190224024744-b3158985225c h1:SZZc
 github.com/fananchong/go-redis-orm.v2 v0.0.0-20190224024744-b3158985225c/go.mod h1:HgSap/1Tq/6LazUQ/g4R25n0GgArz3eDdu3NM8ddEU8=
 github.com/fananchong/goredis v0.0.0-20181224141957-8c4a4601c4c9 h1:8TZIKl6eywKmlNw3JGUSnvhNwuUdYiavh4Mp/DJbSXo=
 github.com/fananchong/goredis v0.0.0-20181224141957-8c4a4601c4c9/go.mod h1:5LLIOz1tkD4ZKNwGVP2Ns9DlF4bCPsi3a5J7GkwuJQo=
-github.com/fananchong/gotcp v0.0.0-20190123091818-cf0db64d5cbf h1:5hT6yYFaK9TeSUYL2XnN96PhNlziJp9kPtV9k6mD4d4=
-github.com/fananchong/gotcp v0.0.0-20190123091818-cf0db64d5cbf/go.mod h1:NwqSPUhE3lftRXXTbIYO3aSdkdQSs2gCGIZA4Mi1B6c=
+github.com/fananchong/gotcp v0.0.0-20190303060523-5b9bc29d0bfb h1:vW+ZsoypSIvoJNeiGdH6LQKIT6uh0Gd73Wbuk3o+6XE=
+github.com/fananchong/gotcp v0.0.0-20190303060523-5b9bc29d0bfb/go.mod h1:NwqSPUhE3lftRXXTbIYO3aSdkdQSs2gCGIZA4Mi1B6c=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=

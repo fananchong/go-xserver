@@ -4,7 +4,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/fananchong/glog v0.0.0-20190224032502-d814c6adef29
 	github.com/fananchong/go-redis-orm.v2 v0.0.0-20190224024744-b3158985225c
-	github.com/fananchong/gotcp v0.0.0-20190123091818-cf0db64d5cbf
+	github.com/fananchong/gotcp v0.0.0-20190303060523-5b9bc29d0bfb
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/gogo/protobuf v1.2.1
 	github.com/gomodule/redigo v2.0.0+incompatible

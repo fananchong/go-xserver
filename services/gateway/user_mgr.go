@@ -16,15 +16,15 @@ func NewUserMgr() *UserMgr {
 }
 
 // AddUser : 加入一个玩家
-func (userMgr *UserMgr) AddUser(account string, user *User) {
-	// 如果存在旧玩家对象，关闭之
-	if old := userMgr.GetUser(account); old != nil {
-		Ctx.Log.Infoln("Delete old player object, account:", account)
-		old.Close()
+func (userMgr *UserMgr) AddUser(account string, user *User) (kickOldUser bool) {
+	userMgr.mutex.RLock()
+	defer userMgr.mutex.RUnlock()
+	if old, ok := userMgr.users[account]; ok {
+		old.CloseSessionOnly()
+		kickOldUser = true
 	}
-	userMgr.mutex.Lock()
-	defer userMgr.mutex.Unlock()
 	userMgr.users[account] = user
+	return
 }
 
 // GetUser : 获取一个玩家
