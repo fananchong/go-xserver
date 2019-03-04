@@ -123,12 +123,18 @@ func parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix string) {
 			flags.Bool(name, v, desc)
 		case reflect.String:
 			flags.String(name, defaultValue, desc)
-		case reflect.Int:
+		case reflect.Int, reflect.Int32:
 			v, _ := strconv.ParseInt(defaultValue, 10, 32)
 			flags.Int(name, int(v), desc)
-		case reflect.Uint:
+		case reflect.Uint, reflect.Uint32:
 			v, _ := strconv.ParseUint(defaultValue, 10, 32)
 			flags.Uint(name, uint(v), desc)
+		case reflect.Int64:
+			v, _ := strconv.ParseInt(defaultValue, 10, 64)
+			flags.Int64(name, int64(v), desc)
+		case reflect.Uint64:
+			v, _ := strconv.ParseUint(defaultValue, 10, 64)
+			flags.Uint64(name, uint64(v), desc)
 		case reflect.Slice:
 			var v []string
 			if defaultValue != "" {

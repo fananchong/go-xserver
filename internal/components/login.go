@@ -1,8 +1,6 @@
 package components
 
 import (
-	"fmt"
-
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/db"
@@ -201,7 +199,7 @@ LOOP:
 	}
 	login.ctx.Log.Infoln("account:", account, "server:", data)
 	var ret string
-	key := fmt.Sprintf("srv%d_%s", nodeType, account)
+	key := db.GetKeyAllocServer(uint32(nodeType), account)
 	ret, err = login.serverRedis.SetGetX(key, data, 365*86400) // 设置账号分配的服务器资源信息，过期时间 1 年
 	if err != nil {
 		login.ctx.Log.Errorln(err, "account:", account)

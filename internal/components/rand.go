@@ -2,9 +2,9 @@ package components
 
 import (
 	"math/rand"
-	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/utils"
 )
 
 // Rand : 随机函数组件
@@ -25,7 +25,7 @@ func (r *Rand) Start() bool {
 }
 
 func (r *Rand) init() {
-	r.ctx.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	r.ctx.Rand = rand.New(rand.NewSource(utils.GetMillisecondTimestamp()))
 }
 
 // Close : 关闭组件

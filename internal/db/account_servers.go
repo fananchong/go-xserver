@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -31,4 +32,9 @@ func (accountserver *AccountServer) Marshal() (string, error) {
 // Unmarshal : 反序列化
 func (accountserver *AccountServer) Unmarshal(data string) error {
 	return json.Unmarshal([]byte(data), accountserver)
+}
+
+// GetKeyAllocServer : 账号对应的服务器资源的 KEY
+func GetKeyAllocServer(nodeType uint32, account string) string {
+	return fmt.Sprintf("srv%d_%s", nodeType, account)
 }
