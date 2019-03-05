@@ -56,7 +56,7 @@ func (gw *Gateway) Close() {
 }
 
 // VerifyToken : 令牌验证。返回值： 0 成功；1 令牌错误； 2 系统错误
-func (gw *Gateway) VerifyToken(account, token string) uint32 {
+func (gw *Gateway) VerifyToken(account, token string, clientSession common.IClientSesion) uint32 {
 	tokenObj := db.NewToken(gw.ctx.Config.DbToken.Name, account)
 	if err := tokenObj.Load(); err != nil {
 		gw.ctx.Log.Errorln(err, "account:", account)
@@ -67,7 +67,7 @@ func (gw *Gateway) VerifyToken(account, token string) uint32 {
 		gw.ctx.Log.Errorf("Token verification failed, expecting token to be %s, but %s. account: %s\n", tmpTokenObj.Token, token, account)
 		return 1
 	}
-	gw.users.AddUser(account, tmpTokenObj.GetAllocServers())
+	gw.users.AddUser(account, tmpTokenObj.GetAllocServers(), clientSession)
 	return 0
 }
 

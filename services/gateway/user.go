@@ -50,7 +50,7 @@ func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte
 		user.Close()
 		return false
 	}
-	errcode := Ctx.Gateway.VerifyToken(msg.GetAccount(), msg.GetToken())
+	errcode := Ctx.Gateway.VerifyToken(msg.GetAccount(), msg.GetToken(), user)
 	repmsg := &protocol.MSG_GATEWAY_VERIFY_TOKEN_RESULT{}
 	repmsg.Err = protocol.ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM(errcode)
 	if errcode != 0 {

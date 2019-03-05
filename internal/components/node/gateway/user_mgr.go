@@ -18,14 +18,16 @@ type User struct {
 	Account         string
 	Servers         map[uint32]common.NodeID
 	ActiveTimestamp int64
+	ClientSession   common.IClientSesion
 }
 
 // NewUser : 客户端对象构造函数
-func NewUser(ctx *common.Context, account string) *User {
+func NewUser(ctx *common.Context, account string, clientSession common.IClientSesion) *User {
 	user := &User{
 		Account:         account,
 		Servers:         make(map[uint32]common.NodeID),
 		ActiveTimestamp: utils.GetMillisecondTimestamp(),
+		ClientSession:   clientSession,
 	}
 	return user
 }
@@ -50,10 +52,10 @@ func NewUserMgr(ctx *common.Context) *UserMgr {
 }
 
 // AddUser : 加入一个玩家
-func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SERVER_ID) error {
+func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SERVER_ID, clientSession common.IClientSesion) error {
 	userMgr.mutex.Lock()
 	defer userMgr.mutex.Unlock()
-	user := NewUser(userMgr.ctx, account)
+	user := NewUser(userMgr.ctx, account, clientSession)
 	for nodeType, serverID := range servers {
 		user.Servers[nodeType] = utility.ServerID2NodeID(serverID)
 		key := db.GetKeyAllocServer(nodeType, account)
@@ -111,6 +113,7 @@ func (userMgr *UserMgr) checkActive() {
 			}
 		}
 		delete(userMgr.users, user.Account)
+		user.ClientSession.Close()
 		userMgr.ctx.Log.Infoln("Delete user information, account:", user.Account)
 	}
 }
