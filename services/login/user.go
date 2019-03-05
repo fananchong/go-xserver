@@ -9,6 +9,7 @@ import (
 // User : 登录玩家类
 type User struct {
 	gotcp.Session
+	account string
 }
 
 // OnRecv : 接收到网络数据包，被触发
@@ -27,7 +28,9 @@ func (user *User) OnRecv(data []byte, flag byte) {
 
 // OnClose : 断开连接，被触发
 func (user *User) OnClose() {
-
+	if user.account != "" {
+		Ctx.Log.Infoln("Account connection disconnected, account:", user.account)
+	}
 }
 
 func (user *User) doVerify(cmd protocol.CMD_LOGIN_ENUM, data []byte, flag byte) bool {
@@ -50,6 +53,7 @@ func (user *User) doVerify(cmd protocol.CMD_LOGIN_ENUM, data []byte, flag byte) 
 
 func (user *User) doLogin(account, passwd string, mode protocol.ENUM_LOGIN_MODE_ENUM, userdata []byte) {
 	Ctx.Log.Infoln("account =", account, "password =", passwd, "mode =", mode)
+	user.account = account
 	token, addrs, ports, nodeTypes, errCode := Ctx.Login.Login(account, passwd, mode == protocol.ENUM_LOGIN_MODE_DEFAULT, userdata)
 	if errCode == common.LoginSuccess {
 		Ctx.Log.Infoln("account =", account, "token =", token, "addr =", addrs, "port =", ports, "nodeTypes =", nodeTypes)

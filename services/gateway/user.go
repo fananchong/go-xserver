@@ -36,6 +36,7 @@ func (user *User) OnRecv(data []byte, flag byte) {
 // OnClose : 断开连接，被触发
 func (user *User) OnClose() {
 	gateway.DelUser(user.account)
+	Ctx.Log.Infoln("Account connection disconnected, account:", user.account)
 }
 
 func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte) bool {
