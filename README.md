@@ -67,7 +67,7 @@
 - 服务器组内通信
   - 服务器组内消息中继（One Node <-> Gateway <-> Other Node）
 - INode Send系列接口不干净
-  - msg proto.Message 改为 msgdata []byte, userdata []byte 代替，方能支持使用方协议自由
+  - msg proto.Message 改为 msg []byte 代替，方能支持使用方协议自由
 - 大厅服务器
   - 创建角色
   - 角色私聊、世界聊天
