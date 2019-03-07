@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package db;
+
+message DB_ROLELIST {
+    map<uint32, uint64> RoleIDs = 1;              // 角色 ID 列表
+}

@@ -40,7 +40,9 @@ func (accountMgr *AccountMgr) GetAccount(account string) *Account {
 	accountMgr.mutex.RLock()
 	defer accountMgr.mutex.RUnlock()
 	if accountObj, ok := accountMgr.accounts[account]; ok {
-		return accountObj
+		if accountObj.Inited() {
+			return accountObj
+		}
 	}
 	return nil
 }
@@ -58,6 +60,7 @@ func (accountMgr *AccountMgr) DelAccount(account string) {
 // PostMsg : 推送消息
 func (accountMgr *AccountMgr) PostMsg(sess common.INode, account string, cmd uint64, data []byte) {
 	var accountObj *Account
+	// TODO: 确保 accountObj 的第一条消息是 protocol.CMD_LOBBY_LOGIN
 	if protocol.CMD_LOBBY_ENUM(cmd) == protocol.CMD_LOBBY_LOGIN {
 		accountObj = accountMgr.onLogin(sess, account)
 	} else {

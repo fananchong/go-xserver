@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"runtime/debug"
 	"sync/atomic"
 
@@ -17,12 +16,14 @@ const LimitRoleNum = 1
 // Account : 账号类
 type Account struct {
 	*db.RoleList
-	account   string
-	roles     []*Role
-	sess      common.INode
-	chanMsg   chan ChanMsg
-	chanClose chan int
-	closeFlag int32
+	account     string       // 账号字符串
+	roles       []*Role      // 角色列表
+	sess        common.INode // 该账号的网络回话对象
+	chanMsg     chan ChanMsg // 用于接收该账号消息
+	chanClose   chan int     // 用于接收该账号消息循环
+	closeFlag   int32        // 标志该账号是否结束会话
+	currentRole *Role        // 该账号当前角色
+	inited      bool         // 该账号是否已经初始化完毕
 }
 
 // NewAccount : 角色列表类构造函数
@@ -48,35 +49,19 @@ func (accountObj *Account) Init() error {
 		}
 	}
 	accountObj.roles = make([]*Role, LimitRoleNum)
-	var ids [256]uint64
-	ids[0] = accountObj.RoleList.GetSlot0()
-	ids[1] = accountObj.RoleList.GetSlot1()
-	ids[2] = accountObj.RoleList.GetSlot2()
-	ids[3] = accountObj.RoleList.GetSlot3()
-	ids[4] = accountObj.RoleList.GetSlot4()
+	ids := accountObj.RoleList.GetRoles(false).GetRoleIDs()
 	for i := 0; i < LimitRoleNum; i++ {
-		roleID := ids[i]
-		if roleID == 0 {
-			// 没有角色，则生成角色ID
-			id, err := lobby.NewID(db.IDGenTypeRole)
+		if roleID, ok := ids[uint32(i)]; ok {
+			role, err := NewRole(roleID, account)
 			if err != nil {
 				return err
 			}
-			roleID = id
-			// 角色创建时，这里才用下`反射`。因此不要当心`反射`造成的效率问题
-			v := reflect.ValueOf(accountObj.RoleList)
-			f := v.MethodByName(fmt.Sprintf("SetSlot%d", i))
-			f.Call([]reflect.Value{reflect.ValueOf(roleID)})
+			accountObj.roles[i] = role
+		} else {
+			accountObj.roles[i] = nil
 		}
-		role, err := NewRole(roleID, account)
-		if err != nil {
-			return err
-		}
-		accountObj.roles[i] = role
 	}
-	if err := accountObj.Save(); err != nil {
-		return err
-	}
+	accountObj.inited = true
 	return nil
 }
 
@@ -127,4 +112,14 @@ func (accountObj *Account) GetRoles() []*Role {
 // SetSession : 设置账号对应的网络会话
 func (accountObj *Account) SetSession(sess common.INode) {
 	accountObj.sess = sess
+}
+
+// Inited : 是否已经初始化
+func (accountObj *Account) Inited() bool {
+	return accountObj.inited
+}
+
+// GetRole : 获取账号当前角色
+func (accountObj *Account) GetRole() *Role {
+	return accountObj.currentRole
 }

@@ -9,17 +9,14 @@ import (
 	"errors"
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
+	"github.com/gogo/protobuf/proto"
 	"github.com/gomodule/redigo/redis"
 )
 
 // RoleList : 代表 1 个 redis 对象
 type RoleList struct {
 	Key   string
-	slot0 uint64
-	slot1 uint64
-	slot2 uint64
-	slot3 uint64
-	slot4 uint64
+	roles DB_ROLELIST
 
 	dirtyDataInRoleList               map[string]interface{}
 	dirtyDataForStructFiledInRoleList map[string]interface{}
@@ -65,20 +62,15 @@ func (objRoleList *RoleList) Load() error {
 		return go_redis_orm.ERR_ISNOT_EXIST_KEY
 	}
 	var data struct {
-		Slot0 uint64 `redis:"slot0"`
-		Slot1 uint64 `redis:"slot1"`
-		Slot2 uint64 `redis:"slot2"`
-		Slot3 uint64 `redis:"slot3"`
-		Slot4 uint64 `redis:"slot4"`
+		Roles []byte `redis:"roles"`
 	}
 	if err := redis.ScanStruct(val, &data); err != nil {
 		return err
 	}
-	objRoleList.slot0 = data.Slot0
-	objRoleList.slot1 = data.Slot1
-	objRoleList.slot2 = data.Slot2
-	objRoleList.slot3 = data.Slot3
-	objRoleList.slot4 = data.Slot4
+	if err := proto.Unmarshal(data.Roles, &objRoleList.roles); err != nil {
+		return err
+	}
+
 	objRoleList.isLoadInRoleList = true
 	return nil
 }
@@ -90,7 +82,13 @@ func (objRoleList *RoleList) Save() error {
 	}
 	for k := range objRoleList.dirtyDataForStructFiledInRoleList {
 		_ = k
-
+		if k == "roles" {
+			data, err := proto.Marshal(&objRoleList.roles)
+			if err != nil {
+				return err
+			}
+			objRoleList.dirtyDataInRoleList["roles"] = data
+		}
 	}
 	db := go_redis_orm.GetDB(objRoleList.ddbNameInRoleList)
 	if _, err := db.Do("HMSET", redis.Args{}.Add(objRoleList.dbKeyInRoleList).AddFlat(objRoleList.dirtyDataInRoleList)...); err != nil {
@@ -132,7 +130,13 @@ func (objRoleList *RoleList) Expire(v uint) {
 func (objRoleList *RoleList) DirtyData() (map[string]interface{}, error) {
 	for k := range objRoleList.dirtyDataForStructFiledInRoleList {
 		_ = k
-
+		if k == "roles" {
+			data, err := proto.Marshal(&objRoleList.roles)
+			if err != nil {
+				return nil, err
+			}
+			objRoleList.dirtyDataInRoleList["roles"] = data
+		}
 	}
 	data := make(map[string]interface{})
 	for k, v := range objRoleList.dirtyDataInRoleList {
@@ -160,57 +164,10 @@ func (objRoleList *RoleList) Save2(dirtyData map[string]interface{}) error {
 	return nil
 }
 
-// GetSlot0 : 获取字段值
-func (objRoleList *RoleList) GetSlot0() uint64 {
-	return objRoleList.slot0
-}
-
-// GetSlot1 : 获取字段值
-func (objRoleList *RoleList) GetSlot1() uint64 {
-	return objRoleList.slot1
-}
-
-// GetSlot2 : 获取字段值
-func (objRoleList *RoleList) GetSlot2() uint64 {
-	return objRoleList.slot2
-}
-
-// GetSlot3 : 获取字段值
-func (objRoleList *RoleList) GetSlot3() uint64 {
-	return objRoleList.slot3
-}
-
-// GetSlot4 : 获取字段值
-func (objRoleList *RoleList) GetSlot4() uint64 {
-	return objRoleList.slot4
-}
-
-// SetSlot0 : 设置字段值
-func (objRoleList *RoleList) SetSlot0(value uint64) {
-	objRoleList.slot0 = value
-	objRoleList.dirtyDataInRoleList["slot0"] = value
-}
-
-// SetSlot1 : 设置字段值
-func (objRoleList *RoleList) SetSlot1(value uint64) {
-	objRoleList.slot1 = value
-	objRoleList.dirtyDataInRoleList["slot1"] = value
-}
-
-// SetSlot2 : 设置字段值
-func (objRoleList *RoleList) SetSlot2(value uint64) {
-	objRoleList.slot2 = value
-	objRoleList.dirtyDataInRoleList["slot2"] = value
-}
-
-// SetSlot3 : 设置字段值
-func (objRoleList *RoleList) SetSlot3(value uint64) {
-	objRoleList.slot3 = value
-	objRoleList.dirtyDataInRoleList["slot3"] = value
-}
-
-// SetSlot4 : 设置字段值
-func (objRoleList *RoleList) SetSlot4(value uint64) {
-	objRoleList.slot4 = value
-	objRoleList.dirtyDataInRoleList["slot4"] = value
+// GetRoles : 获取字段值
+func (objRoleList *RoleList) GetRoles(mutable bool) *DB_ROLELIST {
+	if mutable {
+		objRoleList.dirtyDataForStructFiledInRoleList["roles"] = nil
+	}
+	return &objRoleList.roles
 }

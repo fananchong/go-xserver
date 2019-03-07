@@ -32,7 +32,6 @@ message MSG_LOBBY_LOGIN_RESULT {
 // 进入游戏 ( C -> LOBBY )
 message MSG_LOBBY_ENTER_GAME {
     uint32 Slot = 1;                                    // 角色所在的槽位。如每个账号共有 3 个角色，则槽位值为 0 1 2
-    uint64 RoleID = 2;                                  // 角色ID。还没创建过角色，则填 0
 }
 
 message MSG_LOBBY_ENTER_GAME_RESULT {

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='lobby.proto',
   package='protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0blobby.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"N\n\tCMD_LOBBY\"A\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05LOGIN\x10\x01\x12\x0e\n\nENTER_GAME\x10\x02\x12\x11\n\x0cMSGCMDOFFSET\x10\xa0\x1f\";\n\x17\x45NUM_LOBBY_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"\x11\n\x0fMSG_LOBBY_LOGIN\"v\n\x16MSG_LOBBY_LOGIN_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFO\"4\n\x14MSG_LOBBY_ENTER_GAME\x12\x0c\n\x04Slot\x18\x01 \x01(\r\x12\x0e\n\x06RoleID\x18\x02 \x01(\x04\"\x82\x01\n\x1bMSG_LOBBY_ENTER_GAME_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12.\n\nDetailInfo\x18\x02 \x01(\x0b\x32\x1a.protocol.ROLE_DETAIL_INFOb\x06proto3')
+  serialized_pb=_b('\n\x0blobby.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"N\n\tCMD_LOBBY\"A\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05LOGIN\x10\x01\x12\x0e\n\nENTER_GAME\x10\x02\x12\x11\n\x0cMSGCMDOFFSET\x10\xa0\x1f\";\n\x17\x45NUM_LOBBY_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"\x11\n\x0fMSG_LOBBY_LOGIN\"v\n\x16MSG_LOBBY_LOGIN_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFO\"$\n\x14MSG_LOBBY_ENTER_GAME\x12\x0c\n\x04Slot\x18\x01 \x01(\r\"\x82\x01\n\x1bMSG_LOBBY_ENTER_GAME_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_LOBBY_COMMON_ERROR.ENUM\x12.\n\nDetailInfo\x18\x02 \x01(\x0b\x32\x1a.protocol.ROLE_DETAIL_INFOb\x06proto3')
   ,
   dependencies=[lobby__custom__pb2.DESCRIPTOR,])
 
@@ -205,13 +205,6 @@ _MSG_LOBBY_ENTER_GAME = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='RoleID', full_name='protocol.MSG_LOBBY_ENTER_GAME.RoleID', index=1,
-      number=2, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -225,7 +218,7 @@ _MSG_LOBBY_ENTER_GAME = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=325,
-  serialized_end=377,
+  serialized_end=361,
 )
 
 
@@ -262,8 +255,8 @@ _MSG_LOBBY_ENTER_GAME_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=380,
-  serialized_end=510,
+  serialized_start=364,
+  serialized_end=494,
 )
 
 _CMD_LOBBY_ENUM.containing_type = _CMD_LOBBY
