@@ -27,8 +27,7 @@ func (accountMgr *AccountMgr) AddAccount(account string) *Account {
 	accountMgr.mutex.Lock()
 	defer accountMgr.mutex.Unlock()
 	if old, ok := accountMgr.accounts[account]; ok {
-		old.Close()
-		delete(accountMgr.accounts, account)
+		return old
 	}
 	accountObj := NewAccount(account)
 	accountMgr.accounts[account] = accountObj
@@ -60,7 +59,6 @@ func (accountMgr *AccountMgr) DelAccount(account string) {
 // PostMsg : 推送消息
 func (accountMgr *AccountMgr) PostMsg(sess common.INode, account string, cmd uint64, data []byte) {
 	var accountObj *Account
-	// TODO: 确保 accountObj 的第一条消息是 protocol.CMD_LOBBY_LOGIN
 	if protocol.CMD_LOBBY_ENUM(cmd) == protocol.CMD_LOBBY_LOGIN {
 		accountObj = accountMgr.onLogin(sess, account)
 	} else {
@@ -79,16 +77,20 @@ func (accountMgr *AccountMgr) PostMsg(sess common.INode, account string, cmd uin
 
 func (accountMgr *AccountMgr) onLogin(sess common.INode, account string) *Account {
 	if accountObj := accountMgr.AddAccount(account); accountObj != nil {
-		var err error
-		if err = accountObj.Init(); err == nil {
-			accountObj.SetSession(sess)
-			accountObj.Start()
+		if !accountObj.Inited() {
+			var err error
+			if err = accountObj.Init(); err == nil {
+				accountObj.SetSession(sess)
+				accountObj.Start()
+				return accountObj
+			}
+			Ctx.Log.Errorln("[LOGIN LOBBY]", err, "account:", account)
+			msg := &protocol.MSG_LOBBY_LOGIN_RESULT{}
+			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
+			utility.SendMsgToClient(sess, account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
+		} else {
 			return accountObj
 		}
-		Ctx.Log.Errorln("[LOGIN LOBBY]", err, "account:", account)
-		msg := &protocol.MSG_LOBBY_LOGIN_RESULT{}
-		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		utility.SendMsgToClient(sess, account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
 	}
 	Ctx.Log.Errorln("[LOGIN LOBBY] New account fail, account:", account)
 	return nil

@@ -19,20 +19,23 @@ type CMD_LOBBY_ENUM int32
 const (
 	CMD_LOBBY_INVALID      CMD_LOBBY_ENUM = 0
 	CMD_LOBBY_LOGIN        CMD_LOBBY_ENUM = 1
-	CMD_LOBBY_ENTER_GAME   CMD_LOBBY_ENUM = 2
+	CMD_LOBBY_CREATE_ROLE  CMD_LOBBY_ENUM = 2
+	CMD_LOBBY_ENTER_GAME   CMD_LOBBY_ENUM = 3
 	CMD_LOBBY_MSGCMDOFFSET CMD_LOBBY_ENUM = 4000
 )
 
 var CMD_LOBBY_ENUM_name = map[int32]string{
 	0:    "INVALID",
 	1:    "LOGIN",
-	2:    "ENTER_GAME",
+	2:    "CREATE_ROLE",
+	3:    "ENTER_GAME",
 	4000: "MSGCMDOFFSET",
 }
 var CMD_LOBBY_ENUM_value = map[string]int32{
 	"INVALID":      0,
 	"LOGIN":        1,
-	"ENTER_GAME":   2,
+	"CREATE_ROLE":  2,
+	"ENTER_GAME":   3,
 	"MSGCMDOFFSET": 4000,
 }
 
@@ -113,6 +116,49 @@ func (m *MSG_LOBBY_LOGIN_RESULT) GetRoles() []*ROLE_BASE_INFO {
 	return nil
 }
 
+// 创建角色 ( C -> LOBBY )
+type MSG_LOBBY_CREATE_ROLE struct {
+	Slot uint32          `protobuf:"varint,1,opt,name=Slot,proto3" json:"Slot,omitempty"`
+	Info *ROLE_BASE_INFO `protobuf:"bytes,2,opt,name=Info" json:"Info,omitempty"`
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE) Reset()                    { *m = MSG_LOBBY_CREATE_ROLE{} }
+func (m *MSG_LOBBY_CREATE_ROLE) String() string            { return proto.CompactTextString(m) }
+func (*MSG_LOBBY_CREATE_ROLE) ProtoMessage()               {}
+func (*MSG_LOBBY_CREATE_ROLE) Descriptor() ([]byte, []int) { return fileDescriptorLobby, []int{4} }
+
+func (m *MSG_LOBBY_CREATE_ROLE) GetSlot() uint32 {
+	if m != nil {
+		return m.Slot
+	}
+	return 0
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE) GetInfo() *ROLE_BASE_INFO {
+	if m != nil {
+		return m.Info
+	}
+	return nil
+}
+
+type MSG_LOBBY_CREATE_ROLE_RESULT struct {
+	Err ENUM_LOBBY_COMMON_ERROR_ENUM `protobuf:"varint,1,opt,name=Err,proto3,enum=protocol.ENUM_LOBBY_COMMON_ERROR_ENUM" json:"Err,omitempty"`
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE_RESULT) Reset()         { *m = MSG_LOBBY_CREATE_ROLE_RESULT{} }
+func (m *MSG_LOBBY_CREATE_ROLE_RESULT) String() string { return proto.CompactTextString(m) }
+func (*MSG_LOBBY_CREATE_ROLE_RESULT) ProtoMessage()    {}
+func (*MSG_LOBBY_CREATE_ROLE_RESULT) Descriptor() ([]byte, []int) {
+	return fileDescriptorLobby, []int{5}
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE_RESULT) GetErr() ENUM_LOBBY_COMMON_ERROR_ENUM {
+	if m != nil {
+		return m.Err
+	}
+	return ENUM_LOBBY_COMMON_ERROR_OK
+}
+
 // 进入游戏 ( C -> LOBBY )
 type MSG_LOBBY_ENTER_GAME struct {
 	Slot uint32 `protobuf:"varint,1,opt,name=Slot,proto3" json:"Slot,omitempty"`
@@ -121,7 +167,7 @@ type MSG_LOBBY_ENTER_GAME struct {
 func (m *MSG_LOBBY_ENTER_GAME) Reset()                    { *m = MSG_LOBBY_ENTER_GAME{} }
 func (m *MSG_LOBBY_ENTER_GAME) String() string            { return proto.CompactTextString(m) }
 func (*MSG_LOBBY_ENTER_GAME) ProtoMessage()               {}
-func (*MSG_LOBBY_ENTER_GAME) Descriptor() ([]byte, []int) { return fileDescriptorLobby, []int{4} }
+func (*MSG_LOBBY_ENTER_GAME) Descriptor() ([]byte, []int) { return fileDescriptorLobby, []int{6} }
 
 func (m *MSG_LOBBY_ENTER_GAME) GetSlot() uint32 {
 	if m != nil {
@@ -138,7 +184,7 @@ type MSG_LOBBY_ENTER_GAME_RESULT struct {
 func (m *MSG_LOBBY_ENTER_GAME_RESULT) Reset()                    { *m = MSG_LOBBY_ENTER_GAME_RESULT{} }
 func (m *MSG_LOBBY_ENTER_GAME_RESULT) String() string            { return proto.CompactTextString(m) }
 func (*MSG_LOBBY_ENTER_GAME_RESULT) ProtoMessage()               {}
-func (*MSG_LOBBY_ENTER_GAME_RESULT) Descriptor() ([]byte, []int) { return fileDescriptorLobby, []int{5} }
+func (*MSG_LOBBY_ENTER_GAME_RESULT) Descriptor() ([]byte, []int) { return fileDescriptorLobby, []int{7} }
 
 func (m *MSG_LOBBY_ENTER_GAME_RESULT) GetErr() ENUM_LOBBY_COMMON_ERROR_ENUM {
 	if m != nil {
@@ -159,6 +205,8 @@ func init() {
 	proto.RegisterType((*ENUM_LOBBY_COMMON_ERROR)(nil), "protocol.ENUM_LOBBY_COMMON_ERROR")
 	proto.RegisterType((*MSG_LOBBY_LOGIN)(nil), "protocol.MSG_LOBBY_LOGIN")
 	proto.RegisterType((*MSG_LOBBY_LOGIN_RESULT)(nil), "protocol.MSG_LOBBY_LOGIN_RESULT")
+	proto.RegisterType((*MSG_LOBBY_CREATE_ROLE)(nil), "protocol.MSG_LOBBY_CREATE_ROLE")
+	proto.RegisterType((*MSG_LOBBY_CREATE_ROLE_RESULT)(nil), "protocol.MSG_LOBBY_CREATE_ROLE_RESULT")
 	proto.RegisterType((*MSG_LOBBY_ENTER_GAME)(nil), "protocol.MSG_LOBBY_ENTER_GAME")
 	proto.RegisterType((*MSG_LOBBY_ENTER_GAME_RESULT)(nil), "protocol.MSG_LOBBY_ENTER_GAME_RESULT")
 	proto.RegisterEnum("protocol.CMD_LOBBY_ENUM", CMD_LOBBY_ENUM_name, CMD_LOBBY_ENUM_value)
@@ -253,6 +301,62 @@ func (m *MSG_LOBBY_LOGIN_RESULT) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
+func (m *MSG_LOBBY_CREATE_ROLE) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Slot != 0 {
+		dAtA[i] = 0x8
+		i++
+		i = encodeVarintLobby(dAtA, i, uint64(m.Slot))
+	}
+	if m.Info != nil {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintLobby(dAtA, i, uint64(m.Info.Size()))
+		n1, err := m.Info.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	return i, nil
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE_RESULT) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE_RESULT) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.Err != 0 {
+		dAtA[i] = 0x8
+		i++
+		i = encodeVarintLobby(dAtA, i, uint64(m.Err))
+	}
+	return i, nil
+}
+
 func (m *MSG_LOBBY_ENTER_GAME) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -300,11 +404,11 @@ func (m *MSG_LOBBY_ENTER_GAME_RESULT) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintLobby(dAtA, i, uint64(m.DetailInfo.Size()))
-		n1, err := m.DetailInfo.MarshalTo(dAtA[i:])
+		n2, err := m.DetailInfo.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n1
+		i += n2
 	}
 	return i, nil
 }
@@ -365,6 +469,28 @@ func (m *MSG_LOBBY_LOGIN_RESULT) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovLobby(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE) Size() (n int) {
+	var l int
+	_ = l
+	if m.Slot != 0 {
+		n += 1 + sovLobby(uint64(m.Slot))
+	}
+	if m.Info != nil {
+		l = m.Info.Size()
+		n += 1 + l + sovLobby(uint64(l))
+	}
+	return n
+}
+
+func (m *MSG_LOBBY_CREATE_ROLE_RESULT) Size() (n int) {
+	var l int
+	_ = l
+	if m.Err != 0 {
+		n += 1 + sovLobby(uint64(m.Err))
 	}
 	return n
 }
@@ -633,6 +759,177 @@ func (m *MSG_LOBBY_LOGIN_RESULT) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLobby(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLobby
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MSG_LOBBY_CREATE_ROLE) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLobby
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MSG_LOBBY_CREATE_ROLE: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MSG_LOBBY_CREATE_ROLE: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Slot", wireType)
+			}
+			m.Slot = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLobby
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Slot |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Info", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLobby
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthLobby
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Info == nil {
+				m.Info = &ROLE_BASE_INFO{}
+			}
+			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLobby(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthLobby
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MSG_LOBBY_CREATE_ROLE_RESULT) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLobby
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MSG_LOBBY_CREATE_ROLE_RESULT: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MSG_LOBBY_CREATE_ROLE_RESULT: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Err", wireType)
+			}
+			m.Err = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLobby
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Err |= (ENUM_LOBBY_COMMON_ERROR_ENUM(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLobby(dAtA[iNdEx:])
@@ -933,28 +1230,30 @@ var (
 func init() { proto.RegisterFile("lobby.proto", fileDescriptorLobby) }
 
 var fileDescriptorLobby = []byte{
-	// 359 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x90, 0x4f, 0x6b, 0xdb, 0x30,
-	0x18, 0xc6, 0x23, 0xe7, 0xcf, 0x96, 0xd7, 0x59, 0xa6, 0x88, 0xb1, 0x99, 0x0c, 0x3c, 0xa3, 0xc3,
-	0x08, 0x3b, 0xf8, 0x90, 0x5d, 0xc6, 0x76, 0xb2, 0x63, 0xc5, 0x98, 0x59, 0x16, 0x48, 0xce, 0x20,
-	0x27, 0xb1, 0x84, 0x0c, 0x06, 0xde, 0x54, 0x12, 0xf7, 0xd0, 0x6b, 0x3f, 0x41, 0xa1, 0x5f, 0xa0,
-	0x1f, 0xa7, 0xc7, 0x7e, 0x84, 0x92, 0x7e, 0x91, 0x12, 0x3b, 0x25, 0x25, 0xb4, 0xa7, 0x9e, 0x24,
-	0x9e, 0xf7, 0x79, 0x9e, 0xf7, 0x27, 0x81, 0x5d, 0x98, 0xc5, 0xe2, 0xcc, 0x3f, 0x59, 0x9b, 0xd2,
-	0x90, 0xd7, 0xd5, 0xb1, 0x34, 0xc5, 0x90, 0x54, 0xb2, 0x5e, 0x9e, 0x6e, 0x4a, 0xf3, 0xaf, 0x9e,
-	0xd2, 0x0c, 0xba, 0x13, 0x1e, 0xe9, 0x54, 0x84, 0xe1, 0x9c, 0x06, 0xd0, 0x62, 0xd9, 0x8c, 0x13,
-	0x1b, 0x5e, 0x25, 0xd9, 0xaf, 0x20, 0x4d, 0x22, 0xdc, 0x20, 0x5d, 0x68, 0xa7, 0x22, 0x4e, 0x32,
-	0x8c, 0x48, 0x1f, 0x80, 0x65, 0x39, 0x93, 0x3a, 0x0e, 0x38, 0xc3, 0x16, 0x19, 0x40, 0x8f, 0xab,
-	0x78, 0xc2, 0x23, 0x31, 0x9d, 0x2a, 0x96, 0xe3, 0xab, 0x4f, 0xf4, 0x07, 0x7c, 0xd8, 0x55, 0xd4,
-	0x85, 0x7a, 0x22, 0x38, 0x17, 0x99, 0x66, 0x52, 0x0a, 0x49, 0xbd, 0x7d, 0x7b, 0x07, 0x2c, 0xf1,
-	0x13, 0x37, 0x08, 0x86, 0x9e, 0x9a, 0xab, 0x9c, 0xf1, 0x7a, 0x8e, 0x11, 0x1d, 0xc0, 0x5b, 0xae,
-	0xe2, 0x7d, 0xb6, 0x5a, 0x4a, 0xcf, 0x11, 0xbc, 0x3f, 0xd2, 0xb4, 0x64, 0x6a, 0x96, 0xe6, 0xe4,
-	0x1b, 0x34, 0xd9, 0x7a, 0xed, 0x20, 0x0f, 0x8d, 0xfa, 0xe3, 0xcf, 0xfe, 0xc3, 0x33, 0xfd, 0x67,
-	0xf6, 0x57, 0xba, 0xdc, 0x45, 0x88, 0x0f, 0x6d, 0x69, 0x8a, 0xd5, 0xc6, 0xb1, 0xbc, 0xe6, 0xc8,
-	0x1e, 0x3b, 0x87, 0xac, 0x14, 0x29, 0xd3, 0x61, 0xa0, 0x98, 0x4e, 0xb2, 0xa9, 0x90, 0xb5, 0x8d,
-	0x7e, 0x81, 0x77, 0x07, 0x86, 0xc3, 0x0f, 0x10, 0x02, 0x2d, 0x55, 0x98, 0xb2, 0x42, 0x78, 0x23,
-	0xab, 0x3b, 0xbd, 0x44, 0xf0, 0xf1, 0x29, 0xf3, 0xcb, 0xa9, 0xbf, 0x03, 0x44, 0xab, 0xf2, 0xf7,
-	0xdf, 0x22, 0xf9, 0xff, 0xc7, 0x38, 0x96, 0x87, 0x46, 0xf6, 0x78, 0x78, 0x84, 0x1e, 0xb1, 0x3c,
-	0x48, 0xd2, 0x1a, 0xfe, 0x91, 0x3b, 0xc4, 0xd7, 0x5b, 0x17, 0xdd, 0x6c, 0x5d, 0x74, 0xbb, 0x75,
-	0xd1, 0xc5, 0x9d, 0xdb, 0x58, 0x74, 0xaa, 0xe0, 0xd7, 0xfb, 0x00, 0x00, 0x00, 0xff, 0xff, 0x93,
-	0xa0, 0xb3, 0x9e, 0x2c, 0x02, 0x00, 0x00,
+	// 395 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x51, 0xcd, 0xaa, 0xd3, 0x40,
+	0x18, 0xed, 0xa4, 0xbd, 0x57, 0xef, 0x97, 0xeb, 0xbd, 0x73, 0x07, 0x7f, 0xc2, 0x55, 0x62, 0x98,
+	0x85, 0x14, 0x91, 0x2c, 0xea, 0x46, 0x74, 0x95, 0x9f, 0x69, 0x08, 0x66, 0x32, 0x30, 0x93, 0x8a,
+	0x5d, 0x0d, 0xb6, 0x54, 0x10, 0xa2, 0x23, 0x6d, 0x5c, 0xb8, 0xf5, 0x09, 0x04, 0x5f, 0xc0, 0xc7,
+	0x71, 0xe9, 0x23, 0x48, 0x7d, 0x11, 0xe9, 0xa4, 0x92, 0x52, 0xaa, 0x9b, 0xae, 0x12, 0xbe, 0xef,
+	0x9c, 0xf3, 0x9d, 0x73, 0x06, 0xdc, 0xda, 0xcc, 0x66, 0x9f, 0xc3, 0x8f, 0x4b, 0xd3, 0x18, 0x72,
+	0xd3, 0x7e, 0xe6, 0xa6, 0xbe, 0x26, 0x76, 0xac, 0xe7, 0x9f, 0x56, 0x8d, 0x79, 0xdf, 0x6e, 0xa9,
+	0x86, 0xb3, 0x84, 0xa7, 0xba, 0x10, 0x71, 0x3c, 0xa5, 0x12, 0x06, 0xac, 0x9c, 0x70, 0xe2, 0xc2,
+	0x8d, 0xbc, 0x7c, 0x15, 0x15, 0x79, 0x8a, 0x7b, 0xe4, 0x0c, 0x4e, 0x0a, 0x91, 0xe5, 0x25, 0x46,
+	0xe4, 0x12, 0xdc, 0x44, 0xb2, 0xa8, 0x62, 0x5a, 0x8a, 0x82, 0x61, 0x87, 0x5c, 0x00, 0xb0, 0xb2,
+	0x62, 0x52, 0x67, 0x11, 0x67, 0xb8, 0x4f, 0xae, 0xe0, 0x9c, 0xab, 0x2c, 0xe1, 0xa9, 0x18, 0x8f,
+	0x15, 0xab, 0xf0, 0xf7, 0x87, 0xf4, 0x05, 0xdc, 0xdb, 0x68, 0xb6, 0x17, 0x74, 0x22, 0x38, 0x17,
+	0xa5, 0x66, 0x52, 0x0a, 0x49, 0x83, 0xed, 0xb9, 0x53, 0x70, 0xc4, 0x4b, 0xdc, 0x23, 0x18, 0xce,
+	0xd5, 0x54, 0x55, 0x8c, 0xb7, 0x7b, 0x8c, 0xe8, 0x15, 0x5c, 0x72, 0x95, 0x6d, 0xb9, 0xd6, 0x05,
+	0xfd, 0x82, 0xe0, 0xee, 0xde, 0x4c, 0x4b, 0xa6, 0x26, 0x45, 0x45, 0x9e, 0x41, 0x9f, 0x2d, 0x97,
+	0x1e, 0x0a, 0xd0, 0xf0, 0x62, 0xf4, 0x28, 0xfc, 0x9b, 0x3b, 0xfc, 0xc7, 0x7d, 0x3b, 0x97, 0x1b,
+	0x0a, 0x09, 0xe1, 0x44, 0x9a, 0x7a, 0xb1, 0xf2, 0x9c, 0xa0, 0x3f, 0x74, 0x47, 0x5e, 0xc7, 0xdd,
+	0x04, 0xd5, 0x71, 0xa4, 0x98, 0xce, 0xcb, 0xb1, 0x90, 0x2d, 0x8c, 0x4e, 0xe1, 0x4e, 0xe7, 0x61,
+	0xa7, 0x12, 0x42, 0x60, 0xa0, 0x6a, 0xd3, 0x58, 0x0f, 0xb7, 0xa4, 0xfd, 0x27, 0x4f, 0x60, 0x90,
+	0x7f, 0x78, 0x6b, 0x3c, 0x27, 0x40, 0xff, 0xd5, 0xb6, 0x28, 0xfa, 0x1a, 0x1e, 0x1c, 0x94, 0x3e,
+	0x3a, 0x24, 0x7d, 0x0c, 0xb7, 0x3b, 0xe5, 0xee, 0xd9, 0x0e, 0x79, 0xa6, 0xdf, 0x10, 0xdc, 0x3f,
+	0x04, 0x3e, 0xbe, 0xea, 0xe7, 0x00, 0xe9, 0xa2, 0x79, 0xf3, 0xae, 0xde, 0xe9, 0xe4, 0x7a, 0xaf,
+	0x93, 0x94, 0x55, 0x51, 0x5e, 0xb4, 0xad, 0xec, 0xa0, 0x63, 0xfc, 0x63, 0xed, 0xa3, 0x9f, 0x6b,
+	0x1f, 0xfd, 0x5a, 0xfb, 0xe8, 0xeb, 0x6f, 0xbf, 0x37, 0x3b, 0xb5, 0xc4, 0xa7, 0x7f, 0x02, 0x00,
+	0x00, 0xff, 0xff, 0xf8, 0x42, 0xc6, 0x19, 0xf2, 0x02, 0x00, 0x00,
 }
