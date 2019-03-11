@@ -28,7 +28,7 @@ func (lobby *Lobby) Start() bool {
 	}
 	Ctx.Node.EnableMessageRelay(true)
 	Ctx.Node.RegisterFuncOnRelayMsg(lobby.onRelayMsg)
-	Ctx.Node.RegisterFuncOnLoseAccount(lobby.accountMgr.DelAccount)
+	Ctx.Node.RegisterFuncOnLoseAccount(lobby.onLoseAccount)
 	return true
 }
 
@@ -44,6 +44,10 @@ func (lobby *Lobby) onRelayMsg(source common.NodeType, sess common.INode, accoun
 	default:
 		Ctx.Log.Errorln("Unknown source, type:", source, "(", int(source), ")")
 	}
+}
+
+func (lobby *Lobby) onLoseAccount(account string) {
+	lobby.accountMgr.DelAccount(account)
 }
 
 func (lobby *Lobby) initRedis() bool {
