@@ -69,8 +69,8 @@ func (sess *IntranetSession) DoClose(sessbase *nodecommon.SessionBase) {
 // DoRecv : 节点收到消息处理
 func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	done = true
-	switch cmd {
-	case uint64(protocol.CMD_GW_RELAY_CLIENT_MSG):
+	switch protocol.CMD_GW_ENUM(cmd) {
+	case protocol.CMD_GW_RELAY_CLIENT_MSG:
 		f := sess.FuncOnRelayMsg()
 		if f == nil {
 			sess.Ctx.Log.Errorln("There is no handler function, the handler function is `FuncOnRelayMsg`")
@@ -82,6 +82,18 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			return
 		}
 		f(common.Client, sess, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+	case protocol.CMD_GW_LOSE_ACCOUNT:
+		f := sess.FuncOnLoseAccount()
+		if f == nil {
+			sess.Ctx.Log.Errorln("There is no handler function, the handler function is `FuncOnLoseAccount`")
+			return
+		}
+		msg := &protocol.MSG_GW_LOSE_ACCOUNT{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.CMD_GW_LOSE_ACCOUNT`(", int(protocol.CMD_GW_LOSE_ACCOUNT), ")")
+			return
+		}
+		f(msg.Account)
 	default:
 		done = false
 	}

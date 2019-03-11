@@ -28,6 +28,7 @@ func (lobby *Lobby) Start() bool {
 	}
 	Ctx.Node.EnableMessageRelay(true)
 	Ctx.Node.RegisterFuncOnRelayMsg(lobby.onRelayMsg)
+	Ctx.Node.RegisterFuncOnLoseAccount(lobby.accountMgr.DelAccount)
 	return true
 }
 

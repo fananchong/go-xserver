@@ -17,6 +17,7 @@ type DefaultNodeInterfaceImpl struct {
 	enableMessageReply bool
 	SessMgr            *SessionMgr
 	funcOnRelayMsg     common.FuncTypeOnRelayMsg
+	funcOnLoseAccount  common.FuncTypeOnLoseAccount
 }
 
 // GetID : 获取本节点信息，节点ID
@@ -196,4 +197,14 @@ func (impl *DefaultNodeInterfaceImpl) RegisterFuncOnRelayMsg(f common.FuncTypeOn
 // FuncOnRelayMsg : 获取`自定义处理Gateway中继过来的消息`的函数句柄
 func (impl *DefaultNodeInterfaceImpl) FuncOnRelayMsg() common.FuncTypeOnRelayMsg {
 	return impl.funcOnRelayMsg
+}
+
+// RegisterFuncOnLoseAccount : 注册自定义处理`丢失账号`
+func (impl *DefaultNodeInterfaceImpl) RegisterFuncOnLoseAccount(f common.FuncTypeOnLoseAccount) {
+	impl.funcOnLoseAccount = f
+}
+
+// FuncOnLoseAccount : 获取`自定义处理丢失账号`的函数句柄
+func (impl *DefaultNodeInterfaceImpl) FuncOnLoseAccount() common.FuncTypeOnLoseAccount {
+	return impl.funcOnLoseAccount
 }

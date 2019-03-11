@@ -105,11 +105,17 @@ func (userMgr *UserMgr) checkActive() {
 
 	// 删除闲置连接
 	for _, user := range dels {
+		msg := &protocol.MSG_GW_LOSE_ACCOUNT{}
+		msg.Account = user.Account
 		for nodeType, serverID := range user.Servers {
-			_ = serverID
 			key := db.GetKeyAllocServer(nodeType, user.Account)
 			if _, err := userMgr.ServerRedisCli.Do("EXPIRE", key, 300); err != nil { // 设置账号分配的服务器资源信息，过期时间 5 分钟
 				userMgr.ctx.Log.Errorln(err, "account:", user.Account)
+			}
+			if nodeType != uint32(common.Gateway) {
+				if userMgr.ctx.Gateway.(common.INode).SendByID(serverID, uint64(protocol.CMD_GW_LOSE_ACCOUNT), msg) == false {
+					userMgr.ctx.Log.Errorln("Sending a 'lost account' message failed. account:", user.Account)
+				}
 			}
 		}
 		delete(userMgr.users, user.Account)

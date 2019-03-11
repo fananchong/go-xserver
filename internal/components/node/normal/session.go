@@ -56,6 +56,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		targetSess := NewIntranetSession(sess.Ctx, sess.SessMgr, sess)
 		targetSess.Info = msg.GetData()
 		targetSess.RegisterFuncOnRelayMsg(sess.FuncOnRelayMsg())
+		targetSess.RegisterFuncOnLoseAccount(sess.FuncOnLoseAccount())
 		sess.SessMgr.Register(targetSess.SessionBase)
 
 		sess.PrintNodeInfo(sess.Ctx.Log, common.NodeType(msg.GetData().GetType()))
