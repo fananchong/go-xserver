@@ -7,33 +7,7 @@ import (
 	"github.com/fananchong/gotcp"
 )
 
-// ChanMsg : 账号消息
-type ChanMsg struct {
-	Cmd  uint64
-	Data []byte
-}
-
-// PostMsg : 推送消息
-func (accountObj *Account) PostMsg(cmd uint64, data []byte) {
-	datacopy := make([]byte, len(data))
-	copy(datacopy, data)
-	accountObj.chanMsg <- ChanMsg{cmd, datacopy}
-}
-
-// ProcessMsg : 处理消息
-func (accountObj *Account) processMsg(cmd uint64, data []byte) {
-	switch protocol.CMD_LOBBY_ENUM(cmd) {
-	case protocol.CMD_LOBBY_LOGIN:
-		accountObj.onLogin(data)
-	case protocol.CMD_LOBBY_CREATE_ROLE:
-		accountObj.onCreateRole(data)
-	case protocol.CMD_LOBBY_ENTER_GAME:
-		accountObj.onEnterGame(data)
-	default:
-		Ctx.Log.Errorln("[LOBBY] Unknown cmd, cmd:", cmd)
-	}
-}
-
+// onLogin : 获取角色列表（登录大厅服务）
 func (accountObj *Account) onLogin(data []byte) {
 	Ctx.Log.Infoln("Login, account:", accountObj.account)
 	msg := &protocol.MSG_LOBBY_LOGIN_RESULT{}
@@ -51,6 +25,7 @@ func (accountObj *Account) onLogin(data []byte) {
 	utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
 }
 
+// onCreateRole : 创建角色
 func (accountObj *Account) onCreateRole(data []byte) {
 	Ctx.Log.Infoln("Create role, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_CREATE_ROLE{}
@@ -118,6 +93,7 @@ func (accountObj *Account) onCreateRole(data []byte) {
 	utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 }
 
+// onEnterGame : 获取角色详细信息（进入游戏）
 func (accountObj *Account) onEnterGame(data []byte) {
 	Ctx.Log.Infoln("Enter Game, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_ENTER_GAME{}

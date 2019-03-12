@@ -9,6 +9,7 @@ message CMD_LOBBY {
         LOGIN = 1;                                      // 登录，获取角色信息 ( C -> LOBBY )
         CREATE_ROLE = 2;                                // 创建角色 ( C -> LOBBY )
         ENTER_GAME = 3;                                 // 进入游戏 ( C -> LOBBY )
+        CHAT = 4;                                       // 聊天 ( C -> LOBBY -> C )
         MSGCMDOFFSET = 4000;                            // 消息号偏移量。如发送 `MSG_LOBBY_LOGIN` 消息时，实际发送消息号为： MSGCMDOFFSET + LOGIN
     }
 }
@@ -47,4 +48,11 @@ message MSG_LOBBY_ENTER_GAME {
 message MSG_LOBBY_ENTER_GAME_RESULT {
     ENUM_LOBBY_COMMON_ERROR.ENUM Err = 1;               // 0:成功；非0错误号
     ROLE_DETAIL_INFO DetailInfo = 2;                    // 角色详细信息
+}
+
+// 聊天 ( C -> LOBBY -> C )
+message MSG_LOBBY_CHAT {
+    string From = 1;                                    // 发聊天的角色角色名
+    string To = 2;                                      // 目标角色角色名，空则全服广播
+    string Txt = 3;                                     // 聊天内容
 }
