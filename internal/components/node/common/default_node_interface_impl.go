@@ -80,7 +80,7 @@ func (impl *DefaultNodeInterfaceImpl) GetSID() *protocol.SERVER_ID {
 }
 
 // GetNodeOne : 根据节点类型，随机选择 1 节点
-func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) common.INode {
+func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) *SessionBase {
 	node := impl.SessMgr.SelectOne(nodeType)
 	if node != nil {
 		return node
@@ -89,8 +89,8 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) commo
 }
 
 // GetNodeList : 获取某类型节点列表
-func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []common.INode {
-	var ret []common.INode
+func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []*SessionBase {
+	var ret []*SessionBase
 	impl.SessMgr.ForByType(nodeType, func(sess *SessionBase) {
 		ret = append(ret, sess)
 	})
@@ -98,8 +98,8 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []co
 }
 
 // GetNodeAll : 获取所有节点
-func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []common.INode {
-	var ret []common.INode
+func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []*SessionBase {
+	var ret []*SessionBase
 	impl.SessMgr.ForAll(func(sess *SessionBase) {
 		ret = append(ret, sess)
 	})
@@ -113,7 +113,7 @@ func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID common.NodeID) bool {
 }
 
 // GetNode : 获取节点
-func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID common.NodeID) common.INode {
+func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID common.NodeID) *SessionBase {
 	node := impl.SessMgr.GetByID(nodeID)
 	if node != nil {
 		return node

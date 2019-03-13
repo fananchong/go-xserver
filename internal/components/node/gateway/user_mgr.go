@@ -39,13 +39,15 @@ type UserMgr struct {
 	mutex             sync.RWMutex
 	ServerRedisCli    go_redis_orm.IClient
 	checkActiveTicker *utils.Ticker
+	myNode            *Node
 }
 
 // NewUserMgr : 客户端对象管理类构造函数
-func NewUserMgr(ctx *common.Context) *UserMgr {
+func NewUserMgr(ctx *common.Context, myNode *Node) *UserMgr {
 	userMgr := &UserMgr{
-		ctx:   ctx,
-		users: make(map[string]*User),
+		ctx:    ctx,
+		users:  make(map[string]*User),
+		myNode: myNode,
 	}
 	userMgr.checkActiveTicker = utils.NewTickerHelper("CHECK_ACTIVE", ctx, 1*time.Second, userMgr.checkActive)
 	return userMgr
@@ -113,7 +115,7 @@ func (userMgr *UserMgr) checkActive() {
 				userMgr.ctx.Log.Errorln(err, "account:", user.Account)
 			}
 			if nodeType != uint32(common.Gateway) {
-				if userMgr.ctx.Gateway.(common.INode).SendByID(serverID, uint64(protocol.CMD_GW_LOSE_ACCOUNT), msg) == false {
+				if userMgr.myNode.SendByID(serverID, uint64(protocol.CMD_GW_LOSE_ACCOUNT), msg) == false {
 					userMgr.ctx.Log.Errorln("Sending a 'lost account' message failed. account:", user.Account)
 				}
 			}

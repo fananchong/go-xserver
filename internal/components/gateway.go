@@ -3,6 +3,7 @@ package components
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -22,11 +23,11 @@ type Gateway struct {
 // NewGateway : 构造函数
 func NewGateway(ctx *common.Context) *Gateway {
 	gw := &Gateway{
-		ctx:   ctx,
-		users: nodegateway.NewUserMgr(ctx),
-		Node:  nodegateway.NewNode(ctx),
+		ctx:  ctx,
+		Node: nodegateway.NewNode(ctx),
 	}
 	gw.ctx.Gateway = gw
+	gw.users = nodegateway.NewUserMgr(ctx, gw.Node)
 	return gw
 }
 
@@ -86,7 +87,7 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 		gw.ctx.Log.Errorln(err, "account:", account, "cmd:", cmd)
 		return
 	}
-	var target common.INode
+	var target *nodecommon.SessionBase
 	if nodeID != nil {
 		target = gw.GetNode(*nodeID)
 	} else {

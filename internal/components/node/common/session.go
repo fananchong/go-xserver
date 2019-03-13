@@ -106,11 +106,11 @@ func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 }
 
 // RegisterSelf : 注册自己
-func (sessbase *SessionBase) RegisterSelf(id common.NodeID, targetServerType common.NodeType) {
+func (sessbase *SessionBase) RegisterSelf(id common.NodeID, selfType common.NodeType, targetServerType common.NodeType) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = utility.NodeID2ServerID(id)
-	msg.Data.Type = uint32(sessbase.Ctx.Node.GetType())
+	msg.Data.Type = uint32(selfType)
 	msg.Data.Addrs = []string{utils.GetIPInner(sessbase.Ctx), utils.GetIPOuter(sessbase.Ctx)}
 	msg.Data.Ports = sessbase.Ctx.Config.Network.Port
 

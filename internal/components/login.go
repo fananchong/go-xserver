@@ -3,6 +3,7 @@ package components
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
@@ -16,6 +17,7 @@ type Login struct {
 	verificationFunc common.FuncTypeAccountVerification
 	allocServerType  []common.NodeType
 	serverRedis      db.RedisAtomic
+	myNode           *nodenormal.Node
 }
 
 // NewLogin : 实例化登陆模块
@@ -30,6 +32,7 @@ func NewLogin(ctx *common.Context) *Login {
 // Start : 启动
 func (login *Login) Start() bool {
 	if getPluginType(login.ctx) == common.Login {
+		login.myNode = login.ctx.Node.(*nodenormal.Node)
 		if !login.initRedis() {
 			return false
 		}
@@ -178,8 +181,8 @@ func (login *Login) selectServerList(account string, nodeType []common.NodeType)
 func (login *Login) selectServer(account string, nodeType common.NodeType) (dbObj *db.AccountServer, ok bool) {
 LOOP:
 	dbObj = &db.AccountServer{}
-	login.ctx.Node.PrintNodeInfo(login.ctx.Log, nodeType)
-	node := login.ctx.Node.GetNodeOne(nodeType)
+	login.myNode.PrintNodeInfo(login.ctx.Log, nodeType)
+	node := login.myNode.GetNodeOne(nodeType)
 	if node == nil {
 		login.ctx.Log.Errorln("Did not find the server. type:", nodeType, "account:", account)
 		return
@@ -207,7 +210,7 @@ LOOP:
 	}
 	if ret != "" {
 		dbObj.Unmarshal(ret)
-		if login.ctx.Node.HaveNode(utility.ServerID2NodeID(dbObj.ServerID)) == false {
+		if login.myNode.HaveNode(utility.ServerID2NodeID(dbObj.ServerID)) == false {
 			if _, err = login.serverRedis.DelX(key, ret); err != nil {
 				login.ctx.Log.Errorln(err, "account:", account)
 				return
