@@ -6,7 +6,6 @@ import (
 	"sync/atomic"
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
-	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/services/internal/db"
 )
 
@@ -18,7 +17,6 @@ type Account struct {
 	*db.RoleList
 	account     string       // 账号字符串
 	roles       []*Role      // 角色列表
-	sess        common.INode // 该账号的网络回话对象
 	chanMsg     chan ChanMsg // 用于接收该账号消息
 	chanClose   chan int     // 用于接收该账号消息循环
 	closeFlag   int32        // 标志该账号是否结束会话
@@ -107,11 +105,6 @@ func (accountObj *Account) IsColse() bool {
 // GetRoles : 获取账号对应的角色列表
 func (accountObj *Account) GetRoles() []*Role {
 	return accountObj.roles
-}
-
-// SetSession : 设置账号对应的网络会话
-func (accountObj *Account) SetSession(sess common.INode) {
-	accountObj.sess = sess
 }
 
 // Inited : 是否已经初始化

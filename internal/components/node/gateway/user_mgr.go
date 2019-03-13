@@ -65,6 +65,15 @@ func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SER
 			return err
 		}
 	}
+	msg := &protocol.MSG_GW_REGISTER_ACCOUNT{}
+	msg.Account = account
+	for nodeType, serverID := range user.Servers {
+		if nodeType != uint32(common.Gateway) {
+			if userMgr.myNode.SendByID(serverID, uint64(protocol.CMD_GW_REGISTER_ACCOUNT), msg) == false {
+				userMgr.ctx.Log.Errorln("Sending a 'register account' message failed. account:", user.Account)
+			}
+		}
+	}
 	userMgr.users[account] = user
 	return nil
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"sync"
 
-	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/services/internal/protocol"
 	"github.com/fananchong/go-xserver/services/internal/utility"
 )
@@ -57,10 +56,10 @@ func (accountMgr *AccountMgr) DelAccount(account string) {
 }
 
 // PostMsg : 推送消息
-func (accountMgr *AccountMgr) PostMsg(sess common.INode, account string, cmd uint64, data []byte) {
+func (accountMgr *AccountMgr) PostMsg(account string, cmd uint64, data []byte) {
 	var accountObj *Account
 	if protocol.CMD_LOBBY_ENUM(cmd) == protocol.CMD_LOBBY_LOGIN {
-		accountObj = accountMgr.onLogin(sess, account)
+		accountObj = accountMgr.onLogin(account)
 	} else {
 		accountObj = accountMgr.GetAccount(account)
 	}
@@ -75,19 +74,18 @@ func (accountMgr *AccountMgr) PostMsg(sess common.INode, account string, cmd uin
 	accountObj.PostMsg(cmd, data)
 }
 
-func (accountMgr *AccountMgr) onLogin(sess common.INode, account string) *Account {
+func (accountMgr *AccountMgr) onLogin(account string) *Account {
 	if accountObj := accountMgr.AddAccount(account); accountObj != nil {
 		if !accountObj.Inited() {
 			var err error
 			if err = accountObj.Init(); err == nil {
-				accountObj.SetSession(sess)
 				accountObj.Start()
 				return accountObj
 			}
 			Ctx.Log.Errorln("[LOGIN LOBBY]", err, "account:", account)
 			msg := &protocol.MSG_LOBBY_LOGIN_RESULT{}
 			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-			utility.SendMsgToClient(sess, account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
+			utility.SendMsgToClient(Ctx, account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
 		} else {
 			return accountObj
 		}

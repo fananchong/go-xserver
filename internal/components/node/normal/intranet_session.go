@@ -70,6 +70,13 @@ func (sess *IntranetSession) DoClose(sessbase *nodecommon.SessionBase) {
 func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	done = true
 	switch protocol.CMD_GW_ENUM(cmd) {
+	case protocol.CMD_GW_REGISTER_ACCOUNT:
+		msg := &protocol.MSG_GW_REGISTER_ACCOUNT{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.MSG_GW_REGISTER_ACCOUNT`(", int(protocol.CMD_GW_REGISTER_ACCOUNT), ")")
+			return
+		}
+		sess.sourceSess.GWMgr.AddUser(msg.Account, sess)
 	case protocol.CMD_GW_RELAY_CLIENT_MSG:
 		f := sess.FuncOnRelayMsg()
 		if f == nil {
@@ -78,10 +85,10 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		}
 		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
+			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.MSG_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			return
 		}
-		f(common.Client, sess, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+		f(common.Client, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
 	case protocol.CMD_GW_LOSE_ACCOUNT:
 		f := sess.FuncOnLoseAccount()
 		if f == nil {
@@ -90,10 +97,11 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		}
 		msg := &protocol.MSG_GW_LOSE_ACCOUNT{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.CMD_GW_LOSE_ACCOUNT`(", int(protocol.CMD_GW_LOSE_ACCOUNT), ")")
+			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.MSG_GW_LOSE_ACCOUNT`(", int(protocol.CMD_GW_LOSE_ACCOUNT), ")")
 			return
 		}
 		f(msg.Account)
+		sess.sourceSess.GWMgr.DelUser(msg.Account)
 	default:
 		done = false
 	}

@@ -15,6 +15,7 @@ import (
 // Session : 网络会话类
 type Session struct {
 	*nodecommon.SessionBase
+	GWMgr    *IntranetSessionMgr
 	shutdown int32
 }
 
@@ -23,11 +24,13 @@ func NewSession(ctx *common.Context) *Session {
 	sess := &Session{}
 	sess.SessionBase = nodecommon.NewSessionBase(ctx, sess)
 	sess.SessMgr = nodecommon.NewSessionMgr()
+	sess.GWMgr = NewIntranetSessionMgr(ctx)
 	return sess
 }
 
 // Start : 开始连接 Mgr Server
 func (sess *Session) Start() bool {
+	sess.GWMgr.Start()
 	atomic.StoreInt32(&sess.shutdown, 0)
 	sess.connectMgrServer()
 	return true
@@ -126,6 +129,10 @@ func getMgrInfoByBlock(ctx *common.Context) (string, int32) {
 
 // Shutdown : 关闭
 func (sess *Session) Shutdown() {
+	if sess.GWMgr != nil {
+		sess.GWMgr.Close()
+		sess.GWMgr = nil
+	}
 	atomic.StoreInt32(&sess.shutdown, 1)
 }
 
@@ -136,5 +143,10 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 
 // DoSendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
 func (sess *Session) DoSendClientMsgByRelay(account string, cmd uint64, data []byte) bool {
-	panic("")
+	gwSess := sess.GWMgr.GetAndActive(account)
+	if gwSess != nil {
+		return gwSess.DoSendClientMsgByRelay(account, cmd, data)
+	}
+	sess.Ctx.Log.Errorln("Gateway server not connected yet, send msg failed. account:", account, ", cmd:", cmd)
+	return false
 }

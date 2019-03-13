@@ -9,7 +9,6 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
-	"github.com/gogo/protobuf/proto"
 )
 
 // Node : 管理节点基类
@@ -88,12 +87,10 @@ func (node *Node) ping() {
 	})
 }
 
-// SendMsg : 往该节点，发送数据
-func (node *Node) SendMsg(cmd uint64, msg proto.Message) bool {
-	panic("")
-}
-
 // SendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
 func (node *Node) SendClientMsgByRelay(account string, cmd uint64, data []byte) bool {
+	// Gateway 、 MgrServer 调用该接口会 panic
+	//    - Gateway 不需要这个接口，没有意义
+	//    - MgrServer 如果有需求需要通过 Gateway 给客户端消息，则可以实现之。优先级太低了！
 	panic("")
 }

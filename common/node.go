@@ -8,7 +8,7 @@ import (
 type NodeID uuid.UUID
 
 // FuncTypeOnRelayMsg : 处理中继消息的函数声明
-type FuncTypeOnRelayMsg func(source NodeType, sess INode, account string, cmd uint64, data []byte)
+type FuncTypeOnRelayMsg func(source NodeType, account string, cmd uint64, data []byte)
 
 // FuncTypeOnLoseAccount : 处理丢失账号的函数声明
 type FuncTypeOnLoseAccount func(account string)

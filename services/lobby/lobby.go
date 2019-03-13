@@ -37,10 +37,10 @@ func (lobby *Lobby) Close() {
 
 }
 
-func (lobby *Lobby) onRelayMsg(source common.NodeType, sess common.INode, account string, cmd uint64, data []byte) {
+func (lobby *Lobby) onRelayMsg(source common.NodeType, account string, cmd uint64, data []byte) {
 	switch source {
 	case common.Client:
-		lobby.accountMgr.PostMsg(sess, account, cmd, data)
+		lobby.accountMgr.PostMsg(account, cmd, data)
 	default:
 		Ctx.Log.Errorln("Unknown source, type:", source, "(", int(source), ")")
 	}

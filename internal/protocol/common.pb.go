@@ -12,6 +12,7 @@
 	It has these top-level messages:
 		SERVER_ID
 		CMD_GW
+		MSG_GW_REGISTER_ACCOUNT
 		MSG_GW_RELAY_CLIENT_MSG
 		MSG_GW_LOSE_ACCOUNT
 		CMD_MGR

@@ -22,7 +22,7 @@ func (accountObj *Account) onLogin(data []byte) {
 		}
 		msg.Roles = append(msg.Roles, info)
 	}
-	utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
+	utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
 }
 
 // onCreateRole : 创建角色
@@ -38,14 +38,14 @@ func (accountObj *Account) onCreateRole(data []byte) {
 	if req.Slot >= LimitRoleNum {
 		Ctx.Log.Errorln("Message field error, Slot is ", req.Slot, ", but expect less than", LimitRoleNum, ". account:", accountObj.account)
 		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 		return
 	}
 
 	if req.GetInfo() == nil {
 		Ctx.Log.Errorln("Message field error, Info is nil. account:", accountObj.account)
 		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 		return
 	}
 
@@ -58,7 +58,7 @@ func (accountObj *Account) onCreateRole(data []byte) {
 		if err != nil {
 			Ctx.Log.Errorln(err, "account:", accountObj.account)
 			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-			utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+			utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 			return
 		}
 		// 生成角色
@@ -66,14 +66,14 @@ func (accountObj *Account) onCreateRole(data []byte) {
 		if err != nil {
 			Ctx.Log.Errorln(err, "account:", accountObj.account)
 			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-			utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+			utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 			return
 		}
 		role.SetName(req.GetInfo().GetRoleName())
 		if err = role.Save(); err != nil {
 			Ctx.Log.Errorln(err, "account:", accountObj.account)
 			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-			utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+			utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 			return
 		}
 		// 关联账号
@@ -86,11 +86,11 @@ func (accountObj *Account) onCreateRole(data []byte) {
 		if err := accountObj.Save(); err != nil {
 			Ctx.Log.Errorln(err, "account:", accountObj.account)
 			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-			utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+			utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 			return
 		}
 	}
-	utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+	utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 }
 
 // onEnterGame : 获取角色详细信息（进入游戏）
@@ -106,7 +106,7 @@ func (accountObj *Account) onEnterGame(data []byte) {
 	if req.Slot >= LimitRoleNum {
 		Ctx.Log.Errorln("Message field error, Slot is ", req.Slot, ", but expect less than", LimitRoleNum, ". account:", accountObj.account)
 		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
+		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
 		return
 	}
 
@@ -115,7 +115,7 @@ func (accountObj *Account) onEnterGame(data []byte) {
 		// 没有角色
 		Ctx.Log.Errorln("No role found, Slot is ", req.Slot, ", account:", accountObj.account)
 		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
-		utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
+		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
 		return
 	}
 	accountObj.currentRole = role
@@ -126,5 +126,5 @@ func (accountObj *Account) onEnterGame(data []byte) {
 
 	// TODO: 未加载角色各细节数据，则加载之
 
-	utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
+	utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
 }
