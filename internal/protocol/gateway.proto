@@ -8,7 +8,7 @@ message CMD_GW {
         PING = 1;                           // PING ( GATEWAY -> S )。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
         REGISTER_SERVER = 2;                // 注册服务器信息 ( S -> GATEWAY -> S )。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
         LOSE_SERVER = 3;                    // 丢失服务器信息 ( GATEWAY -> S )。实际上用的是 mgr.proto 的协议。这里占位下，避免协议号重复
-        RELAY_CLIENT_MSG = 4;               // 中继客户端消息 ( GATEWAY -> S )
+        RELAY_CLIENT_MSG = 4;               // 中继客户端消息 ( GATEWAY -> S / S -> GATEWAY )
         LOSE_ACCOUNT = 5;                   // 丢失账号 ( GATEWAY -> S )。只通知账号对应分配的服务
     }
 }
@@ -22,9 +22,9 @@ message CMD_GW {
 // 丢失服务器信息( GATEWAY -> S )
 // 参见 mgr.proto
 
-// 中继客户端消息 ( GATEWAY -> S )
+// 中继客户端消息 ( GATEWAY -> S / S -> GATEWAY )
 message MSG_GW_RELAY_CLIENT_MSG {
-    string Account = 1;                     // 账号
+    string Account = 1;                     // 账号。S -> GATEWAY 时，该字段为空，则表示 GATEWAY 需要把该消息发给所有客户端
     uint32 CMD = 2;                         // 消息号（真实消息号，已脱掉消息偏移量）
     bytes Data = 3;                         // 数据
 }

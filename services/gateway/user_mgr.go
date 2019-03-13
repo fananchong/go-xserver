@@ -45,3 +45,21 @@ func (userMgr *UserMgr) DelUser(account string) {
 		delete(userMgr.users, account)
 	}
 }
+
+// Foreach : 遍历
+func (userMgr *UserMgr) Foreach(f func(*User) bool) {
+	var templist []*User
+	userMgr.mutex.RLock()
+	i := 0
+	templist = make([]*User, len(userMgr.users))
+	for _, user := range userMgr.users {
+		templist[i] = user
+		i = i + 1
+	}
+	userMgr.mutex.RUnlock()
+	for _, user := range templist {
+		if f(user) == false {
+			break
+		}
+	}
+}

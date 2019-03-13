@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/fananchong/go-xserver/services/internal/protocol"
-	"github.com/fananchong/go-xserver/services/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -23,5 +22,12 @@ func (accountObj *Account) onChat(data []byte) {
 	//           2. 向某类型服务广播消息
 	//           3. Gateway 处理全服广播
 
-	utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CHAT), msg)
+	msg.From = accountObj.GetRole().GetName()
+	if msg.GetTo() == "" {
+		// 全服广播
+		//Ctx.Node.SendByType(    )
+	} else {
+		// 私聊
+	}
+	// utility.SendMsgToClient(accountObj.sess, accountObj.account, uint64(protocol.CMD_LOBBY_CHAT), msg)
 }

@@ -11,11 +11,12 @@ import (
 // Gateway : 网关服务器
 type Gateway struct {
 	*nodegateway.Node
-	ctx              *common.Context
-	funcSendToClient common.FuncTypeSendToClient
-	funcEncodeFunc   common.FuncTypeEncode
-	funcDecodeFunc   common.FuncTypeDecode
-	users            *nodegateway.UserMgr
+	ctx                 *common.Context
+	funcSendToClient    common.FuncTypeSendToClient
+	funcSendToAllClient common.FuncTypeSendToAllClient
+	funcEncodeFunc      common.FuncTypeEncode
+	funcDecodeFunc      common.FuncTypeDecode
+	users               *nodegateway.UserMgr
 }
 
 // NewGateway : 构造函数
@@ -118,6 +119,16 @@ func (gw *Gateway) RegisterSendToClient(f common.FuncTypeSendToClient) {
 // GetSendToClient : 可自定义客户端交互协议
 func (gw *Gateway) GetSendToClient() common.FuncTypeSendToClient {
 	return gw.funcSendToClient
+}
+
+// RegisterSendToAllClient : 可自定义客户端交互协议
+func (gw *Gateway) RegisterSendToAllClient(f common.FuncTypeSendToAllClient) {
+	gw.funcSendToAllClient = f
+}
+
+// GetSendToAllClient : 可自定义客户端交互协议
+func (gw *Gateway) GetSendToAllClient() common.FuncTypeSendToAllClient {
+	return gw.funcSendToAllClient
 }
 
 // RegisterEncodeFunc : 可自定义加解密算法

@@ -55,7 +55,7 @@ func (m *CMD_GW) String() string            { return proto.CompactTextString(m) 
 func (*CMD_GW) ProtoMessage()               {}
 func (*CMD_GW) Descriptor() ([]byte, []int) { return fileDescriptorGateway, []int{0} }
 
-// 中继客户端消息 ( GATEWAY -> S )
+// 中继客户端消息 ( GATEWAY -> S / S -> GATEWAY )
 type MSG_GW_RELAY_CLIENT_MSG struct {
 	Account string `protobuf:"bytes,1,opt,name=Account,proto3" json:"Account,omitempty"`
 	CMD     uint32 `protobuf:"varint,2,opt,name=CMD,proto3" json:"CMD,omitempty"`

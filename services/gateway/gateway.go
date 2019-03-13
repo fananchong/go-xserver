@@ -16,6 +16,7 @@ func NewGateway() *Gateway {
 func (gateway *Gateway) Start() bool {
 	Ctx.ServerForClient.RegisterSessType(User{})
 	Ctx.Gateway.RegisterSendToClient(gateway.sendToClient)
+	Ctx.Gateway.RegisterSendToAllClient(gateway.sendToAllClient)
 	return true
 }
 
@@ -35,4 +36,17 @@ func (gateway *Gateway) sendToClient(account string, cmd uint64, data []byte) bo
 	}
 	Ctx.Log.Warning("The player was not found, account:", account)
 	return false
+}
+
+func (gateway *Gateway) sendToAllClient(cmd uint64, data []byte) bool {
+	datalen := len(data) - 1
+	msg := data[:datalen]
+	flag := data[datalen]
+	gateway.Foreach(func(user *User) bool {
+		if user.SendEx(int(cmd), msg, flag) == false {
+			Ctx.Log.Warning("Sending message failed, account:", user.GetAccount(), ", cmd:", cmd)
+		}
+		return true
+	})
+	return true
 }
