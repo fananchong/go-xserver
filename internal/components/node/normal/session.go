@@ -141,12 +141,21 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	return
 }
 
-// DoSendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
-func (sess *Session) DoSendClientMsgByRelay(account string, cmd uint64, data []byte) bool {
+// DoSendMsgToClient : 发送消息给客户端，通过 Gateway 中继
+func (sess *Session) DoSendMsgToClient(account string, cmd uint64, data []byte) bool {
 	gwSess := sess.GWMgr.GetAndActive(account)
 	if gwSess != nil {
-		return gwSess.DoSendClientMsgByRelay(account, cmd, data)
+		return gwSess.DoSendMsgToClient(account, cmd, data)
 	}
 	sess.Ctx.Log.Errorln("Gateway server not connected yet, send msg failed. account:", account, ", cmd:", cmd)
 	return false
+}
+
+// DoBroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
+func (sess *Session) DoBroadcastMsgToClient(cmd uint64, data []byte) bool {
+	sess.GWMgr.Foreach(func(user *User) bool {
+		user.Sess.DoBroadcastMsgToClient(cmd, data)
+		return true
+	})
+	return true
 }

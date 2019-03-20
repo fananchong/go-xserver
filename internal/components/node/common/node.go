@@ -87,8 +87,16 @@ func (node *Node) ping() {
 	})
 }
 
-// SendClientMsgByRelay : 发送消息给客户端，通过 Gateway 中继
-func (node *Node) SendClientMsgByRelay(account string, cmd uint64, data []byte) bool {
+// SendMsgToClient : 发送消息给客户端，通过 Gateway 中继
+func (node *Node) SendMsgToClient(account string, cmd uint64, data []byte) bool {
+	// Gateway 、 MgrServer 调用该接口会 panic
+	//    - Gateway 不需要这个接口，没有意义
+	//    - MgrServer 如果有需求需要通过 Gateway 给客户端消息，则可以实现之。优先级太低了！
+	panic("")
+}
+
+// BroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
+func (node *Node) BroadcastMsgToClient(cmd uint64, data []byte) bool {
 	// Gateway 、 MgrServer 调用该接口会 panic
 	//    - Gateway 不需要这个接口，没有意义
 	//    - MgrServer 如果有需求需要通过 Gateway 给客户端消息，则可以实现之。优先级太低了！

@@ -83,6 +83,21 @@ func (mgr *IntranetSessionMgr) checkActive() {
 	}
 }
 
+// Foreach : 遍历
+func (mgr *IntranetSessionMgr) Foreach(f func(user *User) bool) {
+	mgr.mutex.RLock()
+	var users []*User
+	for _, user := range mgr.users {
+		users = append(users, user)
+	}
+	mgr.mutex.RUnlock()
+	for _, user := range users {
+		if !f(user) {
+			break
+		}
+	}
+}
+
 // Start : 开始
 func (mgr *IntranetSessionMgr) Start() {
 	mgr.checkActiveTicker.Start()
