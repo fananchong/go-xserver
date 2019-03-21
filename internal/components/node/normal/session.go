@@ -153,9 +153,8 @@ func (sess *Session) DoSendMsgToClient(account string, cmd uint64, data []byte) 
 
 // DoBroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
 func (sess *Session) DoBroadcastMsgToClient(cmd uint64, data []byte) bool {
-	sess.GWMgr.Foreach(func(user *User) bool {
-		user.Sess.DoBroadcastMsgToClient(cmd, data)
-		return true
+	sess.SessMgr.ForByType(common.Gateway, func(targetSess *nodecommon.SessionBase) {
+		targetSess.SendMsgToClient("", cmd, data)
 	})
 	return true
 }
