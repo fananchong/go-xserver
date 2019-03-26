@@ -120,7 +120,8 @@ func (userMgr *UserMgr) checkActive() {
 		msg.Account = user.Account
 		for nodeType, serverID := range user.Servers {
 			key := db.GetKeyAllocServer(nodeType, user.Account)
-			if _, err := userMgr.ServerRedisCli.Do("EXPIRE", key, 300); err != nil { // 设置账号分配的服务器资源信息，过期时间 5 分钟
+			ttl := userMgr.ctx.Config.Role.SessionAffinityInterval
+			if _, err := userMgr.ServerRedisCli.Do("EXPIRE", key, ttl); err != nil { // 设置账号分配的服务器资源信息，过期时间 5 分钟
 				userMgr.ctx.Log.Errorln(err, "account:", user.Account)
 			}
 			if nodeType != uint32(common.Gateway) {

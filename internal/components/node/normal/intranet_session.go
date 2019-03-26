@@ -76,7 +76,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			sess.Ctx.Log.Errorln("Message parsing failed, message number is `protocol.MSG_GW_REGISTER_ACCOUNT`(", int(protocol.CMD_GW_REGISTER_ACCOUNT), ")")
 			return
 		}
-		sess.sourceSess.GWMgr.AddUser(msg.Account, sess)
+		sess.sourceSess.GWMgr.AddUser(msg.Account, sess.SessionBase)
 	case protocol.CMD_GW_RELAY_CLIENT_MSG:
 		f := sess.FuncOnRelayMsg()
 		if f == nil {
@@ -106,22 +106,4 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		done = false
 	}
 	return
-}
-
-// DoSendMsgToClient : 发送消息给客户端，通过 Gateway 中继
-func (sess *IntranetSession) DoSendMsgToClient(account string, cmd uint64, data []byte) bool {
-	msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
-	msgRelay.Account = account
-	msgRelay.CMD = uint32(cmd)
-	msgRelay.Data = data
-	return sess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
-}
-
-// DoBroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
-func (sess *IntranetSession) DoBroadcastMsgToClient(cmd uint64, data []byte) bool {
-	msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
-	msgRelay.Account = ""
-	msgRelay.CMD = uint32(cmd)
-	msgRelay.Data = data
-	return sess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 }

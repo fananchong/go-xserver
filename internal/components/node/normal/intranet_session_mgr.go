@@ -6,17 +6,18 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
+	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 )
 
 // User :
 type User struct {
 	Account         string
-	Sess            *IntranetSession
+	Sess            *nodecommon.SessionBase
 	ActiveTimestamp int64
 }
 
 // NewUser :
-func NewUser(account string, sess *IntranetSession) *User {
+func NewUser(account string, sess *nodecommon.SessionBase) *User {
 	user := &User{
 		Account:         account,
 		Sess:            sess,
@@ -44,7 +45,7 @@ func NewIntranetSessionMgr(ctx *common.Context) *IntranetSessionMgr {
 }
 
 // AddUser :
-func (mgr *IntranetSessionMgr) AddUser(account string, sess *IntranetSession) {
+func (mgr *IntranetSessionMgr) AddUser(account string, sess *nodecommon.SessionBase) {
 	mgr.mutex.Lock()
 	defer mgr.mutex.Unlock()
 	mgr.users[account] = NewUser(account, sess)
@@ -58,7 +59,7 @@ func (mgr *IntranetSessionMgr) DelUser(account string) {
 }
 
 // GetAndActive :
-func (mgr *IntranetSessionMgr) GetAndActive(account string) *IntranetSession {
+func (mgr *IntranetSessionMgr) GetAndActive(account string) *nodecommon.SessionBase {
 	mgr.mutex.RLock()
 	defer mgr.mutex.RUnlock()
 	if user, ok := mgr.users[account]; ok {
@@ -74,27 +75,12 @@ func (mgr *IntranetSessionMgr) checkActive() {
 	now := utils.GetMillisecondTimestamp()
 	var dels []*User
 	for _, user := range mgr.users {
-		if now-user.ActiveTimestamp >= mgr.ctx.Config.Role.IdleTime*2*1000 {
+		if now-user.ActiveTimestamp >= mgr.ctx.Config.Role.IdleTime*1000 {
 			dels = append(dels, user)
 		}
 	}
 	for _, user := range dels {
 		delete(mgr.users, user.Account)
-	}
-}
-
-// Foreach : 遍历
-func (mgr *IntranetSessionMgr) Foreach(f func(user *User) bool) {
-	mgr.mutex.RLock()
-	var users []*User
-	for _, user := range mgr.users {
-		users = append(users, user)
-	}
-	mgr.mutex.RUnlock()
-	for _, user := range users {
-		if !f(user) {
-			break
-		}
 	}
 }
 

@@ -15,8 +15,6 @@ type ISessionDerived interface {
 	DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte)
 	DoClose(sessbase *SessionBase)
 	DoRecv(cmd uint64, data []byte, flag byte) (done bool)
-	DoSendMsgToClient(account string, cmd uint64, data []byte) bool
-	DoBroadcastMsgToClient(cmd uint64, data []byte) bool
 }
 
 // SessionBase : 网络会话类
@@ -131,14 +129,4 @@ func (sessbase *SessionBase) RegisterSelf(id common.NodeID, selfType common.Node
 	} else {
 		sessbase.Ctx.Log.Errorln("Register your information with the server(", targetServerType, "), info:", msg.GetData())
 	}
-}
-
-// SendMsgToClient : 发送消息给客户端，通过 Gateway 中继
-func (sessbase *SessionBase) SendMsgToClient(account string, cmd uint64, data []byte) bool {
-	return sessbase.derived.DoSendMsgToClient(account, cmd, data)
-}
-
-// BroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
-func (sessbase *SessionBase) BroadcastMsgToClient(cmd uint64, data []byte) bool {
-	return sessbase.derived.DoBroadcastMsgToClient(cmd, data)
 }

@@ -41,5 +41,6 @@ type ConfigRedis struct {
 
 // ConfigRole : 配置 role 相关节
 type ConfigRole struct {
-	IdleTime int64 `default:"300" desc:"角色闲置该时间间隔后账号、角色对象内存中清除。单位：秒"`
+	IdleTime                int64 `default:"300" desc:"角色闲置该时间间隔后账号、角色对象内存中清除。单位：秒"`
+	SessionAffinityInterval int64 `default:"300" desc:"账号登出后，分配的服务器资源信息保留时间。单位：秒"`
 }

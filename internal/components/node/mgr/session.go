@@ -84,15 +84,3 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	return
 }
-
-// DoSendMsgToClient : 发送消息给客户端，通过 Gateway 中继
-func (sess *Session) DoSendMsgToClient(account string, cmd uint64, data []byte) bool {
-	// MgrServer 一般不会直接发送消息给客户端，因此实现该函数优先级太低。
-	panic("")
-}
-
-// DoBroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
-func (sess *Session) DoBroadcastMsgToClient(cmd uint64, data []byte) bool {
-	// MgrServer 一般不会直接发送消息给客户端，因此实现该函数优先级太低。
-	panic("")
-}

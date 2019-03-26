@@ -21,6 +21,15 @@ func SendMsgToClient(ctx *common.Context, account string, cmd uint64, msg proto.
 	return false, fmt.Errorf("Sending message failed, account: %s, cmd:%d", account, cmd)
 }
 
+// SendMsgToClientByRoleName : 发送数据
+func SendMsgToClientByRoleName(ctx *common.Context, roleName string, cmd uint64, msg proto.Message) (bool, error) {
+	account := ""
+
+	// TODO: 根据 rolename 查找 账号
+
+	return SendMsgToClient(ctx, account, cmd, msg)
+}
+
 // BroadcastMsgToClient :
 func BroadcastMsgToClient(ctx *common.Context, cmd uint64, msg proto.Message) (bool, error) {
 	data, flag, err := gotcp.Encode(cmd, msg)

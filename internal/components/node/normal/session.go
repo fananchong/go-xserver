@@ -5,11 +5,13 @@ import (
 	"sync/atomic"
 	"time"
 
+	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utility"
+	"github.com/gomodule/redigo/redis"
 )
 
 // Session : 网络会话类
@@ -141,20 +143,55 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	return
 }
 
-// DoSendMsgToClient : 发送消息给客户端，通过 Gateway 中继
-func (sess *Session) DoSendMsgToClient(account string, cmd uint64, data []byte) bool {
-	gwSess := sess.GWMgr.GetAndActive(account)
-	if gwSess != nil {
-		return gwSess.DoSendMsgToClient(account, cmd, data)
+// SendMsgToClient : 发送消息给客户端，通过 Gateway 中继
+func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bool {
+	targetSess := sess.GWMgr.GetAndActive(account)
+	if targetSess != nil {
+		msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
+		msgRelay.Account = account
+		msgRelay.CMD = uint32(cmd)
+		msgRelay.Data = data
+		return targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 	}
-	sess.Ctx.Log.Errorln("Gateway server not connected yet, send msg failed. account:", account, ", cmd:", cmd)
-	return false
+	// 非本服务节点上的账号，则查找对应的 Gateway ID ，再发送
+	dbaccess := go_redis_orm.GetDB(sess.Ctx.Config.DbServer.Name)
+	key := db.GetKeyAllocServer(uint32(common.Gateway), account)
+	val, err := redis.String(dbaccess.Do("GET", key))
+	if err != nil {
+		sess.Ctx.Log.Errorln(err, "account:", account, ", cmd:", cmd)
+		return false
+	}
+	dbObj := &db.AccountServer{}
+	if err := dbObj.Unmarshal(val); err != nil {
+		sess.Ctx.Log.Errorln(err, "account:", account, ", cmd:", cmd)
+		return false
+	}
+	ttl, err := redis.Uint64(dbaccess.Do("TTL", key))
+	if err != nil {
+		sess.Ctx.Log.Errorln(err, "account:", account, ", cmd:", cmd)
+		return false
+	}
+	if int64(ttl) <= sess.Ctx.Config.Role.SessionAffinityInterval {
+		sess.Ctx.Log.Infoln("Target account offline", "account:", account, ", cmd:", cmd)
+		return false
+	}
+	targetSess = sess.SessMgr.GetByID(utility.ServerID2NodeID(dbObj.ServerID))
+	sess.GWMgr.AddUser(account, targetSess) // sess 加入缓存
+	msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
+	msgRelay.Account = account
+	msgRelay.CMD = uint32(cmd)
+	msgRelay.Data = data
+	return targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 }
 
-// DoBroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
-func (sess *Session) DoBroadcastMsgToClient(cmd uint64, data []byte) bool {
+// BroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
+func (sess *Session) BroadcastMsgToClient(cmd uint64, data []byte) bool {
 	sess.SessMgr.ForByType(common.Gateway, func(targetSess *nodecommon.SessionBase) {
-		targetSess.SendMsgToClient("", cmd, data)
+		msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
+		msgRelay.Account = ""
+		msgRelay.CMD = uint32(cmd)
+		msgRelay.Data = data
+		targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 	})
 	return true
 }

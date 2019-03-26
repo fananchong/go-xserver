@@ -87,13 +87,3 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	}
 	return
 }
-
-// DoSendMsgToClient : 发送消息给客户端，通过 Gateway 中继
-func (sess *Session) DoSendMsgToClient(account string, cmd uint64, data []byte) bool {
-	return sess.Ctx.Gateway.GetSendToClient()(account, cmd+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config.Common.MsgCmdOffset), data)
-}
-
-// DoBroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
-func (sess *Session) DoBroadcastMsgToClient(cmd uint64, data []byte) bool {
-	return sess.Ctx.Gateway.GetSendToAllClient()(cmd+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config.Common.MsgCmdOffset), data)
-}
