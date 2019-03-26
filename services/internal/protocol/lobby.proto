@@ -18,6 +18,7 @@ message ENUM_LOBBY_COMMON_ERROR {
     enum ENUM {
         OK = 0;                                         // 没有错误
         SYSTEM_ERROR = 1;                               // 系统错误
+        DUPLICATION_ROLE_NAME = 2;                      // 角色名重复
     }
 }
 

@@ -33,3 +33,9 @@ Name = "mgr"
 Addrs = ["127.0.0.1:6379"]
 Password = "123456"
 DBIndex = 1
+
+[dbrolename]
+Name = "rolename"
+Addrs = ["127.0.0.1:6379"]
+Password = "123456"
+DBIndex = 1

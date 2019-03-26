@@ -49,11 +49,24 @@ func (accountObj *Account) onCreateRole(data []byte) {
 		return
 	}
 
-	// TODO: 重名检查
+	// 重名检查
+	if Ctx.Role2Account.GetAndActive(req.GetInfo().GetRoleName()) != "" {
+		Ctx.Log.Errorln("Duplication of role names. account:", accountObj.account)
+		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_DUPLICATION_ROLE_NAME
+		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+		return
+	}
 
 	role := accountObj.roles[req.Slot]
 	if role == nil { // 创建角色
-		// 没有角色，则生成角色ID
+		// 保存角色名到角色名数据库
+		if Ctx.Role2Account.AddAndInsertDB(req.GetInfo().GetRoleName(), accountObj.account) == false {
+			Ctx.Log.Errorln("Save role name to db fail. account:", accountObj.account)
+			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
+			utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+			return
+		}
+		// 生成角色ID
 		roleID, err := lobby.NewID(db.IDGenTypeRole)
 		if err != nil {
 			Ctx.Log.Errorln(err, "account:", accountObj.account)
@@ -118,6 +131,7 @@ func (accountObj *Account) onEnterGame(data []byte) {
 		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
 		return
 	}
+	Ctx.Role2Account.Add(role.GetName(), accountObj.account)
 	accountObj.currentRole = role
 	msg.DetailInfo = &protocol.ROLE_DETAIL_INFO{}
 	msg.DetailInfo.BaseInfo = &protocol.ROLE_BASE_INFO{}

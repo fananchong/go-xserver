@@ -32,8 +32,19 @@ LOOP0:
 		goto LOOP0
 	}
 
+LOOP1:
+	if err := go_redis_orm.CreateDB(
+		redis.ctx.Config.DbRoleName.Name,
+		redis.ctx.Config.DbRoleName.Addrs,
+		redis.ctx.Config.DbRoleName.Password,
+		redis.ctx.Config.DbRoleName.DBIndex); err != nil {
+		redis.ctx.Log.Errorln(err)
+		time.Sleep(5 * time.Second)
+		goto LOOP1
+	}
+
 	if pluginType != common.Login {
-	LOOP1:
+	LOOP99:
 		if err := go_redis_orm.CreateDB(
 			redis.ctx.Config.DbServer.Name,
 			redis.ctx.Config.DbServer.Addrs,
@@ -41,7 +52,7 @@ LOOP0:
 			redis.ctx.Config.DbServer.DBIndex); err != nil {
 			redis.ctx.Log.Errorln(err)
 			time.Sleep(5 * time.Second)
-			goto LOOP1
+			goto LOOP99
 		}
 	}
 

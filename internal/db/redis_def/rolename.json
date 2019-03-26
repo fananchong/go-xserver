@@ -1,0 +1,9 @@
+{
+  "name": "RoleName",
+  "type": "1-1",
+  "key": "string",
+  "struct_format": "gogo",
+  "fields": {
+    "account": "string"
+  }
+}

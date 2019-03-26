@@ -23,11 +23,11 @@ func SendMsgToClient(ctx *common.Context, account string, cmd uint64, msg proto.
 
 // SendMsgToClientByRoleName : 发送数据
 func SendMsgToClientByRoleName(ctx *common.Context, roleName string, cmd uint64, msg proto.Message) (bool, error) {
-	account := ""
-
-	// TODO: 根据 rolename 查找 账号
-
-	return SendMsgToClient(ctx, account, cmd, msg)
+	account := ctx.Role2Account.GetAndActive(roleName)
+	if account != "" {
+		return SendMsgToClient(ctx, account, cmd, msg)
+	}
+	return false, fmt.Errorf("Sending message failed, roleName: %s, cmd:%d, account:%s", roleName, cmd, account)
 }
 
 // BroadcastMsgToClient :
