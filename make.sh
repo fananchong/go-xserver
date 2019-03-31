@@ -38,6 +38,7 @@ case $1 in
         exit 0
         ;;
     "")
+        export GOPROXY=https://goproxy.io
         cd $SRC_DIR
         go generate ./...
         cd $SRC_DIR

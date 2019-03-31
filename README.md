@@ -8,15 +8,15 @@
 
 ## 编译
 
-- 编译环境需要[翻墙设置](doc/编译-翻墙设置.md)
-- 安装 golang 1.11+ 、 docker
+- [安装 golang 1.11+](https://golang.google.cn/dl/)
+- [安装 docker](https://docs.docker.com/install/linux/docker-ce/centos/)
 - 编译执行以下语句即可：
 
   ```shell
   ./make.sh
   ```
 
-- Windows 10 下开发，请参考[在 Win10 中 Linux 环境搭建](doc/编译-在Win10中Linux环境搭建.md)
+- 【非必须】 Windows 10 下开发，请参考[在 Win10 中 Linux 环境搭建](doc/编译-在Win10中Linux环境搭建.md)
 
 
 ## 运行
@@ -80,6 +80,8 @@
   - 匹配完毕进入房间
 - 网关服务器
   - 消息加解密
+- 代码整理，加强代码可读性
+- 代码优化，参考 goim ，优化代码
 
 ## 将要实现的功能
 
