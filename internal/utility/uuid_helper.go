@@ -11,7 +11,7 @@ import (
 
 // NewNID : 生成一个NID
 func NewNID() common.NodeID {
-	return UUID2NodeID(uuid.NewV2(uuid.DomainPerson))
+	return UUID2NodeID(uuid.NewV1())
 }
 
 // UUID2NodeID : uuid.UUID 转化为 common.NodeID
