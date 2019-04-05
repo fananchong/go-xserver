@@ -8,9 +8,9 @@ Client->>LoginServer: 1. 账号登陆
 Note right of LoginServer: 1. 账号相关验证（略）
 Note right of LoginServer: 2. 本地缓存中选取一个 Gateway （以Gateway为例，方便理解；实际上可定制服务列表）
 LoginServer->>Redis: 2.1 SETGETX { uid, gatewayid } 键值对
-LoginServer->>LoginServer: 2.2 检查对应的 gateway 是否失效
-alt gateway 已失效
-  LoginServer-->>Redis: DELX { uid, gatewayid } 键值对
+Redis-->>LoginServer: 2.1 返回 gatewayid'
+alt gateway' 已失效
+  LoginServer-->>Redis: DELX { uid, gatewayid' } 键值对
   LoginServer-->>LoginServer: goto 2.1
 end
 LoginServer->>Redis: 3. SET { uid, token } 键值对
