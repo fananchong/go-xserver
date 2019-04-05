@@ -10,18 +10,25 @@ import (
 
 // SessionMgr : 网络会话对象管理类
 type SessionMgr struct {
+	ctx     *common.Context
 	m       sync.RWMutex
 	ss      map[common.NodeType][]*SessionBase
 	ssByID  map[common.NodeID]*SessionBase
-	counter uint32
+	counter map[int]uint32
 }
 
 // NewSessionMgr : 实例化网络会话对象管理类
-func NewSessionMgr() *SessionMgr {
-	return &SessionMgr{
-		ss:     make(map[common.NodeType][]*SessionBase),
-		ssByID: make(map[common.NodeID]*SessionBase),
+func NewSessionMgr(ctx *common.Context) *SessionMgr {
+	sessMgr := &SessionMgr{
+		ctx:     ctx,
+		ss:      make(map[common.NodeType][]*SessionBase),
+		ssByID:  make(map[common.NodeID]*SessionBase),
+		counter: make(map[int]uint32),
 	}
+	for i := 0; i < int(common.NodeTypeSize); i++ {
+		sessMgr.counter[i] = 0
+	}
+	return sessMgr
 }
 
 // Register : 有网络会话节点加入
@@ -109,8 +116,8 @@ func (sessmgr *SessionMgr) SelectOne(t common.NodeType) *SessionBase {
 	lst := sessmgr.GetByType(t)
 	n := len(lst)
 	if n > 0 {
-		index := int32(sessmgr.counter % uint32(n))
-		sessmgr.counter++
+		index := int32(sessmgr.counter[int(t)] % uint32(n))
+		sessmgr.counter[int(t)]++
 		return lst[index]
 	}
 	return nil

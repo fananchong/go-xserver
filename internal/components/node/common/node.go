@@ -22,7 +22,7 @@ type Node struct {
 // NewNode : 管理节点基类实现类的构造函数
 func NewNode(ctx *common.Context, nodeType common.NodeType) *Node {
 	node := &Node{Ctx: ctx}
-	node.SessMgr = NewSessionMgr()
+	node.SessMgr = NewSessionMgr(ctx)
 	node.Info = &protocol.SERVER_INFO{}
 	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
 	node.Info.Type = uint32(nodeType)

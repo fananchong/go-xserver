@@ -25,7 +25,7 @@ type Session struct {
 func NewSession(ctx *common.Context) *Session {
 	sess := &Session{}
 	sess.SessionBase = nodecommon.NewSessionBase(ctx, sess)
-	sess.SessMgr = nodecommon.NewSessionMgr()
+	sess.SessMgr = nodecommon.NewSessionMgr(ctx)
 	sess.GWMgr = NewIntranetSessionMgr(ctx)
 	return sess
 }
