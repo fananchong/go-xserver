@@ -1,43 +1,44 @@
-package components
+package nodegateway
 
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/utils"
+	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
-	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
 )
 
-// Gateway : 网关服务器
+// Gateway : 网关节点
 type Gateway struct {
-	*nodegateway.Node
+	*nodecommon.Node
 	ctx                 *common.Context
 	funcSendToClient    common.FuncTypeSendToClient
 	funcSendToAllClient common.FuncTypeSendToAllClient
 	funcEncodeFunc      common.FuncTypeEncode
 	funcDecodeFunc      common.FuncTypeDecode
-	users               *nodegateway.UserMgr
+	users               *UserMgr
 }
 
-// NewGateway : 构造函数
+// NewGateway : 网关节点实现类的构造函数
 func NewGateway(ctx *common.Context) *Gateway {
 	gw := &Gateway{
 		ctx:  ctx,
-		Node: nodegateway.NewNode(ctx),
+		Node: nodecommon.NewNode(ctx, common.Gateway),
 	}
 	gw.ctx.Gateway = gw
-	gw.users = nodegateway.NewUserMgr(ctx, gw.Node)
+	gw.users = NewUserMgr(ctx, gw)
 	return gw
 }
 
 // Start : 启动
 func (gw *Gateway) Start() bool {
-	if getPluginType(gw.ctx) == common.Gateway {
+	if misc.GetPluginType(gw.ctx.Ctx) == common.Gateway {
 		if gw.initRedis() == false {
 			return false
 		}
-		if gw.Node.Init() == false {
+		if gw.Node.Init(Session{}, []utils.IComponent{}) == false {
 			return false
 		}
 		if gw.Node.Start() == false {

@@ -21,6 +21,7 @@ func NewSignal(ctx *common.Context) *Signal {
 
 // Start : 实例化组件
 func (s *Signal) Start() bool {
+	s.ctx.Log.Infoln("The program started successfully")
 	s.sig = make(chan os.Signal)
 	signal.Notify(s.sig,
 		syscall.SIGINT,

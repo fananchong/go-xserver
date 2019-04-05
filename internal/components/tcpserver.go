@@ -20,7 +20,6 @@ func NewTCPServer(ctx *common.Context) *TCPServer {
 
 // Start : 实例化组件
 func (server *TCPServer) Start() bool {
-	loadPlugin(server.ctx)
 	s := server.ctx.ServerForClient.(*gotcp.Server)
 	if s.GetSessionType() != nil {
 		// 填写 `0.0.0.0` ， 而不是 `utils.GetIPOuter(server.ctx)` 具体外网 IP ，是为了能支持阿里云 ECS 服务器

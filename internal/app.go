@@ -6,6 +6,8 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/components"
+	"github.com/fananchong/go-xserver/internal/components/misc"
+	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 )
 
 // App : 应用程序类
@@ -17,7 +19,7 @@ type App struct {
 // NewApp : 应用程序类的构造函数
 func NewApp() *App {
 	app := &App{
-		ctx: &common.Context{Ctx: components.CreateContext()},
+		ctx: &common.Context{Ctx: misc.CreateContext()},
 	}
 	return app
 }
@@ -33,11 +35,11 @@ func (app *App) Run() {
 		components.NewPlugin(app.ctx),
 		components.NewRedis(app.ctx),
 		components.NewRole2Account(app.ctx),
+		components.NewTCPServer(app.ctx),
 		components.NewNode(app.ctx),
 		components.NewMgr(app.ctx),
 		components.NewLogin(app.ctx),
-		components.NewGateway(app.ctx),
-		components.NewTCPServer(app.ctx),
+		nodegateway.NewGateway(app.ctx),
 		components.NewSignal(app.ctx),
 	}
 
@@ -47,9 +49,9 @@ func (app *App) Run() {
 }
 
 func (app *App) onAppReady() {
-	components.SetComponentCount(app.ctx.Ctx, len(app.components))
+	misc.SetComponentCount(app.ctx.Ctx, len(app.components))
 	for i := 0; i < len(app.components); i++ {
-		components.OneComponentOK(app.ctx.Ctx)
+		misc.OneComponentOK(app.ctx.Ctx)
 		c := app.components[i]
 		if !c.Start() {
 			os.Exit(1)

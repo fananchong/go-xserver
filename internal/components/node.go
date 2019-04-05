@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 )
 
@@ -18,7 +19,8 @@ type Node struct {
 // NewNode : 实例化
 func NewNode(ctx *common.Context) *Node {
 	node := &Node{ctx: ctx}
-	switch getPluginType(node.ctx) {
+	pluginType := misc.GetPluginType(node.ctx.Ctx)
+	switch pluginType {
 	case common.Mgr:
 		node.node = nil
 	default:
@@ -33,7 +35,7 @@ func NewNode(ctx *common.Context) *Node {
 // Start : 实例化组件
 func (node *Node) Start() bool {
 	go func() {
-		WaitComponent(node.ctx.Ctx)
+		misc.WaitComponent(node.ctx.Ctx)
 		node.ctx.Log.Infoln("Service node start ...")
 		if node.node != nil && node.node.Start() == false {
 			node.ctx.Log.Errorln("Service node failed to start")

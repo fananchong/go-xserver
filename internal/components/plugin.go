@@ -5,42 +5,41 @@ import (
 	"plugin"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/components/misc"
 	"github.com/spf13/viper"
 )
 
-var pluginObj common.Plugin
-var pluginType common.NodeType
-
 // Plugin : 插件组件
 type Plugin struct {
-	ctx *common.Context
+	ctx       *common.Context
+	pluginObj common.Plugin
 }
 
 // NewPlugin : 实例化
 func NewPlugin(ctx *common.Context) *Plugin {
 	p := &Plugin{ctx: ctx}
-	loadPlugin(ctx)
+	p.loadPlugin(ctx)
 	return p
 }
 
 // Start : 实例化组件
 func (p *Plugin) Start() bool {
 	var ret bool
-	if pluginObj != nil {
-		ret = pluginObj.Start()
+	if p.pluginObj != nil {
+		ret = p.pluginObj.Start()
 	}
 	return ret
 }
 
 // Close : 关闭组件
-func (*Plugin) Close() {
-	if pluginObj != nil {
-		pluginObj.Close()
-		pluginObj = nil
+func (p *Plugin) Close() {
+	if p.pluginObj != nil {
+		p.pluginObj.Close()
+		p.pluginObj = nil
 	}
 }
 
-func loadPlugin(ctx *common.Context) {
+func (p *Plugin) loadPlugin(ctx *common.Context) {
 	appName := viper.GetString("app")
 	if appName == "" {
 		printUsage()
@@ -66,11 +65,8 @@ func loadPlugin(ctx *common.Context) {
 		ctx.Log.Errorln(err)
 		os.Exit(1)
 	}
-	pluginObj = *obj.(*common.Plugin)
-	pluginType = *t.(*common.NodeType)
+	p.pluginObj = *obj.(*common.Plugin)
+	pluginType := *t.(*common.NodeType)
 	*c.(**common.Context) = ctx
-}
-
-func getPluginType(ctx *common.Context) common.NodeType {
-	return pluginType
+	misc.SetPluginType(ctx.Ctx, pluginType)
 }

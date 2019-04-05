@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodemgr "github.com/fananchong/go-xserver/internal/components/node/mgr"
 )
 
@@ -16,7 +17,8 @@ type Mgr struct {
 // NewMgr : 实例化
 func NewMgr(ctx *common.Context) *Mgr {
 	mgr := &Mgr{ctx: ctx}
-	if getPluginType(mgr.ctx) == common.Mgr {
+	pluginType := misc.GetPluginType(mgr.ctx.Ctx)
+	if pluginType == common.Mgr {
 		mgr.node = nodemgr.NewNode(mgr.ctx)
 		if mgr.node.Init() {
 			mgr.ctx.Node = mgr.node
@@ -27,7 +29,8 @@ func NewMgr(ctx *common.Context) *Mgr {
 
 // Start : 实例化组件
 func (mgr *Mgr) Start() bool {
-	if getPluginType(mgr.ctx) == common.Mgr {
+	pluginType := misc.GetPluginType(mgr.ctx.Ctx)
+	if pluginType == common.Mgr {
 		if mgr.node.Start() == false {
 			mgr.ctx.Log.Errorln("Mgr Server node failed to start")
 			os.Exit(1)

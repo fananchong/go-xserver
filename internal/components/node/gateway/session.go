@@ -14,6 +14,8 @@ import (
 // Session : 网络会话类
 type Session struct {
 	*nodecommon.SessionBase
+	funcSendToClient    common.FuncTypeSendToClient
+	funcSendToAllClient common.FuncTypeSendToAllClient
 }
 
 // Init : 初始化网络会话节点
@@ -22,6 +24,8 @@ func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISe
 	sess.SessionBase = nodecommon.NewSessionBase(ud.Ctx, sess)
 	sess.SessionBase.Init(root, conn, derived)
 	sess.SessMgr = ud.SessMgr
+	sess.funcSendToClient = ud.Ctx.Gateway.(*Gateway).GetSendToClient()
+	sess.funcSendToAllClient = ud.Ctx.Gateway.(*Gateway).GetSendToAllClient()
 }
 
 // DoVerify : 验证时保存自己的注册消息
@@ -74,11 +78,11 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		}
 		targetAccount := msg.GetAccount()
 		if targetAccount != "" {
-			sess.Ctx.Gateway.GetSendToClient()(targetAccount,
+			sess.funcSendToClient(targetAccount,
 				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config.Common.MsgCmdOffset),
 				msg.GetData())
 		} else {
-			sess.Ctx.Gateway.GetSendToAllClient()(
+			sess.funcSendToAllClient(
 				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config.Common.MsgCmdOffset),
 				msg.GetData())
 		}

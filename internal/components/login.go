@@ -3,6 +3,7 @@ package components
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -31,7 +32,8 @@ func NewLogin(ctx *common.Context) *Login {
 
 // Start : 启动
 func (login *Login) Start() bool {
-	if getPluginType(login.ctx) == common.Login {
+	pluginType := misc.GetPluginType(login.ctx.Ctx)
+	if pluginType == common.Login {
 		login.myNode = login.ctx.Node.(*nodenormal.Node)
 		if !login.initRedis() {
 			return false
