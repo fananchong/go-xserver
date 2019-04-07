@@ -9,6 +9,7 @@ import (
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	nodemgr "github.com/fananchong/go-xserver/internal/components/node/mgr"
+	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 )
 
 // App : 应用程序类
@@ -37,7 +38,7 @@ func (app *App) Run() {
 		components.NewRedis(app.ctx),
 		components.NewRole2Account(app.ctx),
 		components.NewTCPServer(app.ctx),
-		components.NewNode(app.ctx),
+		nodenormal.NewNormal(app.ctx),
 		nodemgr.NewMgr(app.ctx),
 		components.NewLogin(app.ctx),
 		nodegateway.NewGateway(app.ctx),

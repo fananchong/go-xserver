@@ -7,6 +7,8 @@ import (
 	"github.com/fananchong/go-xserver/common"
 )
 
+// 框架层的一些全局变量，可以按以下方式 Set/Get
+
 // ContextValueType : context value 的 key 类型
 type ContextValueType int
 

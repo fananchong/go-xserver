@@ -25,12 +25,8 @@ func NewMgr(ctx *common.Context) *Mgr {
 	}
 	pluginType := misc.GetPluginType(mgr.ctx.Ctx)
 	if pluginType == common.Mgr {
-		if mgr.init() {
-			mgr.ctx.Node = mgr
-		} else {
-			ctx.Log.Errorln("Mgr init fail")
-			os.Exit(1)
-		}
+		mgr.init()
+		mgr.ctx.Node = mgr
 	}
 	return mgr
 }
