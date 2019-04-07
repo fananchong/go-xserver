@@ -1,4 +1,4 @@
-package components
+package nodelogin
 
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"

@@ -8,6 +8,7 @@ import (
 	"github.com/fananchong/go-xserver/internal/components"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
+	nodelogin "github.com/fananchong/go-xserver/internal/components/node/login"
 	nodemgr "github.com/fananchong/go-xserver/internal/components/node/mgr"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 )
@@ -40,7 +41,7 @@ func (app *App) Run() {
 		components.NewTCPServer(app.ctx),
 		nodenormal.NewNormal(app.ctx),
 		nodemgr.NewMgr(app.ctx),
-		components.NewLogin(app.ctx),
+		nodelogin.NewLogin(app.ctx),
 		nodegateway.NewGateway(app.ctx),
 		components.NewSignal(app.ctx),
 	}
