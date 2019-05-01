@@ -12,7 +12,7 @@ import (
 // Plugin : 插件组件
 type Plugin struct {
 	ctx       *common.Context
-	pluginObj common.Plugin
+	pluginObj common.IPlugin
 }
 
 // NewPlugin : 实例化
@@ -65,7 +65,7 @@ func (p *Plugin) loadPlugin(ctx *common.Context) {
 		ctx.Log.Errorln(err)
 		os.Exit(1)
 	}
-	p.pluginObj = *obj.(*common.Plugin)
+	p.pluginObj = *obj.(*common.IPlugin)
 	pluginType := *t.(*common.NodeType)
 	*c.(**common.Context) = ctx
 	misc.SetPluginType(ctx.Ctx, pluginType)

@@ -7,7 +7,7 @@ import (
 )
 
 // PluginObj : 代表一个插件对象
-var PluginObj common.Plugin
+var PluginObj common.IPlugin
 
 // PluginType : 插件类型
 var PluginType common.NodeType
