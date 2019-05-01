@@ -14,6 +14,6 @@ type Context struct {
 	Node            INode           // 常驻功能
 	Role2Account    IRole2Account   // 常驻功能
 	ServerForClient ITCPServer      // 注册该字段相应接口，才会开启（可选模块）
-	Login           ILogin          // 常驻功能。节点类型为 Login，才会开启
-	Gateway         IGateway        // 常驻功能。节点类型为 Gateway ，才会开启
+	Login           ILogin          // 节点类型为 Login，才会开启
+	Gateway         IGateway        // 节点类型为 Gateway ，才会开启
 }

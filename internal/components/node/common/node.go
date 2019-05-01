@@ -7,7 +7,6 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -24,7 +23,7 @@ func NewNode(ctx *common.Context, nodeType common.NodeType) *Node {
 	node := &Node{Ctx: ctx}
 	node.SessMgr = NewSessionMgr(ctx)
 	node.Info = &protocol.SERVER_INFO{}
-	node.Info.Id = utility.NodeID2ServerID(utility.NewNID())
+	node.Info.Id = NodeID2ServerID(NewNID())
 	node.Info.Type = uint32(nodeType)
 	node.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
 	node.Info.Ports = ctx.Config.Network.Port

@@ -7,7 +7,6 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -35,10 +34,10 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
-	if utility.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
+	if nodecommon.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
 		sess.Ctx.Log.Errorln("Service ID is different.")
-		sess.Ctx.Log.Errorln("sess.Info.GetId() :", utility.ServerID2UUID(sess.Info.GetId()).String())
-		sess.Ctx.Log.Errorln("msg.GetData().GetId() :", utility.ServerID2UUID(msg.GetData().GetId()).String())
+		sess.Ctx.Log.Errorln("sess.Info.GetId() :", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
+		sess.Ctx.Log.Errorln("msg.GetData().GetId() :", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
 		sess.Close()
 		return
 	}
@@ -49,7 +48,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	}
 	sess.Info = msg.GetData()
 	sess.SessMgr.Register(sess.SessionBase)
-	sess.Ctx.Log.Infoln("The service node registers with me, the node ID is", utility.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Log.Infoln("The service node registers with me, the node ID is", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
 	sess.Ctx.Log.Infoln(sess.Info)
 }
 
@@ -61,7 +60,7 @@ func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag
 func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 	if sess.SessionBase == sessbase && sessbase.Info != nil {
 		sess.SessMgr.Lose1(sessbase)
-		sess.Ctx.Log.Infoln("Service node loses connection, type:", sess.Info.GetType(), "id:", utility.ServerID2UUID(sess.Info.GetId()).String())
+		sess.Ctx.Log.Infoln("Service node loses connection, type:", sess.Info.GetType(), "id:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
 	}
 }
 

@@ -4,10 +4,10 @@ import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/components/misc"
+	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/gomodule/redigo/redis"
 	uuid "github.com/satori/go.uuid"
 )
@@ -190,7 +190,7 @@ LOOP:
 		return
 	}
 	nodeID := node.GetID()
-	dbObj.ServerID = utility.NodeID2ServerID(nodeID)
+	dbObj.ServerID = nodecommon.NodeID2ServerID(nodeID)
 	dbObj.Type = nodeType
 	dbObj.Address = node.GetIP(common.IPOUTER)
 	dbObj.Port = node.GetPort(int(common.PORTFORCLIENT))
@@ -212,7 +212,7 @@ LOOP:
 	}
 	if ret != "" {
 		dbObj.Unmarshal(ret)
-		if login.HaveNode(utility.ServerID2NodeID(dbObj.ServerID)) == false {
+		if login.HaveNode(nodecommon.ServerID2NodeID(dbObj.ServerID)) == false {
 			if _, err = login.serverRedis.DelX(key, ret); err != nil {
 				login.ctx.Log.Errorln(err, "account:", account)
 				return

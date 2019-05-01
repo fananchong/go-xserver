@@ -5,9 +5,12 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/gogo/protobuf/proto"
+	uuid "github.com/satori/go.uuid"
 )
+
+// NodeID : 节点ID类型
+type NodeID uuid.UUID
 
 // type INode interface {
 // 	GetID() NodeID                                                                 // 【1】获取节点ID
@@ -38,7 +41,7 @@ import (
 // DefaultNodeInterfaceImpl : 缺省的节点接口实现
 type DefaultNodeInterfaceImpl struct {
 	Info               *protocol.SERVER_INFO
-	nid                common.NodeID
+	nid                NodeID
 	once               sync.Once
 	enableMessageReply bool
 	SessMgr            *SessionMgr
@@ -47,14 +50,14 @@ type DefaultNodeInterfaceImpl struct {
 }
 
 // GetID : 获取本节点信息，节点ID
-func (impl *DefaultNodeInterfaceImpl) GetID() common.NodeID {
+func (impl *DefaultNodeInterfaceImpl) GetID() NodeID {
 	if impl.Info != nil {
 		impl.once.Do(func() {
-			impl.nid = utility.ServerID2NodeID(impl.Info.GetId())
+			impl.nid = ServerID2NodeID(impl.Info.GetId())
 		})
 		return impl.nid
 	}
-	return common.NodeID{}
+	return NodeID{}
 }
 
 // GetType : 获取节点类型
@@ -133,13 +136,13 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []*SessionBase {
 }
 
 // HaveNode : 是否有节点
-func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID common.NodeID) bool {
+func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID NodeID) bool {
 	node := impl.SessMgr.GetByID(nodeID)
 	return node != nil
 }
 
 // GetNode : 获取节点
-func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID common.NodeID) *SessionBase {
+func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID NodeID) *SessionBase {
 	node := impl.SessMgr.GetByID(nodeID)
 	if node != nil {
 		return node
@@ -151,7 +154,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID common.NodeID) *SessionBase
 func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log common.ILogger, nodeType common.NodeType) {
 	log.Infoln("==========================================================================================================")
 	for _, v := range impl.GetNodeList(nodeType) {
-		log.Infoln("id:", utility.NodeID2UUID(v.GetID()).String(), "type:",
+		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
 			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
 			v.GetIP(common.IPINNER), "ip1:", v.GetIP(common.IPOUTER))
 	}
@@ -162,7 +165,7 @@ func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log common.ILogger, nodeType
 func (impl *DefaultNodeInterfaceImpl) PrintAllNodeInfo(log common.ILogger) {
 	log.Infoln("==========================================================================================================")
 	for _, v := range impl.GetNodeAll() {
-		log.Infoln("id:", utility.NodeID2UUID(v.GetID()).String(), "type:",
+		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
 			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
 			v.GetIP(common.IPINNER), "ip1:", v.GetIP(common.IPOUTER))
 	}
@@ -180,7 +183,7 @@ func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint
 // SendByType : 对某类型节点，广播数据
 func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType common.NodeType, cmd uint64, msg proto.Message, excludeSelf bool) {
 	impl.SessMgr.ForByType(nodeType, func(sess *SessionBase) {
-		if excludeSelf && utility.EqualNID(sess.GetID(), impl.GetID()) {
+		if excludeSelf && EqualNID(sess.GetID(), impl.GetID()) {
 			return
 		}
 		sess.SendMsg(cmd, msg)
@@ -188,7 +191,7 @@ func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType common.NodeType, cmd u
 }
 
 // SendByID : 往指定节点，发送数据
-func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID common.NodeID, cmd uint64, msg proto.Message) bool {
+func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID NodeID, cmd uint64, msg proto.Message) bool {
 	if sess := impl.SessMgr.GetByID(nodeID); sess != nil {
 		return sess.SendMsg(cmd, msg)
 	}
@@ -198,7 +201,7 @@ func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID common.NodeID, cmd uint64,
 // SendAll : 对服务器组，广播数据
 func (impl *DefaultNodeInterfaceImpl) SendAll(cmd uint64, msg proto.Message, excludeSelf bool) {
 	impl.SessMgr.ForAll(func(sess *SessionBase) {
-		if excludeSelf && utility.EqualNID(sess.GetID(), impl.GetID()) {
+		if excludeSelf && EqualNID(sess.GetID(), impl.GetID()) {
 			return
 		}
 		sess.SendMsg(cmd, msg)

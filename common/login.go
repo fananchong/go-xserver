@@ -44,5 +44,5 @@ type ILogin interface {
 	RegisterCustomAccountVerification(f FuncTypeAccountVerification) // 注册自定义账号验证
 	RegisterAllocationNodeType(types []NodeType)                     // 注册自定义要分配的服务器节点类型
 	Login(account, password string, defaultMode bool, userdata []byte) (token string,
-		address []string, port []int32, nodeType []NodeType, errcode LoginErrCode) // 登录。框架层处理登录事宜，并返回 ip list / type list / port list / token 等
+		address []string, port []int32, nodeType []NodeType, errcode LoginErrCode) // 登录。 框架层处理登录事宜，并返回 ip list / type list / port list / token 等
 }

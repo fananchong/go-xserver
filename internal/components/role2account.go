@@ -89,7 +89,7 @@ func (role2account *Role2Account) GetAndActive(role string) string {
 }
 
 func (role2account *Role2Account) checkActive() {
-	// TODO: 需要新增最小堆排序容器字段，并维护。使该函数计算复杂度为 O(1)
+	// TODO: 需要新增最小堆排序容器字段，并维护。使该函数计算复杂度最高为 O(logn)
 	role2account.mutex.Lock()
 	defer role2account.mutex.Unlock()
 	now := utils.GetMillisecondTimestamp()

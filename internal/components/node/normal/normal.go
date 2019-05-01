@@ -8,8 +8,8 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/components/misc"
+	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 )
 
 // 通过该类接入服务器组，该类主要处理与 Mgr Server 的交互
@@ -31,7 +31,7 @@ func NewNormal(ctx *common.Context) *Normal {
 	pluginType := misc.GetPluginType(ctx.Ctx)
 	if pluginType != common.Mgr {
 		normal.Info = &protocol.SERVER_INFO{}
-		normal.Info.Id = utility.NodeID2ServerID(utility.NewNID())
+		normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID())
 		normal.Info.Type = uint32(pluginType)
 		normal.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
 		normal.Info.Ports = ctx.Config.Network.Port
@@ -40,7 +40,7 @@ func NewNormal(ctx *common.Context) *Normal {
 		// normal.Info.Version
 		normal.init()
 		normal.ctx.Node = normal
-		ctx.Log.Infoln("NODE ID:", utility.NodeID2UUID(normal.GetID()).String(), ", NODE TYPE:", pluginType)
+		ctx.Log.Infoln("NODE ID:", nodecommon.NodeID2UUID(normal.GetID()).String(), ", NODE TYPE:", pluginType)
 	}
 	return normal
 }

@@ -1,12 +1,5 @@
 package common
 
-import (
-	uuid "github.com/satori/go.uuid"
-)
-
-// NodeID : 节点ID类型
-type NodeID uuid.UUID
-
 // FuncTypeOnRelayMsg : 处理中继消息的函数声明
 type FuncTypeOnRelayMsg func(source NodeType, account string, cmd uint64, data []byte)
 

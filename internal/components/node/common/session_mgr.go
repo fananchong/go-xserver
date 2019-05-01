@@ -5,7 +5,6 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 )
 
 // SessionMgr : 网络会话对象管理类
@@ -13,7 +12,7 @@ type SessionMgr struct {
 	ctx     *common.Context
 	m       sync.RWMutex
 	ss      map[common.NodeType][]*SessionBase
-	ssByID  map[common.NodeID]*SessionBase
+	ssByID  map[NodeID]*SessionBase
 	counter map[int]uint32
 }
 
@@ -22,7 +21,7 @@ func NewSessionMgr(ctx *common.Context) *SessionMgr {
 	sessMgr := &SessionMgr{
 		ctx:     ctx,
 		ss:      make(map[common.NodeType][]*SessionBase),
-		ssByID:  make(map[common.NodeID]*SessionBase),
+		ssByID:  make(map[NodeID]*SessionBase),
 		counter: make(map[int]uint32),
 	}
 	for i := 0; i < int(common.NodeTypeSize); i++ {
@@ -58,7 +57,7 @@ func (sessmgr *SessionMgr) Lose2(sid *protocol.SERVER_ID, t common.NodeType) {
 	for sessmgr.deleteSessInSS(sid, t) {
 		// No need to do anything
 	}
-	delete(sessmgr.ssByID, utility.ServerID2NodeID(sid))
+	delete(sessmgr.ssByID, ServerID2NodeID(sid))
 }
 
 func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t common.NodeType) bool {
@@ -66,7 +65,7 @@ func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t common.Node
 	if lst, ok := sessmgr.ss[t]; ok {
 		findindex := -1
 		for i, v := range lst {
-			if utility.EqualSID(v.GetSID(), sid) {
+			if EqualSID(v.GetSID(), sid) {
 				findindex = i
 				break
 			}
@@ -80,7 +79,7 @@ func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t common.Node
 }
 
 // GetByID : 根据 NID 获取网络会话节点
-func (sessmgr *SessionMgr) GetByID(nid common.NodeID) *SessionBase {
+func (sessmgr *SessionMgr) GetByID(nid NodeID) *SessionBase {
 	sessmgr.m.RLock()
 	defer sessmgr.m.RUnlock()
 	if v, ok := sessmgr.ssByID[nid]; ok {

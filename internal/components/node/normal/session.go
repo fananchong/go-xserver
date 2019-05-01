@@ -10,7 +10,6 @@ import (
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -53,9 +52,9 @@ func (sess *Session) connectMgrServer() {
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
-	sess.Ctx.Log.Infoln("The service node registers information with me with ID", utility.ServerID2UUID(msg.GetData().GetId()).String(), "type:", msg.GetData().GetType())
+	sess.Ctx.Log.Infoln("The service node registers information with me with ID", nodecommon.ServerID2UUID(msg.GetData().GetId()).String(), "type:", msg.GetData().GetType())
 
-	tempSess := sess.SessMgr.GetByID(utility.ServerID2NodeID(msg.GetData().GetId()))
+	tempSess := sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(msg.GetData().GetId()))
 	if tempSess == nil {
 		// 本地保其他存节点信息
 		targetSess := NewIntranetSession(sess.Ctx, sess.SessMgr, sess)
@@ -82,11 +81,11 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 
 // DoLose : 节点丢失时处理
 func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
-	sess.Ctx.Log.Infoln("Service node connection lost, ID is", utility.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
+	sess.Ctx.Log.Infoln("Service node connection lost, ID is", nodecommon.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
 
 	// 如果存在互连关系的，关闭 TCP 连接
 	if sess.IsEnableMessageRelay() && msg.GetType() == uint32(common.Gateway) {
-		targetSess := sess.SessMgr.GetByID(utility.ServerID2NodeID(msg.GetId()))
+		targetSess := sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(msg.GetId()))
 		if targetSess != nil {
 			targetSess.Close()
 		}
@@ -175,7 +174,7 @@ func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bo
 		sess.Ctx.Log.Infoln("Target account offline", "account:", account, ", cmd:", cmd)
 		return false
 	}
-	targetSess = sess.SessMgr.GetByID(utility.ServerID2NodeID(dbObj.ServerID))
+	targetSess = sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(dbObj.ServerID))
 	sess.GWMgr.AddUser(account, targetSess) // sess 加入缓存
 	msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 	msgRelay.Account = account

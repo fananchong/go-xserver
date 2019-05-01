@@ -7,7 +7,6 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -30,20 +29,20 @@ func NewIntranetSession(ctx *common.Context, sessMgr *nodecommon.SessionMgr, sou
 func (sess *IntranetSession) Start() {
 	go func() {
 		for {
-			node := sess.SessMgr.GetByID(utility.ServerID2NodeID(sess.Info.GetId()))
+			node := sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(sess.Info.GetId()))
 			if node == nil {
 				// 目标节点已丢失，不用试图去连接啦
 				break
 			}
 			address := fmt.Sprintf("%s:%d", sess.Info.GetAddrs()[common.IPINNER], sess.Info.GetPorts()[common.PORTFORINTRANET])
-			sess.Ctx.Log.Infoln("Try to connect to the gateway server, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
+			sess.Ctx.Log.Infoln("Try to connect to the gateway server, address:", address, "node:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
 			if sess.Connect(address, sess) == false {
 				time.Sleep(1 * time.Second)
 				continue
 			}
 			sess.Verify()
 			sess.RegisterSelf(sess.sourceSess.GetID(), sess.sourceSess.GetType(), common.Gateway)
-			sess.Ctx.Log.Infoln("Successfully connected to the gateway server, address:", address, "node:", utility.ServerID2UUID(sess.Info.GetId()).String())
+			sess.Ctx.Log.Infoln("Successfully connected to the gateway server, address:", address, "node:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
 			break
 		}
 	}()

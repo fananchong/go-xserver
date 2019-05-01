@@ -8,15 +8,15 @@ import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
+	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 )
 
 // User : 表示 1 个客户端对象
 type User struct {
 	Account         string
-	Servers         map[uint32]common.NodeID
+	Servers         map[uint32]nodecommon.NodeID
 	ActiveTimestamp int64
 	ClientSession   common.IClientSesion
 }
@@ -25,7 +25,7 @@ type User struct {
 func NewUser(ctx *common.Context, account string, clientSession common.IClientSesion) *User {
 	user := &User{
 		Account:         account,
-		Servers:         make(map[uint32]common.NodeID),
+		Servers:         make(map[uint32]nodecommon.NodeID),
 		ActiveTimestamp: utils.GetMillisecondTimestamp(),
 		ClientSession:   clientSession,
 	}
@@ -59,7 +59,7 @@ func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SER
 	defer userMgr.mutex.Unlock()
 	user := NewUser(userMgr.ctx, account, clientSession)
 	for nodeType, serverID := range servers {
-		user.Servers[nodeType] = utility.ServerID2NodeID(serverID)
+		user.Servers[nodeType] = nodecommon.ServerID2NodeID(serverID)
 		key := db.GetKeyAllocServer(nodeType, account)
 		if _, err := userMgr.ServerRedisCli.Do("EXPIRE", key, 365*86400); err != nil { // 设置账号分配的服务器资源信息，过期时间 1 年
 			return err
@@ -79,7 +79,7 @@ func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SER
 }
 
 // GetServerAndActive : 获取玩家对应服务器类型的服务器资源信息
-func (userMgr *UserMgr) GetServerAndActive(account string, nodeType common.NodeType) (*common.NodeID, error) {
+func (userMgr *UserMgr) GetServerAndActive(account string, nodeType common.NodeType) (*nodecommon.NodeID, error) {
 	userMgr.mutex.RLock()
 	defer userMgr.mutex.RUnlock()
 	if user, ok := userMgr.users[account]; ok {

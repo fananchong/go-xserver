@@ -4,7 +4,6 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/protocol"
-	"github.com/fananchong/go-xserver/internal/utility"
 	"github.com/fananchong/gotcp"
 )
 
@@ -105,10 +104,10 @@ func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 }
 
 // RegisterSelf : 注册自己
-func (sessbase *SessionBase) RegisterSelf(id common.NodeID, selfType common.NodeType, targetServerType common.NodeType) {
+func (sessbase *SessionBase) RegisterSelf(id NodeID, selfType common.NodeType, targetServerType common.NodeType) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
-	msg.Data.Id = utility.NodeID2ServerID(id)
+	msg.Data.Id = NodeID2ServerID(id)
 	msg.Data.Type = uint32(selfType)
 	msg.Data.Addrs = []string{utils.GetIPInner(sessbase.Ctx), utils.GetIPOuter(sessbase.Ctx)}
 	msg.Data.Ports = sessbase.Ctx.Config.Network.Port
