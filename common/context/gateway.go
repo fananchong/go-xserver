@@ -1,4 +1,4 @@
-package common
+package context
 
 // IGateway 接口暴露框架层网关模块的使用方法
 // 完整的网关，由框架层登陆模块、逻辑层交互模块共同完成

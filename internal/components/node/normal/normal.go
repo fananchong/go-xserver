@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/utils"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // 通过该类接入服务器组，该类主要处理与 Mgr Server 的交互
@@ -29,7 +30,7 @@ func NewNormal(ctx *common.Context) *Normal {
 		Session: NewSession(ctx),
 	}
 	pluginType := misc.GetPluginType(ctx)
-	if pluginType != common.Mgr {
+	if pluginType != config.Mgr {
 		normal.Info = &protocol.SERVER_INFO{}
 		normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID())
 		normal.Info.Type = uint32(pluginType)
@@ -60,7 +61,7 @@ func (normal *Normal) init() bool {
 // Start : 节点开始工作
 func (normal *Normal) Start() bool {
 	pluginType := misc.GetPluginType(normal.ctx)
-	if pluginType != common.Mgr {
+	if pluginType != config.Mgr {
 		go func() {
 			misc.WaitComponent(normal.ctx)
 			normal.ctx.Infoln("Service node start ...")

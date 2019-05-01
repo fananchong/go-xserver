@@ -2,7 +2,7 @@ package main
 
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
-	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/services/internal/db"
 )
 
@@ -37,9 +37,9 @@ func (lobby *Lobby) Close() {
 
 }
 
-func (lobby *Lobby) onRelayMsg(source common.NodeType, account string, cmd uint64, data []byte) {
+func (lobby *Lobby) onRelayMsg(source config.NodeType, account string, cmd uint64, data []byte) {
 	switch source {
-	case common.Client:
+	case config.Client:
 		lobby.accountMgr.PostMsg(account, cmd, data)
 	default:
 		Ctx.Errorln("Unknown source, type:", source, "(", int(source), ")")

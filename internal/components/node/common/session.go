@@ -2,8 +2,9 @@ package nodecommon
 
 import (
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/utils"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
 )
 
@@ -104,7 +105,7 @@ func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 }
 
 // RegisterSelf : 注册自己
-func (sessbase *SessionBase) RegisterSelf(id NodeID, selfType common.NodeType, targetServerType common.NodeType) {
+func (sessbase *SessionBase) RegisterSelf(id NodeID, selfType config.NodeType, targetServerType config.NodeType) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = NodeID2ServerID(id)
@@ -121,9 +122,9 @@ func (sessbase *SessionBase) RegisterSelf(id NodeID, selfType common.NodeType, t
 	sessbase.Info = msg.GetData()
 	sessbase.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
 
-	if targetServerType == common.Mgr {
+	if targetServerType == config.Mgr {
 		sessbase.Ctx.Infoln("Register your information with the management server, info:", msg.GetData())
-	} else if targetServerType == common.Gateway {
+	} else if targetServerType == config.Gateway {
 		sessbase.Ctx.Infoln("Register your information with the gateway server, info:", msg.GetData())
 	} else {
 		sessbase.Ctx.Errorln("Register your information with the server(", targetServerType, "), info:", msg.GetData())

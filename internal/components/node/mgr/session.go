@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/gotcp"
@@ -37,7 +37,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		sess.Close()
 		return
 	}
-	if msg.GetTargetServerType() != uint32(common.Mgr) {
+	if msg.GetTargetServerType() != uint32(config.Mgr) {
 		sess.Close()
 		return
 	}

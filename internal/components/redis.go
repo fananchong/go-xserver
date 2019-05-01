@@ -5,6 +5,7 @@ import (
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 )
 
@@ -45,7 +46,7 @@ LOOP1:
 	}
 
 	pluginType := misc.GetPluginType(redis.ctx)
-	if pluginType != common.Login && pluginType != common.Gateway {
+	if pluginType != config.Login && pluginType != config.Gateway {
 	LOOP99:
 		if err := go_redis_orm.CreateDB(
 			redis.ctx.Config.DbServer.Name,

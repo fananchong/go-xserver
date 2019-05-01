@@ -7,6 +7,7 @@ import (
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -46,7 +47,7 @@ func (sess *Session) connectMgrServer() {
 			goto TRY_AGAIN
 		}
 		sess.Verify()
-		sess.RegisterSelf(sess.GetID(), sess.GetType(), common.Mgr)
+		sess.RegisterSelf(sess.GetID(), sess.GetType(), config.Mgr)
 	}
 }
 
@@ -63,15 +64,15 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		targetSess.RegisterFuncOnLoseAccount(sess.FuncOnLoseAccount())
 		sess.SessMgr.Register(targetSess.SessionBase)
 
-		sess.PrintNodeInfo(sess.Ctx, common.NodeType(msg.GetData().GetType()))
+		sess.PrintNodeInfo(sess.Ctx, config.NodeType(msg.GetData().GetType()))
 
 		// 如果存在互连关系的，开始互连逻辑。
-		if sess.IsEnableMessageRelay() && targetSess.Info.GetType() == uint32(common.Gateway) {
+		if sess.IsEnableMessageRelay() && targetSess.Info.GetType() == uint32(config.Gateway) {
 			targetSess.Start()
 		}
 	} else {
 		tempSess.Info = msg.GetData()
-		sess.PrintNodeInfo(sess.Ctx, common.NodeType(msg.GetData().GetType()))
+		sess.PrintNodeInfo(sess.Ctx, config.NodeType(msg.GetData().GetType()))
 	}
 }
 
@@ -84,15 +85,15 @@ func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag
 	sess.Ctx.Infoln("Service node connection lost, ID is", nodecommon.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
 
 	// 如果存在互连关系的，关闭 TCP 连接
-	if sess.IsEnableMessageRelay() && msg.GetType() == uint32(common.Gateway) {
+	if sess.IsEnableMessageRelay() && msg.GetType() == uint32(config.Gateway) {
 		targetSess := sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(msg.GetId()))
 		if targetSess != nil {
 			targetSess.Close()
 		}
 	}
 
-	sess.SessMgr.Lose2(msg.GetId(), common.NodeType(msg.GetType()))
-	sess.PrintNodeInfo(sess.Ctx, common.NodeType(msg.GetType()))
+	sess.SessMgr.Lose2(msg.GetId(), config.NodeType(msg.GetType()))
+	sess.PrintNodeInfo(sess.Ctx, config.NodeType(msg.GetType()))
 }
 
 // DoClose : 节点关闭时处理
@@ -154,7 +155,7 @@ func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bo
 	}
 	// 非本服务节点上的账号，则查找对应的 Gateway ID ，再发送
 	dbaccess := go_redis_orm.GetDB(sess.Ctx.Config.DbServer.Name)
-	key := db.GetKeyAllocServer(uint32(common.Gateway), account)
+	key := db.GetKeyAllocServer(uint32(config.Gateway), account)
 	val, err := redis.String(dbaccess.Do("GET", key))
 	if err != nil {
 		sess.Ctx.Errorln(err, "account:", account, ", cmd:", cmd)
@@ -185,7 +186,7 @@ func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bo
 
 // BroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
 func (sess *Session) BroadcastMsgToClient(cmd uint64, data []byte) bool {
-	sess.SessMgr.ForByType(common.Gateway, func(targetSess *nodecommon.SessionBase) {
+	sess.SessMgr.ForByType(config.Gateway, func(targetSess *nodecommon.SessionBase) {
 		msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 		msgRelay.Account = ""
 		msgRelay.CMD = uint32(cmd)

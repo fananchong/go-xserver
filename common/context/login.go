@@ -1,4 +1,8 @@
-package common
+package context
+
+import (
+	"github.com/fananchong/go-xserver/config"
+)
 
 // ILogin 接口暴露框架层登陆模块的使用方法
 // 完整的登陆过程，由框架层登陆模块、逻辑层交互模块共同完成
@@ -42,7 +46,7 @@ type FuncTypeAccountVerification func(account, password string, userdata []byte)
 // ILogin : 登陆模块接口
 type ILogin interface {
 	RegisterCustomAccountVerification(f FuncTypeAccountVerification) // 注册自定义账号验证
-	RegisterAllocationNodeType(types []NodeType)                     // 注册自定义要分配的服务器节点类型
+	RegisterAllocationNodeType(types []config.NodeType)              // 注册自定义要分配的服务器节点类型
 	Login(account, password string, defaultMode bool, userdata []byte) (token string,
-		address []string, port []int32, nodeType []NodeType, errcode LoginErrCode) // 登录。 框架层处理登录事宜，并返回 ip list / type list / port list / token 等
+		address []string, port []int32, nodeType []config.NodeType, errcode LoginErrCode) // 登录。 框架层处理登录事宜，并返回 ip list / type list / port list / token 等
 }

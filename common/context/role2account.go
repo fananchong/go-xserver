@@ -1,4 +1,4 @@
-package common
+package context
 
 // IRole2Account : 提供`根据角色名查找账号`的功能；角色名重名检查也可以用该接口
 type IRole2Account interface {

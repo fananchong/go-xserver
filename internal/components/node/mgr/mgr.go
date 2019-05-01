@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/utils"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // Mgr : 管理节点
@@ -21,10 +22,10 @@ type Mgr struct {
 func NewMgr(ctx *common.Context) *Mgr {
 	mgr := &Mgr{
 		ctx:  ctx,
-		Node: nodecommon.NewNode(ctx, common.Mgr),
+		Node: nodecommon.NewNode(ctx, config.Mgr),
 	}
 	pluginType := misc.GetPluginType(mgr.ctx)
-	if pluginType == common.Mgr {
+	if pluginType == config.Mgr {
 		mgr.init()
 		mgr.ctx.INode = mgr
 	}
@@ -34,7 +35,7 @@ func NewMgr(ctx *common.Context) *Mgr {
 // Start : 实例化组件
 func (mgr *Mgr) Start() bool {
 	pluginType := misc.GetPluginType(mgr.ctx)
-	if pluginType == common.Mgr {
+	if pluginType == config.Mgr {
 		if mgr.Node.Start() == false {
 			mgr.ctx.Errorln("Mgr Server node failed to start")
 			os.Exit(1)

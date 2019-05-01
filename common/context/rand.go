@@ -1,4 +1,4 @@
-package common
+package context
 
 // IRand : 随机类接口
 type IRand interface {

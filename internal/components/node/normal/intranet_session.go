@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
@@ -42,7 +43,7 @@ func (sess *IntranetSession) Start() {
 				continue
 			}
 			sess.Verify()
-			sess.RegisterSelf(sess.sourceSess.GetID(), sess.sourceSess.GetType(), common.Gateway)
+			sess.RegisterSelf(sess.sourceSess.GetID(), sess.sourceSess.GetType(), config.Gateway)
 			sess.Ctx.Infoln("Successfully connected to the gateway server, address:", address, "node:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
 			break
 		}
@@ -88,7 +89,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.MSG_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			return
 		}
-		f(common.Client, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+		f(config.Client, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
 	case protocol.CMD_GW_LOSE_ACCOUNT:
 		f := sess.FuncOnLoseAccount()
 		if f == nil {

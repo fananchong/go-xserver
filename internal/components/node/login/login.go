@@ -3,6 +3,8 @@ package nodelogin
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/context"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
@@ -17,8 +19,8 @@ import (
 type Login struct {
 	*nodenormal.Normal
 	ctx              *common.Context
-	verificationFunc common.FuncTypeAccountVerification
-	allocServerType  []common.NodeType
+	verificationFunc context.FuncTypeAccountVerification
+	allocServerType  []config.NodeType
 	serverRedis      db.RedisAtomic
 }
 
@@ -34,7 +36,7 @@ func NewLogin(ctx *common.Context) *Login {
 // Start : 启动
 func (login *Login) Start() bool {
 	pluginType := misc.GetPluginType(login.ctx)
-	if pluginType == common.Login {
+	if pluginType == config.Login {
 		login.Normal = login.ctx.INode.(*nodenormal.Normal)
 		if !login.initRedis() {
 			return false
@@ -44,34 +46,34 @@ func (login *Login) Start() bool {
 }
 
 // RegisterCustomAccountVerification : 注册自定义账号验证处理
-func (login *Login) RegisterCustomAccountVerification(f common.FuncTypeAccountVerification) {
+func (login *Login) RegisterCustomAccountVerification(f context.FuncTypeAccountVerification) {
 	login.verificationFunc = f
 }
 
 // RegisterAllocationNodeType : 注册要分配的服务器资源类型
-func (login *Login) RegisterAllocationNodeType(types []common.NodeType) {
+func (login *Login) RegisterAllocationNodeType(types []config.NodeType) {
 	login.allocServerType = append(login.allocServerType, types...)
 }
 
 // Login : 登陆处理
 func (login *Login) Login(account, password string, defaultMode bool, userdata []byte) (string,
-	[]string, []int32, []common.NodeType, common.LoginErrCode) {
+	[]string, []int32, []config.NodeType, context.LoginErrCode) {
 
 	//账号验证
-	var err common.LoginErrCode
+	var err context.LoginErrCode
 	if defaultMode {
 		err = login.loginByDefault(account, password)
 	} else {
 		err = login.verificationFunc(account, password, userdata)
 	}
-	if err != common.LoginSuccess {
+	if err != context.LoginSuccess {
 		return "", nil, nil, nil, err
 	}
 
 	// 分配服务资源列表
 	addressList, portList, ids, ok := login.selectServerList(account, login.allocServerType)
 	if !ok {
-		return "", nil, nil, nil, common.LoginSystemError
+		return "", nil, nil, nil, context.LoginSystemError
 	}
 
 	//生成 Token
@@ -86,9 +88,9 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	}
 	if err := tokenObj.Save(); err != nil {
 		login.ctx.Errorln(err, "account:", account)
-		return "", nil, nil, nil, common.LoginSystemError
+		return "", nil, nil, nil, context.LoginSystemError
 	}
-	return tempID, addressList, portList, login.allocServerType, common.LoginSuccess
+	return tempID, addressList, portList, login.allocServerType, context.LoginSuccess
 }
 
 // Close : 关闭
@@ -99,25 +101,25 @@ func (login *Login) Close() {
 	}
 }
 
-func (login *Login) loginByDefault(account, password string) common.LoginErrCode {
+func (login *Login) loginByDefault(account, password string) context.LoginErrCode {
 	accountObj := db.NewAccount(login.ctx.Config.DbAccount.Name, account)
 	if err := accountObj.Load(); err != nil {
 		// 新建账号
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {
-			return common.LoginSystemError
+			return context.LoginSystemError
 		}
 		accountObj.SetPasswd(password)
 		if err = accountObj.Save(); err != nil {
 			login.ctx.Errorln(err, "account:", account)
-			return common.LoginSystemError
+			return context.LoginSystemError
 		}
 	} else {
 		// 验证密码
 		if accountObj.GetPasswd() != password {
-			return common.LoginVerifyFail
+			return context.LoginVerifyFail
 		}
 	}
-	return common.LoginSuccess
+	return context.LoginSuccess
 }
 
 func (login *Login) initRedis() bool {
@@ -167,7 +169,7 @@ func (login *Login) initRedis() bool {
 	return true
 }
 
-func (login *Login) selectServerList(account string, nodeType []common.NodeType) (addressList []string, portList []int32, serverIDs []*protocol.SERVER_ID, ok bool) {
+func (login *Login) selectServerList(account string, nodeType []config.NodeType) (addressList []string, portList []int32, serverIDs []*protocol.SERVER_ID, ok bool) {
 	for i := 0; i < len(nodeType); i++ {
 		dbObj, have := login.selectServer(account, nodeType[i])
 		if !have {
@@ -181,7 +183,7 @@ func (login *Login) selectServerList(account string, nodeType []common.NodeType)
 	return
 }
 
-func (login *Login) selectServer(account string, nodeType common.NodeType) (dbObj *db.AccountServer, ok bool) {
+func (login *Login) selectServer(account string, nodeType config.NodeType) (dbObj *db.AccountServer, ok bool) {
 LOOP:
 	dbObj = &db.AccountServer{}
 	login.PrintNodeInfo(login.ctx, nodeType)

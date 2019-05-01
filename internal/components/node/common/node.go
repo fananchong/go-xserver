@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
@@ -19,7 +20,7 @@ type Node struct {
 }
 
 // NewNode : 管理节点基类实现类的构造函数
-func NewNode(ctx *common.Context, nodeType common.NodeType) *Node {
+func NewNode(ctx *common.Context, nodeType config.NodeType) *Node {
 	node := &Node{Ctx: ctx}
 	node.SessMgr = NewSessionMgr(ctx)
 	node.Info = &protocol.SERVER_INFO{}

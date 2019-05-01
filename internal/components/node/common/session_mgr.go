@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/protocol"
 )
 
@@ -11,7 +12,7 @@ import (
 type SessionMgr struct {
 	ctx     *common.Context
 	m       sync.RWMutex
-	ss      map[common.NodeType][]*SessionBase
+	ss      map[config.NodeType][]*SessionBase
 	ssByID  map[NodeID]*SessionBase
 	counter map[int]uint32
 }
@@ -20,12 +21,9 @@ type SessionMgr struct {
 func NewSessionMgr(ctx *common.Context) *SessionMgr {
 	sessMgr := &SessionMgr{
 		ctx:     ctx,
-		ss:      make(map[common.NodeType][]*SessionBase),
+		ss:      make(map[config.NodeType][]*SessionBase),
 		ssByID:  make(map[NodeID]*SessionBase),
 		counter: make(map[int]uint32),
-	}
-	for i := 0; i < int(common.NodeTypeSize); i++ {
-		sessMgr.counter[i] = 0
 	}
 	return sessMgr
 }
@@ -51,7 +49,7 @@ func (sessmgr *SessionMgr) Lose1(sess *SessionBase) {
 }
 
 // Lose2 : 丢失网络会话节点
-func (sessmgr *SessionMgr) Lose2(sid *protocol.SERVER_ID, t common.NodeType) {
+func (sessmgr *SessionMgr) Lose2(sid *protocol.SERVER_ID, t config.NodeType) {
 	sessmgr.m.Lock()
 	defer sessmgr.m.Unlock()
 	for sessmgr.deleteSessInSS(sid, t) {
@@ -60,7 +58,7 @@ func (sessmgr *SessionMgr) Lose2(sid *protocol.SERVER_ID, t common.NodeType) {
 	delete(sessmgr.ssByID, ServerID2NodeID(sid))
 }
 
-func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t common.NodeType) bool {
+func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t config.NodeType) bool {
 	// 不用加锁，调用它的函数会加锁
 	if lst, ok := sessmgr.ss[t]; ok {
 		findindex := -1
@@ -89,7 +87,7 @@ func (sessmgr *SessionMgr) GetByID(nid NodeID) *SessionBase {
 }
 
 // GetByType : 根据节点类型，获取某类网络会话节点列表
-func (sessmgr *SessionMgr) GetByType(t common.NodeType) []*SessionBase {
+func (sessmgr *SessionMgr) GetByType(t config.NodeType) []*SessionBase {
 	sessmgr.m.RLock()
 	defer sessmgr.m.RUnlock()
 	var ret []*SessionBase
@@ -111,10 +109,13 @@ func (sessmgr *SessionMgr) GetAll() []*SessionBase {
 }
 
 // SelectOne : 选择 1 个某类型的网络会话节点
-func (sessmgr *SessionMgr) SelectOne(t common.NodeType) *SessionBase {
+func (sessmgr *SessionMgr) SelectOne(t config.NodeType) *SessionBase {
 	lst := sessmgr.GetByType(t)
 	n := len(lst)
 	if n > 0 {
+		if _, ok := sessmgr.counter[int(t)]; !ok {
+			sessmgr.counter[int(t)] = 0
+		}
 		index := int32(sessmgr.counter[int(t)] % uint32(n))
 		sessmgr.counter[int(t)]++
 		return lst[index]
@@ -123,7 +124,7 @@ func (sessmgr *SessionMgr) SelectOne(t common.NodeType) *SessionBase {
 }
 
 // ForByType : 根据类型遍历网络会话节点
-func (sessmgr *SessionMgr) ForByType(t common.NodeType, f func(*SessionBase)) {
+func (sessmgr *SessionMgr) ForByType(t config.NodeType, f func(*SessionBase)) {
 	lst := sessmgr.GetByType(t)
 	for _, v := range lst {
 		f(v)

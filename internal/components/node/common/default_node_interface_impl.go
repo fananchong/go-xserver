@@ -3,7 +3,8 @@ package nodecommon
 import (
 	"sync"
 
-	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/context"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/gogo/protobuf/proto"
@@ -46,8 +47,8 @@ type DefaultNodeInterfaceImpl struct {
 	once               sync.Once
 	enableMessageReply bool
 	SessMgr            *SessionMgr
-	funcOnRelayMsg     common.FuncTypeOnRelayMsg
-	funcOnLoseAccount  common.FuncTypeOnLoseAccount
+	funcOnRelayMsg     context.FuncTypeOnRelayMsg
+	funcOnLoseAccount  context.FuncTypeOnLoseAccount
 }
 
 // GetID : 获取本节点信息，节点ID
@@ -62,11 +63,11 @@ func (impl *DefaultNodeInterfaceImpl) GetID() NodeID {
 }
 
 // GetType : 获取节点类型
-func (impl *DefaultNodeInterfaceImpl) GetType() common.NodeType {
+func (impl *DefaultNodeInterfaceImpl) GetType() config.NodeType {
 	if impl.Info != nil {
-		return common.NodeType(impl.Info.GetType())
+		return config.NodeType(impl.Info.GetType())
 	}
-	return common.Unknow
+	return config.Unknow
 }
 
 // GetIP : 获取本节点信息，IP
@@ -110,7 +111,7 @@ func (impl *DefaultNodeInterfaceImpl) GetSID() *protocol.SERVER_ID {
 }
 
 // GetNodeOne : 根据节点类型，随机选择 1 节点
-func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) *SessionBase {
+func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType config.NodeType) *SessionBase {
 	node := impl.SessMgr.SelectOne(nodeType)
 	if node != nil {
 		return node
@@ -119,7 +120,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeOne(nodeType common.NodeType) *Sess
 }
 
 // GetNodeList : 获取某类型节点列表
-func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType common.NodeType) []*SessionBase {
+func (impl *DefaultNodeInterfaceImpl) GetNodeList(nodeType config.NodeType) []*SessionBase {
 	var ret []*SessionBase
 	impl.SessMgr.ForByType(nodeType, func(sess *SessionBase) {
 		ret = append(ret, sess)
@@ -152,7 +153,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID NodeID) *SessionBase {
 }
 
 // PrintNodeInfo : 打印节点信息
-func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log common.ILogger, nodeType common.NodeType) {
+func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log context.ILogger, nodeType config.NodeType) {
 	log.Infoln("==========================================================================================================")
 	for _, v := range impl.GetNodeList(nodeType) {
 		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
@@ -163,7 +164,7 @@ func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log common.ILogger, nodeType
 }
 
 // PrintAllNodeInfo : 打印节点信息
-func (impl *DefaultNodeInterfaceImpl) PrintAllNodeInfo(log common.ILogger) {
+func (impl *DefaultNodeInterfaceImpl) PrintAllNodeInfo(log context.ILogger) {
 	log.Infoln("==========================================================================================================")
 	for _, v := range impl.GetNodeAll() {
 		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
@@ -174,7 +175,7 @@ func (impl *DefaultNodeInterfaceImpl) PrintAllNodeInfo(log common.ILogger) {
 }
 
 // SendOne : 根据节点类型，随机选择 1 节点，发送数据
-func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint64, msg proto.Message) bool {
+func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType config.NodeType, cmd uint64, msg proto.Message) bool {
 	if sess := impl.SessMgr.SelectOne(nodeType); sess != nil {
 		return sess.SendMsg(cmd, msg)
 	}
@@ -182,7 +183,7 @@ func (impl *DefaultNodeInterfaceImpl) SendOne(nodeType common.NodeType, cmd uint
 }
 
 // SendByType : 对某类型节点，广播数据
-func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType common.NodeType, cmd uint64, msg proto.Message, excludeSelf bool) {
+func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType config.NodeType, cmd uint64, msg proto.Message, excludeSelf bool) {
 	impl.SessMgr.ForByType(nodeType, func(sess *SessionBase) {
 		if excludeSelf && EqualNID(sess.GetID(), impl.GetID()) {
 			return
@@ -220,21 +221,21 @@ func (impl *DefaultNodeInterfaceImpl) IsEnableMessageRelay() bool {
 }
 
 // RegisterFuncOnRelayMsg : 注册自定义处理Gateway中继过来的消息
-func (impl *DefaultNodeInterfaceImpl) RegisterFuncOnRelayMsg(f common.FuncTypeOnRelayMsg) {
+func (impl *DefaultNodeInterfaceImpl) RegisterFuncOnRelayMsg(f context.FuncTypeOnRelayMsg) {
 	impl.funcOnRelayMsg = f
 }
 
 // FuncOnRelayMsg : 获取`自定义处理Gateway中继过来的消息`的函数句柄
-func (impl *DefaultNodeInterfaceImpl) FuncOnRelayMsg() common.FuncTypeOnRelayMsg {
+func (impl *DefaultNodeInterfaceImpl) FuncOnRelayMsg() context.FuncTypeOnRelayMsg {
 	return impl.funcOnRelayMsg
 }
 
 // RegisterFuncOnLoseAccount : 注册自定义处理`丢失账号`
-func (impl *DefaultNodeInterfaceImpl) RegisterFuncOnLoseAccount(f common.FuncTypeOnLoseAccount) {
+func (impl *DefaultNodeInterfaceImpl) RegisterFuncOnLoseAccount(f context.FuncTypeOnLoseAccount) {
 	impl.funcOnLoseAccount = f
 }
 
 // FuncOnLoseAccount : 获取`自定义处理丢失账号`的函数句柄
-func (impl *DefaultNodeInterfaceImpl) FuncOnLoseAccount() common.FuncTypeOnLoseAccount {
+func (impl *DefaultNodeInterfaceImpl) FuncOnLoseAccount() context.FuncTypeOnLoseAccount {
 	return impl.funcOnLoseAccount
 }

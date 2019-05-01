@@ -4,13 +4,14 @@ import (
 	"fmt"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 )
 
 // PluginObj : 代表一个插件对象
 var PluginObj common.IPlugin
 
 // PluginType : 插件类型
-var PluginType common.NodeType
+var PluginType config.NodeType
 
 // Ctx : 应用程序上下文
 var Ctx *common.Context
@@ -20,7 +21,7 @@ var gateway = NewGateway()
 func init() {
 	fmt.Println("LOAD PLUGIN: GATEWAY")
 	PluginObj = &Plugin{}
-	PluginType = common.Gateway
+	PluginType = config.Gateway
 }
 
 // Plugin : 插件类

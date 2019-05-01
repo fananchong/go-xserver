@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/protocol"
 )
 
@@ -17,7 +17,7 @@ type AccountServer struct {
 	ServerID *protocol.SERVER_ID
 	Address  string
 	Port     int32
-	Type     common.NodeType
+	Type     config.NodeType
 }
 
 // Marshal : 序列化

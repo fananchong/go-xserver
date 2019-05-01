@@ -3,21 +3,23 @@ package nodegateway
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/utils"
+	"github.com/fananchong/go-xserver/common/context"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // Gateway : 网关节点
 type Gateway struct {
 	*nodecommon.Node
 	ctx                 *common.Context
-	funcSendToClient    common.FuncTypeSendToClient
-	funcSendToAllClient common.FuncTypeSendToAllClient
-	funcEncodeFunc      common.FuncTypeEncode
-	funcDecodeFunc      common.FuncTypeDecode
+	funcSendToClient    context.FuncTypeSendToClient
+	funcSendToAllClient context.FuncTypeSendToAllClient
+	funcEncodeFunc      context.FuncTypeEncode
+	funcDecodeFunc      context.FuncTypeDecode
 	users               *UserMgr
 }
 
@@ -25,7 +27,7 @@ type Gateway struct {
 func NewGateway(ctx *common.Context) *Gateway {
 	gw := &Gateway{
 		ctx:  ctx,
-		Node: nodecommon.NewNode(ctx, common.Gateway),
+		Node: nodecommon.NewNode(ctx, config.Gateway),
 	}
 	gw.ctx.IGateway = gw
 	gw.users = NewUserMgr(ctx, gw)
@@ -34,7 +36,7 @@ func NewGateway(ctx *common.Context) *Gateway {
 
 // Start : 启动
 func (gw *Gateway) Start() bool {
-	if misc.GetPluginType(gw.ctx) == common.Gateway {
+	if misc.GetPluginType(gw.ctx) == config.Gateway {
 		if gw.initRedis() == false {
 			return false
 		}
@@ -59,7 +61,7 @@ func (gw *Gateway) Close() {
 }
 
 // VerifyToken : 令牌验证。返回值： 0 成功；1 令牌错误； 2 系统错误
-func (gw *Gateway) VerifyToken(account, token string, clientSession common.IClientSesion) uint32 {
+func (gw *Gateway) VerifyToken(account, token string, clientSession context.IClientSesion) uint32 {
 	tokenObj := db.NewToken(gw.ctx.Config.DbToken.Name, account)
 	if err := tokenObj.Load(); err != nil {
 		gw.ctx.Errorln(err, "account:", account)
@@ -76,8 +78,8 @@ func (gw *Gateway) VerifyToken(account, token string, clientSession common.IClie
 
 // OnRecvFromClient : 可自定义客户端交互协议。data 格式需转化为框架层可理解的格式。done 为 true ，表示框架层接管处理该消息
 func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (done bool) {
-	nodeType := common.NodeType(cmd / uint32(gw.ctx.Config.Common.MsgCmdOffset))
-	if nodeType >= common.NodeTypeSize || nodeType <= common.Gateway {
+	nodeType := config.NodeType(cmd / uint32(gw.ctx.Config.Common.MsgCmdOffset))
+	if nodeType <= config.Gateway {
 		gw.ctx.Errorln("Wrong message number. cmd:", cmd, "account:", account)
 		return
 	}
@@ -114,32 +116,32 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 }
 
 // RegisterSendToClient : 可自定义客户端交互协议
-func (gw *Gateway) RegisterSendToClient(f common.FuncTypeSendToClient) {
+func (gw *Gateway) RegisterSendToClient(f context.FuncTypeSendToClient) {
 	gw.funcSendToClient = f
 }
 
 // GetSendToClient : 可自定义客户端交互协议
-func (gw *Gateway) GetSendToClient() common.FuncTypeSendToClient {
+func (gw *Gateway) GetSendToClient() context.FuncTypeSendToClient {
 	return gw.funcSendToClient
 }
 
 // RegisterSendToAllClient : 可自定义客户端交互协议
-func (gw *Gateway) RegisterSendToAllClient(f common.FuncTypeSendToAllClient) {
+func (gw *Gateway) RegisterSendToAllClient(f context.FuncTypeSendToAllClient) {
 	gw.funcSendToAllClient = f
 }
 
 // GetSendToAllClient : 可自定义客户端交互协议
-func (gw *Gateway) GetSendToAllClient() common.FuncTypeSendToAllClient {
+func (gw *Gateway) GetSendToAllClient() context.FuncTypeSendToAllClient {
 	return gw.funcSendToAllClient
 }
 
 // RegisterEncodeFunc : 可自定义加解密算法
-func (gw *Gateway) RegisterEncodeFunc(f common.FuncTypeEncode) {
+func (gw *Gateway) RegisterEncodeFunc(f context.FuncTypeEncode) {
 	gw.funcEncodeFunc = f
 }
 
 // RegisterDecodeFunc : 可自定义加解密算法
-func (gw *Gateway) RegisterDecodeFunc(f common.FuncTypeDecode) {
+func (gw *Gateway) RegisterDecodeFunc(f context.FuncTypeDecode) {
 	gw.funcDecodeFunc = f
 }
 

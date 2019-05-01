@@ -1,4 +1,4 @@
-package common
+package context
 
 // ILogger : 日志类接口
 type ILogger interface {

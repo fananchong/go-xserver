@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 )
 
 // 框架层的一些全局变量，可以按以下方式 Set/Get
@@ -45,13 +45,13 @@ func WaitComponent(ctx context.Context) {
 }
 
 // SetPluginType : 设置插件类型
-func SetPluginType(ctx context.Context, t common.NodeType) {
+func SetPluginType(ctx context.Context, t config.NodeType) {
 	values := ctx.Value(_contextValueKey).(map[ContextValueType]interface{})
 	values[_pluginType] = t
 }
 
 // GetPluginType : 获取插件类型
-func GetPluginType(ctx context.Context) common.NodeType {
+func GetPluginType(ctx context.Context) config.NodeType {
 	values := ctx.Value(_contextValueKey).(map[ContextValueType]interface{})
-	return values[_pluginType].(common.NodeType)
+	return values[_pluginType].(config.NodeType)
 }

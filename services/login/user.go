@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/context"
 	"github.com/fananchong/go-xserver/services/internal/protocol"
 	"github.com/fananchong/gotcp"
 )
@@ -55,7 +55,7 @@ func (user *User) doLogin(account, passwd string, mode protocol.ENUM_LOGIN_MODE_
 	Ctx.Infoln("account =", account, "password =", passwd, "mode =", mode)
 	user.account = account
 	token, addrs, ports, nodeTypes, errCode := Ctx.Login(account, passwd, mode == protocol.ENUM_LOGIN_MODE_DEFAULT, userdata)
-	if errCode == common.LoginSuccess {
+	if errCode == context.LoginSuccess {
 		Ctx.Infoln("account =", account, "token =", token, "addr =", addrs, "port =", ports, "nodeTypes =", nodeTypes)
 		msg := &protocol.MSG_LOGIN_RESULT{}
 		msg.Err = protocol.ENUM_LOGIN_ERROR_OK

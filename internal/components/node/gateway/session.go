@@ -1,10 +1,11 @@
 package nodegateway
 
 import (
-	"context"
+	gocontext "context"
 	"net"
 
-	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/context"
+	"github.com/fananchong/go-xserver/config"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/gotcp"
@@ -13,12 +14,12 @@ import (
 // Session : 网络会话类
 type Session struct {
 	*nodecommon.SessionBase
-	funcSendToClient    common.FuncTypeSendToClient
-	funcSendToAllClient common.FuncTypeSendToAllClient
+	funcSendToClient    context.FuncTypeSendToClient
+	funcSendToAllClient context.FuncTypeSendToAllClient
 }
 
 // Init : 初始化网络会话节点
-func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISession, userdata interface{}) {
+func (sess *Session) Init(root gocontext.Context, conn net.Conn, derived gotcp.ISession, userdata interface{}) {
 	ud := userdata.(*nodecommon.UserData)
 	sess.SessionBase = nodecommon.NewSessionBase(ud.Ctx, sess)
 	sess.SessionBase.Init(root, conn, derived)
@@ -41,8 +42,8 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		sess.Close()
 		return
 	}
-	if msg.GetTargetServerType() != uint32(common.Gateway) {
-		sess.Ctx.Errorln("Target server type different. Expectation is common.Gateway, but it is", msg.GetTargetServerType())
+	if msg.GetTargetServerType() != uint32(config.Gateway) {
+		sess.Ctx.Errorln("Target server type different. Expectation is config.Gateway, but it is", msg.GetTargetServerType())
 		sess.Close()
 		return
 	}

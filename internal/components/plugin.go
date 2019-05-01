@@ -5,6 +5,7 @@ import (
 	"plugin"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	"github.com/spf13/viper"
 )
@@ -66,7 +67,7 @@ func (p *Plugin) loadPlugin(ctx *common.Context) {
 		os.Exit(1)
 	}
 	p.pluginObj = *obj.(*common.IPlugin)
-	pluginType := *t.(*common.NodeType)
+	pluginType := *t.(*config.NodeType)
 	*c.(**common.Context) = ctx
 	misc.SetPluginType(ctx, pluginType)
 }

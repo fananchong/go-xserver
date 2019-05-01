@@ -7,10 +7,12 @@ import (
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/utils"
+	"github.com/fananchong/go-xserver/common/context"
+	"github.com/fananchong/go-xserver/config"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // User : 表示 1 个客户端对象
@@ -18,11 +20,11 @@ type User struct {
 	Account         string
 	Servers         map[uint32]nodecommon.NodeID
 	ActiveTimestamp int64
-	ClientSession   common.IClientSesion
+	ClientSession   context.IClientSesion
 }
 
 // NewUser : 客户端对象构造函数
-func NewUser(ctx *common.Context, account string, clientSession common.IClientSesion) *User {
+func NewUser(ctx *common.Context, account string, clientSession context.IClientSesion) *User {
 	user := &User{
 		Account:         account,
 		Servers:         make(map[uint32]nodecommon.NodeID),
@@ -54,7 +56,7 @@ func NewUserMgr(ctx *common.Context, myGateway *Gateway) *UserMgr {
 }
 
 // AddUser : 加入一个玩家
-func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SERVER_ID, clientSession common.IClientSesion) error {
+func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SERVER_ID, clientSession context.IClientSesion) error {
 	userMgr.mutex.Lock()
 	defer userMgr.mutex.Unlock()
 	user := NewUser(userMgr.ctx, account, clientSession)
@@ -68,7 +70,7 @@ func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SER
 	msg := &protocol.MSG_GW_REGISTER_ACCOUNT{}
 	msg.Account = account
 	for nodeType, serverID := range user.Servers {
-		if nodeType != uint32(common.Gateway) {
+		if nodeType != uint32(config.Gateway) {
 			if userMgr.myGateway.SendByID(serverID, uint64(protocol.CMD_GW_REGISTER_ACCOUNT), msg) == false {
 				userMgr.ctx.Errorln("Sending a 'register account' message failed. account:", user.Account)
 			}
@@ -79,7 +81,7 @@ func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SER
 }
 
 // GetServerAndActive : 获取玩家对应服务器类型的服务器资源信息
-func (userMgr *UserMgr) GetServerAndActive(account string, nodeType common.NodeType) (*nodecommon.NodeID, error) {
+func (userMgr *UserMgr) GetServerAndActive(account string, nodeType config.NodeType) (*nodecommon.NodeID, error) {
 	userMgr.mutex.RLock()
 	defer userMgr.mutex.RUnlock()
 	if user, ok := userMgr.users[account]; ok {
@@ -124,7 +126,7 @@ func (userMgr *UserMgr) checkActive() {
 			if _, err := userMgr.ServerRedisCli.Do("EXPIRE", key, ttl); err != nil { // 设置账号分配的服务器资源信息，过期时间 5 分钟
 				userMgr.ctx.Errorln(err, "account:", user.Account)
 			}
-			if nodeType != uint32(common.Gateway) {
+			if nodeType != uint32(config.Gateway) {
 				if userMgr.myGateway.SendByID(serverID, uint64(protocol.CMD_GW_LOSE_ACCOUNT), msg) == false {
 					userMgr.ctx.Errorln("Sending a 'lost account' message failed. account:", user.Account)
 				}
