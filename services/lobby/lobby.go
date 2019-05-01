@@ -26,9 +26,9 @@ func (lobby *Lobby) Start() bool {
 	if lobby.initRedis() == false {
 		return false
 	}
-	Ctx.Node.EnableMessageRelay(true)
-	Ctx.Node.RegisterFuncOnRelayMsg(lobby.onRelayMsg)
-	Ctx.Node.RegisterFuncOnLoseAccount(lobby.onLoseAccount)
+	Ctx.EnableMessageRelay(true)
+	Ctx.RegisterFuncOnRelayMsg(lobby.onRelayMsg)
+	Ctx.RegisterFuncOnLoseAccount(lobby.onLoseAccount)
 	return true
 }
 
@@ -42,7 +42,7 @@ func (lobby *Lobby) onRelayMsg(source common.NodeType, account string, cmd uint6
 	case common.Client:
 		lobby.accountMgr.PostMsg(account, cmd, data)
 	default:
-		Ctx.Log.Errorln("Unknown source, type:", source, "(", int(source), ")")
+		Ctx.Errorln("Unknown source, type:", source, "(", int(source), ")")
 	}
 }
 
@@ -58,7 +58,7 @@ func (lobby *Lobby) initRedis() bool {
 		Ctx.Config.DbAccount.Password,
 		Ctx.Config.DbAccount.DBIndex)
 	if err != nil {
-		Ctx.Log.Errorln(err)
+		Ctx.Errorln(err)
 		return false
 	}
 	lobby.IDGen.Cli = go_redis_orm.GetDB(Ctx.Config.DbAccount.Name)

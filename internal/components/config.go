@@ -87,11 +87,11 @@ func loadConfig(ctx *common.Context) error {
 		viper.OnConfigChange(func(e fsnotify.Event) {
 			c := common.Config{}
 			if err := viper.Unmarshal(&c); err != nil {
-				ctx.Log.Errorln("Parsing the configuration file failed, err =", err)
+				ctx.Errorln("Parsing the configuration file failed, err =", err)
 			} else {
 				if c.Common.Version != "" {
 					ctx.Config = &c
-					ctx.Log.Printf("Configuration information is: %#v\n", ctx.Config)
+					ctx.Printf("Configuration information is: %#v\n", ctx.Config)
 				}
 			}
 		})

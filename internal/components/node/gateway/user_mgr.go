@@ -70,7 +70,7 @@ func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SER
 	for nodeType, serverID := range user.Servers {
 		if nodeType != uint32(common.Gateway) {
 			if userMgr.myGateway.SendByID(serverID, uint64(protocol.CMD_GW_REGISTER_ACCOUNT), msg) == false {
-				userMgr.ctx.Log.Errorln("Sending a 'register account' message failed. account:", user.Account)
+				userMgr.ctx.Errorln("Sending a 'register account' message failed. account:", user.Account)
 			}
 		}
 	}
@@ -122,17 +122,17 @@ func (userMgr *UserMgr) checkActive() {
 			key := db.GetKeyAllocServer(nodeType, user.Account)
 			ttl := userMgr.ctx.Config.Role.SessionAffinityInterval
 			if _, err := userMgr.ServerRedisCli.Do("EXPIRE", key, ttl); err != nil { // 设置账号分配的服务器资源信息，过期时间 5 分钟
-				userMgr.ctx.Log.Errorln(err, "account:", user.Account)
+				userMgr.ctx.Errorln(err, "account:", user.Account)
 			}
 			if nodeType != uint32(common.Gateway) {
 				if userMgr.myGateway.SendByID(serverID, uint64(protocol.CMD_GW_LOSE_ACCOUNT), msg) == false {
-					userMgr.ctx.Log.Errorln("Sending a 'lost account' message failed. account:", user.Account)
+					userMgr.ctx.Errorln("Sending a 'lost account' message failed. account:", user.Account)
 				}
 			}
 		}
 		delete(userMgr.users, user.Account)
 		user.ClientSession.Close()
-		userMgr.ctx.Log.Infoln("Delete user information, account:", user.Account)
+		userMgr.ctx.Infoln("Delete user information, account:", user.Account)
 	}
 }
 

@@ -83,6 +83,7 @@
 - 代码整理，加强代码可读性
 - 代码优化，参考 goim ，优化代码
 - NodeID 不再使用 UUID， 改为 type * offset + id , 方便阅读 log 、 调试
+- Config 模块支持加载逻辑层配置
 
 
 ## 已知 BUG

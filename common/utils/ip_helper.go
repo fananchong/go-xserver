@@ -24,7 +24,7 @@ func GetIPInner(ctx *common.Context) string {
 		case 0:
 			ip, err := networkCard2IP(ctx.Config.Network.IPInner)
 			if err != nil {
-				ctx.Log.Errorln(err)
+				ctx.Errorln(err)
 				os.Exit(1)
 			}
 			ipinner = ip
@@ -42,7 +42,7 @@ func GetIPOuter(ctx *common.Context) string {
 		case 0:
 			ip, err := networkCard2IP(ctx.Config.Network.IPOuter)
 			if err != nil {
-				ctx.Log.Errorln(err)
+				ctx.Errorln(err)
 				os.Exit(1)
 			}
 			ipouter = ip

@@ -27,13 +27,13 @@ type Plugin struct {
 
 // Start : 插件类实现启动
 func (plugin *Plugin) Start() bool {
-	Ctx.Log.Infoln("Plugin Start")
+	Ctx.Infoln("Plugin Start")
 	return true
 }
 
 // Close : 插件类实现关闭
 func (plugin *Plugin) Close() {
-	Ctx.Log.Infoln("Plugin Close")
+	Ctx.Infoln("Plugin Close")
 }
 
 // main : 作为插件包，该函数可以不存在。添加之，是避免 go-lint 烦人的错误提示

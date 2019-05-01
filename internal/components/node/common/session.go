@@ -50,7 +50,7 @@ func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
 		// No need to do anything
 	default:
 		if sessbase.derived.DoRecv(uint64(cmd), data, flag) == false {
-			sessbase.Ctx.Log.Errorln("Unknown message number, message number is", cmd)
+			sessbase.Ctx.Errorln("Unknown message number, message number is", cmd)
 		}
 	}
 }
@@ -64,12 +64,12 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 	if cmd == protocol.CMD_MGR_REGISTER_SERVER {
 		msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sessbase.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
+			sessbase.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
 			sessbase.Close()
 			return false
 		}
 		if msg.GetToken() != sessbase.Ctx.Config.Common.IntranetToken {
-			sessbase.Ctx.Log.Errorln("Token verification failed.",
+			sessbase.Ctx.Errorln("Token verification failed.",
 				"Msg token:", msg.GetToken(),
 				"Expect token:", sessbase.Ctx.Config.Common.IntranetToken)
 			sessbase.Close()
@@ -79,7 +79,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 		sessbase.Verify()
 		return true
 	}
-	sessbase.Ctx.Log.Errorln("The expected message number is `protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), "), but", cmd, "(", int(cmd), ")")
+	sessbase.Ctx.Errorln("The expected message number is `protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), "), but", cmd, "(", int(cmd), ")")
 	sessbase.Close()
 	return false
 }
@@ -87,7 +87,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 func (sessbase *SessionBase) doRegister(data []byte, flag byte) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
-		sessbase.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
+		sessbase.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
 		sessbase.Close()
 		return
 	}
@@ -97,7 +97,7 @@ func (sessbase *SessionBase) doRegister(data []byte, flag byte) {
 func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 	msg := &protocol.MSG_MGR_LOSE_SERVER{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
-		sessbase.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_LOSE_SERVER`(", int(protocol.CMD_MGR_LOSE_SERVER), ")")
+		sessbase.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_LOSE_SERVER`(", int(protocol.CMD_MGR_LOSE_SERVER), ")")
 		return
 	}
 	sessbase.derived.DoLose(msg, data, flag)
@@ -122,10 +122,10 @@ func (sessbase *SessionBase) RegisterSelf(id NodeID, selfType common.NodeType, t
 	sessbase.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
 
 	if targetServerType == common.Mgr {
-		sessbase.Ctx.Log.Infoln("Register your information with the management server, info:", msg.GetData())
+		sessbase.Ctx.Infoln("Register your information with the management server, info:", msg.GetData())
 	} else if targetServerType == common.Gateway {
-		sessbase.Ctx.Log.Infoln("Register your information with the gateway server, info:", msg.GetData())
+		sessbase.Ctx.Infoln("Register your information with the gateway server, info:", msg.GetData())
 	} else {
-		sessbase.Ctx.Log.Errorln("Register your information with the server(", targetServerType, "), info:", msg.GetData())
+		sessbase.Ctx.Errorln("Register your information with the server(", targetServerType, "), info:", msg.GetData())
 	}
 }

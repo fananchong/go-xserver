@@ -22,7 +22,7 @@ type App struct {
 // NewApp : 应用程序类的构造函数
 func NewApp() *App {
 	app := &App{
-		ctx: &common.Context{Ctx: misc.CreateContext()},
+		ctx: &common.Context{Context: misc.CreateContext()},
 	}
 	return app
 }
@@ -52,9 +52,9 @@ func (app *App) Run() {
 }
 
 func (app *App) onAppReady() {
-	misc.SetComponentCount(app.ctx.Ctx, len(app.components))
+	misc.SetComponentCount(app.ctx, len(app.components))
 	for i := 0; i < len(app.components); i++ {
-		misc.OneComponentOK(app.ctx.Ctx)
+		misc.OneComponentOK(app.ctx)
 		c := app.components[i]
 		if !c.Start() {
 			os.Exit(1)

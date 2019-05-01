@@ -47,26 +47,26 @@ func (p *Plugin) loadPlugin(ctx *common.Context) {
 	}
 	so, err := plugin.Open(appName + ".so")
 	if err != nil {
-		ctx.Log.Errorln(err)
+		ctx.Errorln(err)
 		os.Exit(1)
 	}
 	obj, err := so.Lookup("PluginObj")
 	if err != nil {
-		ctx.Log.Errorln(err)
+		ctx.Errorln(err)
 		os.Exit(1)
 	}
 	t, err := so.Lookup("PluginType")
 	if err != nil {
-		ctx.Log.Errorln(err)
+		ctx.Errorln(err)
 		os.Exit(1)
 	}
 	c, err := so.Lookup("Ctx")
 	if err != nil {
-		ctx.Log.Errorln(err)
+		ctx.Errorln(err)
 		os.Exit(1)
 	}
 	p.pluginObj = *obj.(*common.IPlugin)
 	pluginType := *t.(*common.NodeType)
 	*c.(**common.Context) = ctx
-	misc.SetPluginType(ctx.Ctx, pluginType)
+	misc.SetPluginType(ctx, pluginType)
 }

@@ -23,8 +23,8 @@ func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISe
 	sess.SessionBase = nodecommon.NewSessionBase(ud.Ctx, sess)
 	sess.SessionBase.Init(root, conn, derived)
 	sess.SessMgr = ud.SessMgr
-	sess.funcSendToClient = ud.Ctx.Gateway.(*Gateway).GetSendToClient()
-	sess.funcSendToAllClient = ud.Ctx.Gateway.(*Gateway).GetSendToAllClient()
+	sess.funcSendToClient = ud.Ctx.IGateway.(*Gateway).GetSendToClient()
+	sess.funcSendToAllClient = ud.Ctx.IGateway.(*Gateway).GetSendToAllClient()
 }
 
 // DoVerify : 验证时保存自己的注册消息
@@ -35,21 +35,21 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
 	if nodecommon.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
-		sess.Ctx.Log.Errorln("Service ID is different.")
-		sess.Ctx.Log.Errorln("sess.Info.GetId() :", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
-		sess.Ctx.Log.Errorln("msg.GetData().GetId() :", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
+		sess.Ctx.Errorln("Service ID is different.")
+		sess.Ctx.Errorln("sess.Info.GetId() :", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
+		sess.Ctx.Errorln("msg.GetData().GetId() :", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
 		sess.Close()
 		return
 	}
 	if msg.GetTargetServerType() != uint32(common.Gateway) {
-		sess.Ctx.Log.Errorln("Target server type different. Expectation is common.Gateway, but it is", msg.GetTargetServerType())
+		sess.Ctx.Errorln("Target server type different. Expectation is common.Gateway, but it is", msg.GetTargetServerType())
 		sess.Close()
 		return
 	}
 	sess.Info = msg.GetData()
 	sess.SessMgr.Register(sess.SessionBase)
-	sess.Ctx.Log.Infoln("The service node registers with me, the node ID is", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
-	sess.Ctx.Log.Infoln(sess.Info)
+	sess.Ctx.Infoln("The service node registers with me, the node ID is", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Infoln(sess.Info)
 }
 
 // DoLose : 节点丢失时处理
@@ -60,7 +60,7 @@ func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag
 func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 	if sess.SessionBase == sessbase && sessbase.Info != nil {
 		sess.SessMgr.Lose1(sessbase)
-		sess.Ctx.Log.Infoln("Service node loses connection, type:", sess.Info.GetType(), "id:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
+		sess.Ctx.Infoln("Service node loses connection, type:", sess.Info.GetType(), "id:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
 	}
 }
 
@@ -71,7 +71,7 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	case protocol.CMD_GW_RELAY_CLIENT_MSG:
 		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sess.Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
+			sess.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			done = false
 			return
 		}

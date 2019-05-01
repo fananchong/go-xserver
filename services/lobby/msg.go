@@ -26,14 +26,14 @@ func (accountObj *Account) processMsg(cmd uint64, data []byte) {
 		accountObj.onEnterGame(data)
 	default:
 		if accountObj.GetRole() == nil {
-			Ctx.Log.Errorln("[LOBBY] Login not completed. account", accountObj.account, ",cmd:", cmd)
+			Ctx.Errorln("[LOBBY] Login not completed. account", accountObj.account, ",cmd:", cmd)
 			return
 		}
 		switch protocol.CMD_LOBBY_ENUM(cmd) {
 		case protocol.CMD_LOBBY_CHAT:
 			accountObj.onChat(data)
 		default:
-			Ctx.Log.Errorln("[LOBBY] Unknown cmd, cmd:", cmd)
+			Ctx.Errorln("[LOBBY] Unknown cmd, cmd:", cmd)
 		}
 	}
 }

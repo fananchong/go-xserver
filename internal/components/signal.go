@@ -21,7 +21,7 @@ func NewSignal(ctx *common.Context) *Signal {
 
 // Start : 实例化组件
 func (s *Signal) Start() bool {
-	s.ctx.Log.Infoln("The program started successfully")
+	s.ctx.Infoln("The program started successfully")
 	s.sig = make(chan os.Signal)
 	signal.Notify(s.sig,
 		syscall.SIGINT,
@@ -36,7 +36,7 @@ func (s *Signal) Start() bool {
 			switch sig {
 			case syscall.SIGPIPE:
 			default:
-				s.ctx.Log.Infoln("Received signal:", sig)
+				s.ctx.Infoln("Received signal:", sig)
 				return true
 			}
 		}

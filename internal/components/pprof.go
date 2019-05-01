@@ -23,7 +23,7 @@ func (pprof *Pprof) Start() bool {
 	addr := pprof.ctx.Config.Common.Pprof
 	if addr != "" {
 		go func() {
-			pprof.ctx.Log.Println("pprof listen :", addr)
+			pprof.ctx.Println("pprof listen :", addr)
 			pprof.web = &http.Server{Addr: addr, Handler: nil}
 			pprof.web.ListenAndServe()
 		}()

@@ -15,7 +15,7 @@ func SendMsgToClient(ctx *common.Context, account string, cmd uint64, msg proto.
 		return false, err
 	}
 	data = append(data, flag)
-	if ctx.Node.SendMsgToClient(account, cmd, data) {
+	if ctx.SendMsgToClient(account, cmd, data) {
 		return true, nil
 	}
 	return false, fmt.Errorf("Sending message failed, account: %s, cmd:%d", account, cmd)
@@ -23,7 +23,7 @@ func SendMsgToClient(ctx *common.Context, account string, cmd uint64, msg proto.
 
 // SendMsgToClientByRoleName : 发送数据
 func SendMsgToClientByRoleName(ctx *common.Context, roleName string, cmd uint64, msg proto.Message) (bool, error) {
-	account := ctx.Role2Account.GetAndActive(roleName)
+	account := ctx.IRole2Account.GetAndActive(roleName)
 	if account != "" {
 		return SendMsgToClient(ctx, account, cmd, msg)
 	}
@@ -37,7 +37,7 @@ func BroadcastMsgToClient(ctx *common.Context, cmd uint64, msg proto.Message) (b
 		return false, err
 	}
 	data = append(data, flag)
-	if ctx.Node.BroadcastMsgToClient(cmd, data) {
+	if ctx.BroadcastMsgToClient(cmd, data) {
 		return true, nil
 	}
 	return false, fmt.Errorf("Broadcast message failed, cmd:%d", cmd)

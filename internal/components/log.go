@@ -38,15 +38,15 @@ func (log *Log) init() {
 	tmpLog.SetLogDir(logDir)
 	tmpLog.SetLogLevel(log.ctx.Config.Common.LogLevel - 1)
 	tmpLog.SetFlushInterval(time.Duration(log.ctx.Config.Common.LogFlushInterval) * time.Millisecond)
-	log.ctx.Log = tmpLog
+	log.ctx.ILogger = tmpLog
 
 	// TODO : gotcp 需要支持非全局LOG类实例
-	gotcp.SetLogger(log.ctx.Log)
+	gotcp.SetLogger(log.ctx)
 }
 
 // Close : 关闭组件
 func (log *Log) Close() {
-	if log.ctx != nil && log.ctx.Log != nil {
-		log.ctx.Log.Flush()
+	if log.ctx != nil && log.ctx.ILogger != nil {
+		log.ctx.Flush()
 	}
 }

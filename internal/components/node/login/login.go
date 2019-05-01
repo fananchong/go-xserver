@@ -26,15 +26,15 @@ func NewLogin(ctx *common.Context) *Login {
 	login := &Login{
 		ctx: ctx,
 	}
-	login.ctx.Login = login
+	login.ctx.ILogin = login
 	return login
 }
 
 // Start : 启动
 func (login *Login) Start() bool {
-	pluginType := misc.GetPluginType(login.ctx.Ctx)
+	pluginType := misc.GetPluginType(login.ctx)
 	if pluginType == common.Login {
-		login.Normal = login.ctx.Node.(*nodenormal.Normal)
+		login.Normal = login.ctx.INode.(*nodenormal.Normal)
 		if !login.initRedis() {
 			return false
 		}
@@ -84,7 +84,7 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 		to.AllocServers[uint32(login.allocServerType[i])] = ids[i]
 	}
 	if err := tokenObj.Save(); err != nil {
-		login.ctx.Log.Errorln(err, "account:", account)
+		login.ctx.Errorln(err, "account:", account)
 		return "", nil, nil, nil, common.LoginSystemError
 	}
 	return tempID, addressList, portList, login.allocServerType, common.LoginSuccess
@@ -107,7 +107,7 @@ func (login *Login) loginByDefault(account, password string) common.LoginErrCode
 		}
 		accountObj.SetPasswd(password)
 		if err = accountObj.Save(); err != nil {
-			login.ctx.Log.Errorln(err, "account:", account)
+			login.ctx.Errorln(err, "account:", account)
 			return common.LoginSystemError
 		}
 	} else {
@@ -127,7 +127,7 @@ func (login *Login) initRedis() bool {
 		login.ctx.Config.DbAccount.Password,
 		login.ctx.Config.DbAccount.DBIndex)
 	if err != nil {
-		login.ctx.Log.Errorln(err)
+		login.ctx.Errorln(err)
 		return false
 	}
 
@@ -138,26 +138,26 @@ func (login *Login) initRedis() bool {
 		login.ctx.Config.DbToken.Password,
 		login.ctx.Config.DbToken.DBIndex)
 	if err != nil {
-		login.ctx.Log.Errorln(err)
+		login.ctx.Errorln(err)
 		return false
 	}
 
 	// db server
 	c, err := redis.Dial("tcp", login.ctx.Config.DbServer.Addrs[0])
 	if err != nil {
-		login.ctx.Log.Errorln(err)
+		login.ctx.Errorln(err)
 		return false
 	}
 	if login.ctx.Config.DbServer.Password != "" {
 		if _, err := c.Do("AUTH", login.ctx.Config.DbServer.Password); err != nil {
-			login.ctx.Log.Errorln(err)
+			login.ctx.Errorln(err)
 			c.Close()
 			return false
 		}
 	}
 	if login.ctx.Config.DbServer.DBIndex != 0 {
 		if _, err := c.Do("SELECT", login.ctx.Config.DbServer.DBIndex); err != nil {
-			login.ctx.Log.Errorln(err)
+			login.ctx.Errorln(err)
 			c.Close()
 			return false
 		}
@@ -183,10 +183,10 @@ func (login *Login) selectServerList(account string, nodeType []common.NodeType)
 func (login *Login) selectServer(account string, nodeType common.NodeType) (dbObj *db.AccountServer, ok bool) {
 LOOP:
 	dbObj = &db.AccountServer{}
-	login.PrintNodeInfo(login.ctx.Log, nodeType)
+	login.PrintNodeInfo(login.ctx, nodeType)
 	node := login.GetNodeOne(nodeType)
 	if node == nil {
-		login.ctx.Log.Errorln("Did not find the server. type:", nodeType, "account:", account)
+		login.ctx.Errorln("Did not find the server. type:", nodeType, "account:", account)
 		return
 	}
 	nodeID := node.GetID()
@@ -199,25 +199,25 @@ LOOP:
 	var err error
 	data, err = dbObj.Marshal()
 	if err != nil {
-		login.ctx.Log.Errorln(err, "account:", account)
+		login.ctx.Errorln(err, "account:", account)
 		return
 	}
-	login.ctx.Log.Infoln("account:", account, "server:", data)
+	login.ctx.Infoln("account:", account, "server:", data)
 	var ret string
 	key := db.GetKeyAllocServer(uint32(nodeType), account)
 	ret, err = login.serverRedis.SetGetX(key, data, 365*86400) // 设置账号分配的服务器资源信息，过期时间 1 年
 	if err != nil {
-		login.ctx.Log.Errorln(err, "account:", account)
+		login.ctx.Errorln(err, "account:", account)
 		return
 	}
 	if ret != "" {
 		dbObj.Unmarshal(ret)
 		if login.HaveNode(nodecommon.ServerID2NodeID(dbObj.ServerID)) == false {
 			if _, err = login.serverRedis.DelX(key, ret); err != nil {
-				login.ctx.Log.Errorln(err, "account:", account)
+				login.ctx.Errorln(err, "account:", account)
 				return
 			}
-			login.ctx.Log.Infoln("Try again to get one server, type:", nodeType, "account:", account)
+			login.ctx.Infoln("Try again to get one server, type:", nodeType, "account:", account)
 			goto LOOP
 		}
 	}

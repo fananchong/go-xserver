@@ -27,14 +27,14 @@ func NewGateway(ctx *common.Context) *Gateway {
 		ctx:  ctx,
 		Node: nodecommon.NewNode(ctx, common.Gateway),
 	}
-	gw.ctx.Gateway = gw
+	gw.ctx.IGateway = gw
 	gw.users = NewUserMgr(ctx, gw)
 	return gw
 }
 
 // Start : 启动
 func (gw *Gateway) Start() bool {
-	if misc.GetPluginType(gw.ctx.Ctx) == common.Gateway {
+	if misc.GetPluginType(gw.ctx) == common.Gateway {
 		if gw.initRedis() == false {
 			return false
 		}
@@ -62,12 +62,12 @@ func (gw *Gateway) Close() {
 func (gw *Gateway) VerifyToken(account, token string, clientSession common.IClientSesion) uint32 {
 	tokenObj := db.NewToken(gw.ctx.Config.DbToken.Name, account)
 	if err := tokenObj.Load(); err != nil {
-		gw.ctx.Log.Errorln(err, "account:", account)
+		gw.ctx.Errorln(err, "account:", account)
 		return 2
 	}
 	tmpTokenObj := tokenObj.GetToken(false)
 	if token != tmpTokenObj.Token {
-		gw.ctx.Log.Errorf("Token verification failed, expecting token to be %s, but %s. account: %s\n", tmpTokenObj.Token, token, account)
+		gw.ctx.Errorf("Token verification failed, expecting token to be %s, but %s. account: %s\n", tmpTokenObj.Token, token, account)
 		return 1
 	}
 	gw.users.AddUser(account, tmpTokenObj.GetAllocServers(), clientSession)
@@ -78,14 +78,14 @@ func (gw *Gateway) VerifyToken(account, token string, clientSession common.IClie
 func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (done bool) {
 	nodeType := common.NodeType(cmd / uint32(gw.ctx.Config.Common.MsgCmdOffset))
 	if nodeType >= common.NodeTypeSize || nodeType <= common.Gateway {
-		gw.ctx.Log.Errorln("Wrong message number. cmd:", cmd, "account:", account)
+		gw.ctx.Errorln("Wrong message number. cmd:", cmd, "account:", account)
 		return
 	}
 
 	// 是否需要状态中继
 	nodeID, err := gw.users.GetServerAndActive(account, nodeType)
 	if err != nil {
-		gw.ctx.Log.Errorln(err, "account:", account, "cmd:", cmd)
+		gw.ctx.Errorln(err, "account:", account, "cmd:", cmd)
 		return
 	}
 	var target *nodecommon.SessionBase
@@ -95,7 +95,7 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 		target = gw.GetNodeOne(nodeType)
 	}
 	if target == nil {
-		gw.ctx.Log.Errorln("Target server not found. cmd:", cmd, "account:", account, "nodeType", nodeType)
+		gw.ctx.Errorln("Target server not found. cmd:", cmd, "account:", account, "nodeType", nodeType)
 		return
 	}
 
@@ -107,7 +107,7 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 	msg.CMD = cmd % uint32(gw.ctx.Config.Common.MsgCmdOffset)
 	msg.Data = append(msg.Data, data...)
 	if target.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msg) == false {
-		gw.ctx.Log.Errorln("Sending a message to the target server failed. cmd:", cmd, "account:", account, "nodeType", nodeType)
+		gw.ctx.Errorln("Sending a message to the target server failed. cmd:", cmd, "account:", account, "nodeType", nodeType)
 		return
 	}
 	return
@@ -151,7 +151,7 @@ func (gw *Gateway) initRedis() bool {
 		gw.ctx.Config.DbToken.Password,
 		gw.ctx.Config.DbToken.DBIndex)
 	if err != nil {
-		gw.ctx.Log.Errorln(err)
+		gw.ctx.Errorln(err)
 		return false
 	}
 
@@ -162,7 +162,7 @@ func (gw *Gateway) initRedis() bool {
 		gw.ctx.Config.DbServer.Password,
 		gw.ctx.Config.DbServer.DBIndex)
 	if err != nil {
-		gw.ctx.Log.Errorln(err)
+		gw.ctx.Errorln(err)
 		return false
 	}
 	gw.users.ServerRedisCli = go_redis_orm.GetDB(gw.ctx.Config.DbServer.Name)

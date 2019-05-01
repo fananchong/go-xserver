@@ -65,11 +65,11 @@ func (accountObj *Account) Init() error {
 
 // Start : 开始
 func (accountObj *Account) Start() {
-	Ctx.Log.Infoln("Account work coroutine start, account:", accountObj.account)
+	Ctx.Infoln("Account work coroutine start, account:", accountObj.account)
 	go func() {
 		defer func() {
 			if err := recover(); err != nil {
-				Ctx.Log.Errorln("[except] ", err, "\n", string(debug.Stack()))
+				Ctx.Errorln("[except] ", err, "\n", string(debug.Stack()))
 			}
 		}()
 		for {
@@ -85,10 +85,10 @@ func (accountObj *Account) Start() {
 
 // Close : 结束
 func (accountObj *Account) Close() {
-	Ctx.Log.Infoln("Account work coroutine close#1, account:", accountObj.account)
+	Ctx.Infoln("Account work coroutine close#1, account:", accountObj.account)
 	atomic.StoreInt32(&accountObj.closeFlag, 1)
 	accountObj.chanClose <- 1
-	Ctx.Log.Infoln("Account work coroutine close#2, account:", accountObj.account)
+	Ctx.Infoln("Account work coroutine close#2, account:", accountObj.account)
 }
 
 // FirstInitialization : 账号首次创建初始化

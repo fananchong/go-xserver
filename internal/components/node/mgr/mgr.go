@@ -23,20 +23,20 @@ func NewMgr(ctx *common.Context) *Mgr {
 		ctx:  ctx,
 		Node: nodecommon.NewNode(ctx, common.Mgr),
 	}
-	pluginType := misc.GetPluginType(mgr.ctx.Ctx)
+	pluginType := misc.GetPluginType(mgr.ctx)
 	if pluginType == common.Mgr {
 		mgr.init()
-		mgr.ctx.Node = mgr
+		mgr.ctx.INode = mgr
 	}
 	return mgr
 }
 
 // Start : 实例化组件
 func (mgr *Mgr) Start() bool {
-	pluginType := misc.GetPluginType(mgr.ctx.Ctx)
+	pluginType := misc.GetPluginType(mgr.ctx)
 	if pluginType == common.Mgr {
 		if mgr.Node.Start() == false {
-			mgr.ctx.Log.Errorln("Mgr Server node failed to start")
+			mgr.ctx.Errorln("Mgr Server node failed to start")
 			os.Exit(1)
 		}
 	}
@@ -62,6 +62,6 @@ func (mgr *Mgr) register() {
 	data.SetAddr(utils.GetIPInner(mgr.ctx))
 	data.SetPort(utils.GetIntranetListenPort(mgr.ctx))
 	if err := data.Save(); err != nil {
-		mgr.ctx.Log.Errorln(err)
+		mgr.ctx.Errorln(err)
 	}
 }

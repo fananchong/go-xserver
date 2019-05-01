@@ -28,7 +28,7 @@ func NewNormal(ctx *common.Context) *Normal {
 		ctx:     ctx,
 		Session: NewSession(ctx),
 	}
-	pluginType := misc.GetPluginType(ctx.Ctx)
+	pluginType := misc.GetPluginType(ctx)
 	if pluginType != common.Mgr {
 		normal.Info = &protocol.SERVER_INFO{}
 		normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID())
@@ -39,8 +39,8 @@ func NewNormal(ctx *common.Context) *Normal {
 		// normal.Info.Overload
 		// normal.Info.Version
 		normal.init()
-		normal.ctx.Node = normal
-		ctx.Log.Infoln("NODE ID:", nodecommon.NodeID2UUID(normal.GetID()).String(), ", NODE TYPE:", pluginType)
+		normal.ctx.INode = normal
+		ctx.Infoln("NODE ID:", nodecommon.NodeID2UUID(normal.GetID()).String(), ", NODE TYPE:", pluginType)
 	}
 	return normal
 }
@@ -59,13 +59,13 @@ func (normal *Normal) init() bool {
 
 // Start : 节点开始工作
 func (normal *Normal) Start() bool {
-	pluginType := misc.GetPluginType(normal.ctx.Ctx)
+	pluginType := misc.GetPluginType(normal.ctx)
 	if pluginType != common.Mgr {
 		go func() {
-			misc.WaitComponent(normal.ctx.Ctx)
-			normal.ctx.Log.Infoln("Service node start ...")
+			misc.WaitComponent(normal.ctx)
+			normal.ctx.Infoln("Service node start ...")
 			if normal.start() == false {
-				normal.ctx.Log.Errorln("Service node failed to start")
+				normal.ctx.Errorln("Service node failed to start")
 				os.Exit(1)
 			}
 		}()

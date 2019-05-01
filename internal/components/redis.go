@@ -28,7 +28,7 @@ LOOP0:
 		redis.ctx.Config.DbMgr.Addrs,
 		redis.ctx.Config.DbMgr.Password,
 		redis.ctx.Config.DbMgr.DBIndex); err != nil {
-		redis.ctx.Log.Errorln(err)
+		redis.ctx.Errorln(err)
 		time.Sleep(5 * time.Second)
 		goto LOOP0
 	}
@@ -39,12 +39,12 @@ LOOP1:
 		redis.ctx.Config.DbRoleName.Addrs,
 		redis.ctx.Config.DbRoleName.Password,
 		redis.ctx.Config.DbRoleName.DBIndex); err != nil {
-		redis.ctx.Log.Errorln(err)
+		redis.ctx.Errorln(err)
 		time.Sleep(5 * time.Second)
 		goto LOOP1
 	}
 
-	pluginType := misc.GetPluginType(redis.ctx.Ctx)
+	pluginType := misc.GetPluginType(redis.ctx)
 	if pluginType != common.Login && pluginType != common.Gateway {
 	LOOP99:
 		if err := go_redis_orm.CreateDB(
@@ -52,7 +52,7 @@ LOOP1:
 			redis.ctx.Config.DbServer.Addrs,
 			redis.ctx.Config.DbServer.Password,
 			redis.ctx.Config.DbServer.DBIndex); err != nil {
-			redis.ctx.Log.Errorln(err)
+			redis.ctx.Errorln(err)
 			time.Sleep(5 * time.Second)
 			goto LOOP99
 		}

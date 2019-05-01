@@ -64,11 +64,11 @@ func (accountMgr *AccountMgr) PostMsg(account string, cmd uint64, data []byte) {
 		accountObj = accountMgr.GetAccount(account)
 	}
 	if accountObj == nil {
-		Ctx.Log.Errorln("Account object does not exist. account:", account, "cmd:", cmd)
+		Ctx.Errorln("Account object does not exist. account:", account, "cmd:", cmd)
 		return
 	}
 	if accountObj.IsColse() {
-		Ctx.Log.Errorln("The account's work coroutine has been closed. account:", account, "cmd:", cmd)
+		Ctx.Errorln("The account's work coroutine has been closed. account:", account, "cmd:", cmd)
 		return
 	}
 	accountObj.PostMsg(cmd, data)
@@ -82,7 +82,7 @@ func (accountMgr *AccountMgr) onLogin(account string) *Account {
 				accountObj.Start()
 				return accountObj
 			}
-			Ctx.Log.Errorln("[LOGIN LOBBY]", err, "account:", account)
+			Ctx.Errorln("[LOGIN LOBBY]", err, "account:", account)
 			msg := &protocol.MSG_LOBBY_LOGIN_RESULT{}
 			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
 			utility.SendMsgToClient(Ctx, account, uint64(protocol.CMD_LOBBY_LOGIN), msg)
@@ -90,7 +90,7 @@ func (accountMgr *AccountMgr) onLogin(account string) *Account {
 			return accountObj
 		}
 	}
-	Ctx.Log.Errorln("[LOGIN LOBBY] New account fail, account:", account)
+	Ctx.Errorln("[LOGIN LOBBY] New account fail, account:", account)
 	return nil
 }
 

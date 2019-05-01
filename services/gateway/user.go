@@ -14,7 +14,7 @@ type User struct {
 // OnRecv : 接收到网络数据包，被触发
 func (user *User) OnRecv(data []byte, flag byte) {
 	if flag != 0 {
-		Ctx.Log.Errorln("Packet flag field error. account:", user.account)
+		Ctx.Errorln("Packet flag field error. account:", user.account)
 		user.Close()
 		return
 	}
@@ -27,8 +27,8 @@ func (user *User) OnRecv(data []byte, flag byte) {
 		// No need to do anything
 	default:
 		data = append(data, flag)
-		if Ctx.Gateway.OnRecvFromClient(user.account, uint32(cmd), data) == false {
-			Ctx.Log.Errorln("Unknown message number, message number is", cmd, "account:", user.account)
+		if Ctx.OnRecvFromClient(user.account, uint32(cmd), data) == false {
+			Ctx.Errorln("Unknown message number, message number is", cmd, "account:", user.account)
 			user.Close()
 		}
 	}
@@ -37,42 +37,42 @@ func (user *User) OnRecv(data []byte, flag byte) {
 // OnClose : 断开连接，被触发
 func (user *User) OnClose() {
 	gateway.DelUser(user.account)
-	Ctx.Log.Infoln("Account connection disconnected, account:", user.account)
+	Ctx.Infoln("Account connection disconnected, account:", user.account)
 }
 
 func (user *User) doVerify(cmd protocol.CMD_GATEWAY_ENUM, data []byte, flag byte) bool {
 	if cmd != protocol.CMD_GATEWAY_VERIFY_TOKEN {
-		Ctx.Log.Errorln("The expected message number is `protocol.CMD_GATEWAY_VERIFY_TOKEN`(", int(protocol.CMD_GATEWAY_VERIFY_TOKEN), "), but", cmd)
+		Ctx.Errorln("The expected message number is `protocol.CMD_GATEWAY_VERIFY_TOKEN`(", int(protocol.CMD_GATEWAY_VERIFY_TOKEN), "), but", cmd)
 		user.Close()
 		return false
 	}
 	msg := &protocol.MSG_GATEWAY_VERIFY_TOKEN{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
-		Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_GATEWAY_VERIFY_TOKEN`(", int(protocol.CMD_GATEWAY_VERIFY_TOKEN), ")")
+		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_GATEWAY_VERIFY_TOKEN`(", int(protocol.CMD_GATEWAY_VERIFY_TOKEN), ")")
 		user.Close()
 		return false
 	}
-	errcode := Ctx.Gateway.VerifyToken(msg.GetAccount(), msg.GetToken(), user)
+	errcode := Ctx.VerifyToken(msg.GetAccount(), msg.GetToken(), user)
 	repmsg := &protocol.MSG_GATEWAY_VERIFY_TOKEN_RESULT{}
 	repmsg.Err = protocol.ENUM_GATEWAY_VERIFY_TOKEN_ERROR_ENUM(errcode)
 	if errcode != 0 {
-		Ctx.Log.Errorln("Token verification failed, account:", msg.GetAccount(), "errcode:", errcode)
+		Ctx.Errorln("Token verification failed, account:", msg.GetAccount(), "errcode:", errcode)
 		user.SendMsg(uint64(protocol.CMD_GATEWAY_VERIFY_TOKEN), repmsg)
 		user.Close()
 		return false
 	}
 	user.Verify()
 	if user.SendMsg(uint64(protocol.CMD_GATEWAY_VERIFY_TOKEN), repmsg) == false {
-		Ctx.Log.Errorln("Failed to send data, account:", msg.GetAccount())
+		Ctx.Errorln("Failed to send data, account:", msg.GetAccount())
 		user.Close()
 		return false
 	}
 	user.account = msg.GetAccount()
 	kickOldUser := gateway.AddUser(user.account, user)
 	if kickOldUser {
-		Ctx.Log.Infoln("Delete old player object, account:", user.account)
+		Ctx.Infoln("Delete old player object, account:", user.account)
 	}
-	Ctx.Log.Infoln("Token verification succeeded, account:", msg.GetAccount())
+	Ctx.Infoln("Token verification succeeded, account:", msg.GetAccount())
 	return true
 }
 

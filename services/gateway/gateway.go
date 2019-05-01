@@ -14,9 +14,9 @@ func NewGateway() *Gateway {
 
 // Start : 启动
 func (gateway *Gateway) Start() bool {
-	Ctx.ServerForClient.RegisterSessType(User{})
-	Ctx.Gateway.RegisterSendToClient(gateway.sendToClient)
-	Ctx.Gateway.RegisterSendToAllClient(gateway.sendToAllClient)
+	Ctx.RegisterSessType(User{})
+	Ctx.RegisterSendToClient(gateway.sendToClient)
+	Ctx.RegisterSendToAllClient(gateway.sendToAllClient)
 	return true
 }
 
@@ -31,10 +31,10 @@ func (gateway *Gateway) sendToClient(account string, cmd uint64, data []byte) bo
 		if user.SendEx(int(cmd), data[:datalen], data[datalen]) {
 			return true
 		}
-		Ctx.Log.Warning("Sending message failed, account:", account, ", cmd:", cmd)
+		Ctx.Warning("Sending message failed, account:", account, ", cmd:", cmd)
 		return false
 	}
-	Ctx.Log.Warning("The player was not found, account:", account)
+	Ctx.Warning("The player was not found, account:", account)
 	return false
 }
 
@@ -44,7 +44,7 @@ func (gateway *Gateway) sendToAllClient(cmd uint64, data []byte) bool {
 	flag := data[datalen]
 	gateway.Foreach(func(user *User) bool {
 		if user.SendEx(int(cmd), msg, flag) == false {
-			Ctx.Log.Warning("Sending message failed, account:", user.GetAccount(), ", cmd:", cmd)
+			Ctx.Warning("Sending message failed, account:", user.GetAccount(), ", cmd:", cmd)
 		}
 		return true
 	})

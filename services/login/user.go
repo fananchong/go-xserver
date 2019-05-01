@@ -22,26 +22,26 @@ func (user *User) OnRecv(data []byte, flag byte) {
 	case protocol.CMD_LOGIN_LOGIN:
 		// No need to do anything
 	default:
-		Ctx.Log.Errorln("Unknown message number, message number is", cmd)
+		Ctx.Errorln("Unknown message number, message number is", cmd)
 	}
 }
 
 // OnClose : 断开连接，被触发
 func (user *User) OnClose() {
 	if user.account != "" {
-		Ctx.Log.Infoln("Account connection disconnected, account:", user.account)
+		Ctx.Infoln("Account connection disconnected, account:", user.account)
 	}
 }
 
 func (user *User) doVerify(cmd protocol.CMD_LOGIN_ENUM, data []byte, flag byte) bool {
 	if cmd != protocol.CMD_LOGIN_LOGIN {
-		Ctx.Log.Errorln("The expected message number is `protocol.CMD_LOGIN_LOGIN`(", int(protocol.CMD_LOGIN_LOGIN), "), but", cmd)
+		Ctx.Errorln("The expected message number is `protocol.CMD_LOGIN_LOGIN`(", int(protocol.CMD_LOGIN_LOGIN), "), but", cmd)
 		user.Close()
 		return false
 	}
 	msg := &protocol.MSG_LOGIN{}
 	if gotcp.DecodeCmd(data, flag, msg) == nil {
-		Ctx.Log.Errorln("Message parsing failed, message number is`protocol.CMD_LOGIN_LOGIN`(", int(protocol.CMD_LOGIN_LOGIN), ")")
+		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOGIN_LOGIN`(", int(protocol.CMD_LOGIN_LOGIN), ")")
 		user.Close()
 		return false
 	}
@@ -52,11 +52,11 @@ func (user *User) doVerify(cmd protocol.CMD_LOGIN_ENUM, data []byte, flag byte) 
 }
 
 func (user *User) doLogin(account, passwd string, mode protocol.ENUM_LOGIN_MODE_ENUM, userdata []byte) {
-	Ctx.Log.Infoln("account =", account, "password =", passwd, "mode =", mode)
+	Ctx.Infoln("account =", account, "password =", passwd, "mode =", mode)
 	user.account = account
-	token, addrs, ports, nodeTypes, errCode := Ctx.Login.Login(account, passwd, mode == protocol.ENUM_LOGIN_MODE_DEFAULT, userdata)
+	token, addrs, ports, nodeTypes, errCode := Ctx.Login(account, passwd, mode == protocol.ENUM_LOGIN_MODE_DEFAULT, userdata)
 	if errCode == common.LoginSuccess {
-		Ctx.Log.Infoln("account =", account, "token =", token, "addr =", addrs, "port =", ports, "nodeTypes =", nodeTypes)
+		Ctx.Infoln("account =", account, "token =", token, "addr =", addrs, "port =", ports, "nodeTypes =", nodeTypes)
 		msg := &protocol.MSG_LOGIN_RESULT{}
 		msg.Err = protocol.ENUM_LOGIN_ERROR_OK
 		msg.Token = token
@@ -67,7 +67,7 @@ func (user *User) doLogin(account, passwd string, mode protocol.ENUM_LOGIN_MODE_
 		}
 		user.SendMsg(uint64(protocol.CMD_LOGIN_LOGIN), msg)
 	} else {
-		Ctx.Log.Errorln("Login failed. error =", errCode, "account =", account)
+		Ctx.Errorln("Login failed. error =", errCode, "account =", account)
 		msg := &protocol.MSG_LOGIN_RESULT{}
 		msg.Err = protocol.ENUM_LOGIN_ERROR_ENUM(errCode)
 		user.SendMsg(uint64(protocol.CMD_LOGIN_LOGIN), msg)

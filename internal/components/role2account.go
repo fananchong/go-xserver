@@ -43,7 +43,7 @@ func NewRole2Account(ctx *common.Context) *Role2Account {
 		cache: make(map[string]*AccountInfo),
 	}
 	role2account.checkActiveTicker = utils.NewTickerHelper("CHECK_ACTIVE", ctx, 1*time.Second, role2account.checkActive)
-	ctx.Role2Account = role2account
+	ctx.IRole2Account = role2account
 	return role2account
 }
 
@@ -59,7 +59,7 @@ func (role2account *Role2Account) AddAndInsertDB(role, account string) bool {
 	dbObj := db.NewRoleName(role2account.ctx.Config.DbRoleName.Name, role)
 	dbObj.SetAccount(account)
 	if err := dbObj.Save(); err != nil {
-		role2account.ctx.Log.Errorln(err, "role:", role, "account:", account)
+		role2account.ctx.Errorln(err, "role:", role, "account:", account)
 		return false
 	}
 	role2account.mutex.Lock()
@@ -80,7 +80,7 @@ func (role2account *Role2Account) GetAndActive(role string) string {
 	dbObj := db.NewRoleName(role2account.ctx.Config.DbRoleName.Name, role)
 	if err := dbObj.Load(); err != nil {
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {
-			role2account.ctx.Log.Errorln(err, "role:", role)
+			role2account.ctx.Errorln(err, "role:", role)
 		}
 		return ""
 	}

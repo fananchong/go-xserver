@@ -52,7 +52,7 @@ func (sess *Session) connectMgrServer() {
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
-	sess.Ctx.Log.Infoln("The service node registers information with me with ID", nodecommon.ServerID2UUID(msg.GetData().GetId()).String(), "type:", msg.GetData().GetType())
+	sess.Ctx.Infoln("The service node registers information with me with ID", nodecommon.ServerID2UUID(msg.GetData().GetId()).String(), "type:", msg.GetData().GetType())
 
 	tempSess := sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(msg.GetData().GetId()))
 	if tempSess == nil {
@@ -63,7 +63,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		targetSess.RegisterFuncOnLoseAccount(sess.FuncOnLoseAccount())
 		sess.SessMgr.Register(targetSess.SessionBase)
 
-		sess.PrintNodeInfo(sess.Ctx.Log, common.NodeType(msg.GetData().GetType()))
+		sess.PrintNodeInfo(sess.Ctx, common.NodeType(msg.GetData().GetType()))
 
 		// 如果存在互连关系的，开始互连逻辑。
 		if sess.IsEnableMessageRelay() && targetSess.Info.GetType() == uint32(common.Gateway) {
@@ -71,7 +71,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		}
 	} else {
 		tempSess.Info = msg.GetData()
-		sess.PrintNodeInfo(sess.Ctx.Log, common.NodeType(msg.GetData().GetType()))
+		sess.PrintNodeInfo(sess.Ctx, common.NodeType(msg.GetData().GetType()))
 	}
 }
 
@@ -81,7 +81,7 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 
 // DoLose : 节点丢失时处理
 func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
-	sess.Ctx.Log.Infoln("Service node connection lost, ID is", nodecommon.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
+	sess.Ctx.Infoln("Service node connection lost, ID is", nodecommon.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
 
 	// 如果存在互连关系的，关闭 TCP 连接
 	if sess.IsEnableMessageRelay() && msg.GetType() == uint32(common.Gateway) {
@@ -92,7 +92,7 @@ func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag
 	}
 
 	sess.SessMgr.Lose2(msg.GetId(), common.NodeType(msg.GetType()))
-	sess.PrintNodeInfo(sess.Ctx.Log, common.NodeType(msg.GetType()))
+	sess.PrintNodeInfo(sess.Ctx, common.NodeType(msg.GetType()))
 }
 
 // DoClose : 节点关闭时处理
@@ -113,18 +113,18 @@ func (sess *Session) Ping() {
 }
 
 func getMgrInfoByBlock(ctx *common.Context) (string, int32) {
-	ctx.Log.Infoln("Try to get management server information ...")
+	ctx.Infoln("Try to get management server information ...")
 	data := db.NewMgrServer(ctx.Config.DbMgr.Name, 0)
 	for {
 		if err := data.Load(); err == nil {
 			break
 		} else {
-			ctx.Log.Errorln(err)
+			ctx.Errorln(err)
 			time.Sleep(1 * time.Second)
 		}
 	}
-	ctx.Log.Infoln("The address of the management server is", data.GetAddr())
-	ctx.Log.Infoln("The port of the management server is", data.GetPort())
+	ctx.Infoln("The address of the management server is", data.GetAddr())
+	ctx.Infoln("The port of the management server is", data.GetPort())
 	return data.GetAddr(), data.GetPort()
 }
 
@@ -157,21 +157,21 @@ func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bo
 	key := db.GetKeyAllocServer(uint32(common.Gateway), account)
 	val, err := redis.String(dbaccess.Do("GET", key))
 	if err != nil {
-		sess.Ctx.Log.Errorln(err, "account:", account, ", cmd:", cmd)
+		sess.Ctx.Errorln(err, "account:", account, ", cmd:", cmd)
 		return false
 	}
 	dbObj := &db.AccountServer{}
 	if err := dbObj.Unmarshal(val); err != nil {
-		sess.Ctx.Log.Errorln(err, "account:", account, ", cmd:", cmd)
+		sess.Ctx.Errorln(err, "account:", account, ", cmd:", cmd)
 		return false
 	}
 	ttl, err := redis.Uint64(dbaccess.Do("TTL", key))
 	if err != nil {
-		sess.Ctx.Log.Errorln(err, "account:", account, ", cmd:", cmd)
+		sess.Ctx.Errorln(err, "account:", account, ", cmd:", cmd)
 		return false
 	}
 	if int64(ttl) <= sess.Ctx.Config.Role.SessionAffinityInterval {
-		sess.Ctx.Log.Infoln("Target account offline", "account:", account, ", cmd:", cmd)
+		sess.Ctx.Infoln("Target account offline", "account:", account, ", cmd:", cmd)
 		return false
 	}
 	targetSess = sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(dbObj.ServerID))

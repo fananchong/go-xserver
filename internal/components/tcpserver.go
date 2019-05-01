@@ -14,13 +14,13 @@ type TCPServer struct {
 // NewTCPServer : 实例化
 func NewTCPServer(ctx *common.Context) *TCPServer {
 	server := &TCPServer{ctx: ctx}
-	server.ctx.ServerForClient = &gotcp.Server{}
+	server.ctx.ITCPServer = &gotcp.Server{}
 	return server
 }
 
 // Start : 实例化组件
 func (server *TCPServer) Start() bool {
-	s := server.ctx.ServerForClient.(*gotcp.Server)
+	s := server.ctx.ITCPServer.(*gotcp.Server)
 	if s.GetSessionType() != nil {
 		// 填写 `0.0.0.0` ， 而不是 `utils.GetIPOuter(server.ctx)` 具体外网 IP ，是为了能支持阿里云 ECS 服务器
 		if !startTCPServer(s, "0.0.0.0", utils.GetDefaultServicePort(server.ctx)) {
@@ -33,9 +33,9 @@ func (server *TCPServer) Start() bool {
 
 // Close : 关闭组件
 func (server *TCPServer) Close() {
-	if server.ctx.ServerForClient != nil {
-		server.ctx.ServerForClient.(*gotcp.Server).Close()
-		server.ctx.ServerForClient = nil
+	if server.ctx.ITCPServer != nil {
+		server.ctx.ITCPServer.(*gotcp.Server).Close()
+		server.ctx.ITCPServer = nil
 	}
 }
 

@@ -10,8 +10,8 @@ import (
 
 // Ticker : 定时器帮助类
 type Ticker struct {
-	myctx     *common.Context
-	ctx       context.Context
+	ctx       *common.Context
+	ctxSub    context.Context
 	ctxCancel context.CancelFunc
 	interval  time.Duration
 	f         func()
@@ -21,7 +21,7 @@ type Ticker struct {
 // NewTickerHelper : 定时器帮助类的构造函数
 func NewTickerHelper(name string, ctx *common.Context, interval time.Duration, f func()) *Ticker {
 	return &Ticker{
-		myctx:    ctx,
+		ctx:      ctx,
 		interval: interval,
 		f:        f,
 		name:     name,
@@ -30,7 +30,7 @@ func NewTickerHelper(name string, ctx *common.Context, interval time.Duration, f
 
 // Start : 开始
 func (helper *Ticker) Start() bool {
-	helper.ctx, helper.ctxCancel = context.WithCancel(helper.myctx.Ctx)
+	helper.ctxSub, helper.ctxCancel = context.WithCancel(helper.ctx)
 	go helper.loop()
 	return true
 }
@@ -40,14 +40,14 @@ func (helper *Ticker) loop() {
 	defer timer.Stop()
 	for {
 		select {
-		case <-helper.ctx.Done():
-			helper.myctx.Log.Infoln("Ticker[", helper.name, "], off")
+		case <-helper.ctxSub.Done():
+			helper.ctx.Infoln("Ticker[", helper.name, "], off")
 			return
 		case <-timer.C:
 			func() {
 				defer func() {
 					if err := recover(); err != nil {
-						helper.myctx.Log.Errorln("Ticker[", helper.name, "] except:", err, "\n", string(debug.Stack()))
+						helper.ctx.Errorln("Ticker[", helper.name, "] except:", err, "\n", string(debug.Stack()))
 					}
 				}()
 				helper.f()
