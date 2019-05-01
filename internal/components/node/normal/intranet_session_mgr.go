@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
+	"github.com/fananchong/go-xserver/internal/utils"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 )
 

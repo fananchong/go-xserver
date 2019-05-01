@@ -7,6 +7,7 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
 )
 
@@ -34,7 +35,7 @@ func (sess *IntranetSession) Start() {
 				// 目标节点已丢失，不用试图去连接啦
 				break
 			}
-			address := fmt.Sprintf("%s:%d", sess.Info.GetAddrs()[common.IPINNER], sess.Info.GetPorts()[common.PORTFORINTRANET])
+			address := fmt.Sprintf("%s:%d", sess.Info.GetAddrs()[utils.IPINNER], sess.Info.GetPorts()[utils.PORTFORINTRANET])
 			sess.Ctx.Infoln("Try to connect to the gateway server, address:", address, "node:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
 			if sess.Connect(address, sess) == false {
 				time.Sleep(1 * time.Second)

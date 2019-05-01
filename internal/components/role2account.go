@@ -8,7 +8,7 @@ import (
 	"github.com/fananchong/go-xserver/internal/db"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // AccountInfo :

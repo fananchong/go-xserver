@@ -4,7 +4,7 @@ import (
 	"math/rand"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // Rand : 随机函数组件

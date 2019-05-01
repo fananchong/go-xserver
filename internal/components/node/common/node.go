@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
 )
 
@@ -64,7 +64,7 @@ func (node *Node) Start() bool {
 		}
 		switch v.(type) {
 		case *gotcp.Server:
-			node.Ctx.Config.Network.Port[common.PORTFORINTRANET] = v.(*gotcp.Server).GetRealPort()
+			node.Ctx.Config.Network.Port[utils.PORTFORINTRANET] = v.(*gotcp.Server).GetRealPort()
 		}
 	}
 	return true

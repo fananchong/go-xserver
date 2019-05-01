@@ -4,13 +4,13 @@ import (
 	"os"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
 	"github.com/fananchong/go-xserver/internal/components"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	nodelogin "github.com/fananchong/go-xserver/internal/components/node/login"
 	nodemgr "github.com/fananchong/go-xserver/internal/components/node/mgr"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // App : 应用程序类

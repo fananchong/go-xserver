@@ -3,7 +3,7 @@ package nodegateway
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"

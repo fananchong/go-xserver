@@ -32,25 +32,3 @@ const (
 	// Unknow : 未知
 	Unknow = NodeTypeSize
 )
-
-// IPType : IP 类型
-type IPType int
-
-const (
-	// IPINNER : 类型 0 ，内网 IP
-	IPINNER IPType = iota
-
-	// IPOUTER : 类型 1 ，外网 IP
-	IPOUTER
-)
-
-// PortType : PORT 类型
-type PortType int
-
-const (
-	// PORTFORCLIENT : 端口类型（对客户端）
-	PORTFORCLIENT PortType = iota
-
-	// PORTFORINTRANET : 端口类型（对内网）
-	PORTFORINTRANET
-)

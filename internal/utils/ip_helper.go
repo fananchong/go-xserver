@@ -17,6 +17,28 @@ var (
 	onceipouter sync.Once
 )
 
+// IPType : IP 类型
+type IPType int
+
+const (
+	// IPINNER : 类型 0 ，内网 IP
+	IPINNER IPType = iota
+
+	// IPOUTER : 类型 1 ，外网 IP
+	IPOUTER
+)
+
+// PortType : PORT 类型
+type PortType int
+
+const (
+	// PORTFORCLIENT : 端口类型（对客户端）
+	PORTFORCLIENT PortType = iota
+
+	// PORTFORINTRANET : 端口类型（对内网）
+	PORTFORINTRANET
+)
+
 // GetIPInner : 获取内网 IP
 func GetIPInner(ctx *common.Context) string {
 	onceipinner.Do(func() {
@@ -54,11 +76,11 @@ func GetIPOuter(ctx *common.Context) string {
 }
 
 // GetIP : 根据类型获取IP
-func GetIP(ctx *common.Context, t common.IPType) string {
+func GetIP(ctx *common.Context, t IPType) string {
 	switch t {
-	case common.IPINNER:
+	case IPINNER:
 		return GetIPInner(ctx)
-	case common.IPOUTER:
+	case IPOUTER:
 		return GetIPOuter(ctx)
 	default:
 		panic("unknow ip type.")
@@ -86,10 +108,10 @@ func networkCard2IP(name string) (string, error) {
 
 // GetIntranetListenPort : 获取服务器组内监听端口
 func GetIntranetListenPort(ctx *common.Context) int32 {
-	return ctx.Config.Network.Port[common.PORTFORINTRANET]
+	return ctx.Config.Network.Port[PORTFORINTRANET]
 }
 
 // GetDefaultServicePort : 获取缺省的对外端口
 func GetDefaultServicePort(ctx *common.Context) int32 {
-	return ctx.Config.Network.Port[common.PORTFORCLIENT]
+	return ctx.Config.Network.Port[PORTFORCLIENT]
 }

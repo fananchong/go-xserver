@@ -5,6 +5,7 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/gogo/protobuf/proto"
 	uuid "github.com/satori/go.uuid"
 )
@@ -69,7 +70,7 @@ func (impl *DefaultNodeInterfaceImpl) GetType() common.NodeType {
 }
 
 // GetIP : 获取本节点信息，IP
-func (impl *DefaultNodeInterfaceImpl) GetIP(i common.IPType) string {
+func (impl *DefaultNodeInterfaceImpl) GetIP(i utils.IPType) string {
 	if impl.Info != nil {
 		return impl.Info.GetAddrs()[i]
 	}
@@ -156,7 +157,7 @@ func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log common.ILogger, nodeType
 	for _, v := range impl.GetNodeList(nodeType) {
 		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
 			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
-			v.GetIP(common.IPINNER), "ip1:", v.GetIP(common.IPOUTER))
+			v.GetIP(utils.IPINNER), "ip1:", v.GetIP(utils.IPOUTER))
 	}
 	log.Infoln("----------------------------------------------------------------------------------------------------------")
 }
@@ -167,7 +168,7 @@ func (impl *DefaultNodeInterfaceImpl) PrintAllNodeInfo(log common.ILogger) {
 	for _, v := range impl.GetNodeAll() {
 		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
 			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
-			v.GetIP(common.IPINNER), "ip1:", v.GetIP(common.IPOUTER))
+			v.GetIP(utils.IPINNER), "ip1:", v.GetIP(utils.IPOUTER))
 	}
 	log.Infoln("----------------------------------------------------------------------------------------------------------")
 }

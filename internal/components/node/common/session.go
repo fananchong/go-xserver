@@ -2,7 +2,7 @@ package nodecommon
 
 import (
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/gotcp"
 )

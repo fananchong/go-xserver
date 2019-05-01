@@ -2,7 +2,7 @@ package components
 
 import (
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/common/utils"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
 )
 
@@ -26,7 +26,7 @@ func (server *TCPServer) Start() bool {
 		if !startTCPServer(s, "0.0.0.0", utils.GetDefaultServicePort(server.ctx)) {
 			return false
 		}
-		server.ctx.Config.Network.Port[common.PORTFORCLIENT] = s.GetRealPort()
+		server.ctx.Config.Network.Port[utils.PORTFORCLIENT] = s.GetRealPort()
 	}
 	return true
 }

@@ -8,6 +8,7 @@ import (
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
+	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/gomodule/redigo/redis"
 	uuid "github.com/satori/go.uuid"
 )
@@ -192,8 +193,8 @@ LOOP:
 	nodeID := node.GetID()
 	dbObj.ServerID = nodecommon.NodeID2ServerID(nodeID)
 	dbObj.Type = nodeType
-	dbObj.Address = node.GetIP(common.IPOUTER)
-	dbObj.Port = node.GetPort(int(common.PORTFORCLIENT))
+	dbObj.Address = node.GetIP(utils.IPOUTER)
+	dbObj.Port = node.GetPort(int(utils.PORTFORCLIENT))
 
 	var data string
 	var err error
