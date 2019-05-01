@@ -2,13 +2,12 @@ package common
 
 import (
 	"context"
-	"math/rand"
 )
 
 // Context : 应用程序上下文
 type Context struct {
 	context.Context // golang context ，可以用于控制并发，传递全局变量等
-	*rand.Rand      // golang rand ，用来随机数
+	IRand           // 随机数生成器
 	*Config         // 配置对象
 	ILogger         // 日志对象
 	INode           // 提供消息中继等功能

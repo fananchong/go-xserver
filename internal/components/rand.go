@@ -25,7 +25,7 @@ func (r *Rand) Start() bool {
 }
 
 func (r *Rand) init() {
-	r.ctx.Rand = rand.New(rand.NewSource(utils.GetMillisecondTimestamp()))
+	r.ctx.IRand = rand.New(rand.NewSource(utils.GetMillisecondTimestamp()))
 }
 
 // Close : 关闭组件
