@@ -1,4 +1,4 @@
-package common
+package config
 
 // Config : 配置类
 type Config struct {

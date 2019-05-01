@@ -2,13 +2,15 @@ package common
 
 import (
 	"context"
+
+	"github.com/fananchong/go-xserver/config"
 )
 
 // Context : 应用程序上下文
 type Context struct {
 	context.Context // golang context ，可以用于控制并发，传递全局变量等
 	IRand           // 随机数生成器
-	*Config         // 配置对象
+	*config.Config  // 配置对象  // TODO, 待优化，支持逻辑层配置接入
 	ILogger         // 日志对象
 	INode           // 提供消息中继等功能
 	IRole2Account   // 提供`根据角色名查找账号`的功能；角色名重名检查也可以用该接口

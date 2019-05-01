@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/config"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -70,22 +71,22 @@ func loadConfig(ctx *common.Context) error {
 	flags.StringVarP(&app, "app", "a", "", "应用名（插件，必填）")
 	flags.StringVarP(&suffix, "suffix", "s", "", "Log 文件名后缀，多开时可以通过它，避免多个进程共用 1 个 Log 文件")
 	viper.BindPFlags(rootCmd.PersistentFlags())
-	bindConfig(rootCmd, common.Config{})
+	bindConfig(rootCmd, config.Config{})
 	cobra.OnInitialize(func() {
-		viper.SetConfigFile(configPath + "/config.toml")
+		viper.SetConfigFile(configPath + "/framework.toml")
 		viper.AutomaticEnv()
 		if err := viper.ReadInConfig(); err != nil {
 			fmt.Println("Failed to read configuration file, err =", err)
 			os.Exit(1)
 		}
-		ctx.Config = &common.Config{}
+		ctx.Config = &config.Config{}
 		if err := viper.Unmarshal(ctx.Config); err != nil {
 			fmt.Println("Parsing the configuration file failed, err =", err)
 			os.Exit(1)
 		}
 		viper.WatchConfig()
 		viper.OnConfigChange(func(e fsnotify.Event) {
-			c := common.Config{}
+			c := config.Config{}
 			if err := viper.Unmarshal(&c); err != nil {
 				ctx.Errorln("Parsing the configuration file failed, err =", err)
 			} else {
