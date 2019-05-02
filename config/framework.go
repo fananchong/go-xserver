@@ -1,7 +1,7 @@
 package config
 
-// Config : 配置类
-type Config struct {
+// FrameworkConfig : 配置类
+type FrameworkConfig struct {
 	Common     ConfigCommon  // 一些基础参数
 	Network    ConfigNetwork // 网络配置
 	DbAccount  ConfigRedis   // 帐号数据库（Redis）

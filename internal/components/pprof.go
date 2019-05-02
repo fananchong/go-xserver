@@ -20,7 +20,7 @@ func NewPprof(ctx *common.Context) *Pprof {
 
 // Start : 实例化组件
 func (pprof *Pprof) Start() bool {
-	addr := pprof.ctx.Config.Common.Pprof
+	addr := pprof.ctx.Config().Common.Pprof
 	if addr != "" {
 		go func() {
 			pprof.ctx.Println("pprof listen :", addr)

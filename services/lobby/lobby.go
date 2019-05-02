@@ -53,14 +53,14 @@ func (lobby *Lobby) onLoseAccount(account string) {
 func (lobby *Lobby) initRedis() bool {
 	// db account
 	err := go_redis_orm.CreateDB(
-		Ctx.Config.DbAccount.Name,
-		Ctx.Config.DbAccount.Addrs,
-		Ctx.Config.DbAccount.Password,
-		Ctx.Config.DbAccount.DBIndex)
+		Ctx.Config().DbAccount.Name,
+		Ctx.Config().DbAccount.Addrs,
+		Ctx.Config().DbAccount.Password,
+		Ctx.Config().DbAccount.DBIndex)
 	if err != nil {
 		Ctx.Errorln(err)
 		return false
 	}
-	lobby.IDGen.Cli = go_redis_orm.GetDB(Ctx.Config.DbAccount.Name)
+	lobby.IDGen.Cli = go_redis_orm.GetDB(Ctx.Config().DbAccount.Name)
 	return true
 }

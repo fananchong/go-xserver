@@ -15,7 +15,7 @@ type Role struct {
 // NewRole : 角色类构造函数
 func NewRole(roleID uint64, account string) (*Role, error) {
 	role := &Role{}
-	role.RoleBase = db.NewRoleBase(Ctx.Config.DbAccount.Name, roleID)
+	role.RoleBase = db.NewRoleBase(Ctx.Config().DbAccount.Name, roleID)
 	role.account = account
 	if err := role.RoleBase.Load(); err != nil {
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {

@@ -8,7 +8,6 @@ import (
 	"github.com/fananchong/glog"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/gotcp"
-	"github.com/spf13/viper"
 )
 
 // Log : 日志组件
@@ -29,15 +28,16 @@ func (log *Log) Start() bool {
 }
 
 func (log *Log) init() {
+	v := log.ctx.IConfig.(*Config).GetViperObj()
 	tmpLog := glog.GetLogger()
-	tmpLog.SetAppName(filepath.Base(os.Args[0]) + "_" + viper.GetString("app") + viper.GetString("suffix"))
-	logDir := log.ctx.Config.Common.LogDir
+	tmpLog.SetAppName(filepath.Base(os.Args[0]) + "_" + v.GetString("app") + v.GetString("suffix"))
+	logDir := log.ctx.Config().Common.LogDir
 	if logDir != "" {
 		os.MkdirAll(logDir, os.ModePerm)
 	}
 	tmpLog.SetLogDir(logDir)
-	tmpLog.SetLogLevel(log.ctx.Config.Common.LogLevel - 1)
-	tmpLog.SetFlushInterval(time.Duration(log.ctx.Config.Common.LogFlushInterval) * time.Millisecond)
+	tmpLog.SetLogLevel(log.ctx.Config().Common.LogLevel - 1)
+	tmpLog.SetFlushInterval(time.Duration(log.ctx.Config().Common.LogFlushInterval) * time.Millisecond)
 	log.ctx.ILogger = tmpLog
 
 	// TODO : gotcp 需要支持非全局LOG类实例

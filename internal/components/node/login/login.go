@@ -78,7 +78,7 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 
 	//生成 Token
 	tempID := uuid.NewV4().String()
-	tokenObj := db.NewToken(login.ctx.Config.DbToken.Name, account)
+	tokenObj := db.NewToken(login.ctx.Config().DbToken.Name, account)
 	tokenObj.Expire(7 * 86400) // 令牌过期时间 7 天
 	to := tokenObj.GetToken(true)
 	to.Token = tempID
@@ -102,7 +102,7 @@ func (login *Login) Close() {
 }
 
 func (login *Login) loginByDefault(account, password string) context.LoginErrCode {
-	accountObj := db.NewAccount(login.ctx.Config.DbAccount.Name, account)
+	accountObj := db.NewAccount(login.ctx.Config().DbAccount.Name, account)
 	if err := accountObj.Load(); err != nil {
 		// 新建账号
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {
@@ -125,10 +125,10 @@ func (login *Login) loginByDefault(account, password string) context.LoginErrCod
 func (login *Login) initRedis() bool {
 	// db account
 	err := go_redis_orm.CreateDB(
-		login.ctx.Config.DbAccount.Name,
-		login.ctx.Config.DbAccount.Addrs,
-		login.ctx.Config.DbAccount.Password,
-		login.ctx.Config.DbAccount.DBIndex)
+		login.ctx.Config().DbAccount.Name,
+		login.ctx.Config().DbAccount.Addrs,
+		login.ctx.Config().DbAccount.Password,
+		login.ctx.Config().DbAccount.DBIndex)
 	if err != nil {
 		login.ctx.Errorln(err)
 		return false
@@ -136,30 +136,30 @@ func (login *Login) initRedis() bool {
 
 	// db token
 	err = go_redis_orm.CreateDB(
-		login.ctx.Config.DbToken.Name,
-		login.ctx.Config.DbToken.Addrs,
-		login.ctx.Config.DbToken.Password,
-		login.ctx.Config.DbToken.DBIndex)
+		login.ctx.Config().DbToken.Name,
+		login.ctx.Config().DbToken.Addrs,
+		login.ctx.Config().DbToken.Password,
+		login.ctx.Config().DbToken.DBIndex)
 	if err != nil {
 		login.ctx.Errorln(err)
 		return false
 	}
 
 	// db server
-	c, err := redis.Dial("tcp", login.ctx.Config.DbServer.Addrs[0])
+	c, err := redis.Dial("tcp", login.ctx.Config().DbServer.Addrs[0])
 	if err != nil {
 		login.ctx.Errorln(err)
 		return false
 	}
-	if login.ctx.Config.DbServer.Password != "" {
-		if _, err := c.Do("AUTH", login.ctx.Config.DbServer.Password); err != nil {
+	if login.ctx.Config().DbServer.Password != "" {
+		if _, err := c.Do("AUTH", login.ctx.Config().DbServer.Password); err != nil {
 			login.ctx.Errorln(err)
 			c.Close()
 			return false
 		}
 	}
-	if login.ctx.Config.DbServer.DBIndex != 0 {
-		if _, err := c.Do("SELECT", login.ctx.Config.DbServer.DBIndex); err != nil {
+	if login.ctx.Config().DbServer.DBIndex != 0 {
+		if _, err := c.Do("SELECT", login.ctx.Config().DbServer.DBIndex); err != nil {
 			login.ctx.Errorln(err)
 			c.Close()
 			return false

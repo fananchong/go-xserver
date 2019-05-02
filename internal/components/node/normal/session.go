@@ -115,7 +115,7 @@ func (sess *Session) Ping() {
 
 func getMgrInfoByBlock(ctx *common.Context) (string, int32) {
 	ctx.Infoln("Try to get management server information ...")
-	data := db.NewMgrServer(ctx.Config.DbMgr.Name, 0)
+	data := db.NewMgrServer(ctx.Config().DbMgr.Name, 0)
 	for {
 		if err := data.Load(); err == nil {
 			break
@@ -154,7 +154,7 @@ func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bo
 		return targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 	}
 	// 非本服务节点上的账号，则查找对应的 Gateway ID ，再发送
-	dbaccess := go_redis_orm.GetDB(sess.Ctx.Config.DbServer.Name)
+	dbaccess := go_redis_orm.GetDB(sess.Ctx.Config().DbServer.Name)
 	key := db.GetKeyAllocServer(uint32(config.Gateway), account)
 	val, err := redis.String(dbaccess.Do("GET", key))
 	if err != nil {
@@ -171,7 +171,7 @@ func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bo
 		sess.Ctx.Errorln(err, "account:", account, ", cmd:", cmd)
 		return false
 	}
-	if int64(ttl) <= sess.Ctx.Config.Role.SessionAffinityInterval {
+	if int64(ttl) <= sess.Ctx.Config().Role.SessionAffinityInterval {
 		sess.Ctx.Infoln("Target account offline", "account:", account, ", cmd:", cmd)
 		return false
 	}

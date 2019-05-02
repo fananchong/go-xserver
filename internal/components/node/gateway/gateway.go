@@ -62,7 +62,7 @@ func (gw *Gateway) Close() {
 
 // VerifyToken : 令牌验证。返回值： 0 成功；1 令牌错误； 2 系统错误
 func (gw *Gateway) VerifyToken(account, token string, clientSession context.IClientSesion) uint32 {
-	tokenObj := db.NewToken(gw.ctx.Config.DbToken.Name, account)
+	tokenObj := db.NewToken(gw.ctx.Config().DbToken.Name, account)
 	if err := tokenObj.Load(); err != nil {
 		gw.ctx.Errorln(err, "account:", account)
 		return 2
@@ -78,7 +78,7 @@ func (gw *Gateway) VerifyToken(account, token string, clientSession context.ICli
 
 // OnRecvFromClient : 可自定义客户端交互协议。data 格式需转化为框架层可理解的格式。done 为 true ，表示框架层接管处理该消息
 func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (done bool) {
-	nodeType := config.NodeType(cmd / uint32(gw.ctx.Config.Common.MsgCmdOffset))
+	nodeType := config.NodeType(cmd / uint32(gw.ctx.Config().Common.MsgCmdOffset))
 	if nodeType <= config.Gateway {
 		gw.ctx.Errorln("Wrong message number. cmd:", cmd, "account:", account)
 		return
@@ -106,7 +106,7 @@ func (gw *Gateway) OnRecvFromClient(account string, cmd uint32, data []byte) (do
 
 	msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 	msg.Account = account
-	msg.CMD = cmd % uint32(gw.ctx.Config.Common.MsgCmdOffset)
+	msg.CMD = cmd % uint32(gw.ctx.Config().Common.MsgCmdOffset)
 	msg.Data = append(msg.Data, data...)
 	if target.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msg) == false {
 		gw.ctx.Errorln("Sending a message to the target server failed. cmd:", cmd, "account:", account, "nodeType", nodeType)
@@ -148,10 +148,10 @@ func (gw *Gateway) RegisterDecodeFunc(f context.FuncTypeDecode) {
 func (gw *Gateway) initRedis() bool {
 	// db token
 	err := go_redis_orm.CreateDB(
-		gw.ctx.Config.DbToken.Name,
-		gw.ctx.Config.DbToken.Addrs,
-		gw.ctx.Config.DbToken.Password,
-		gw.ctx.Config.DbToken.DBIndex)
+		gw.ctx.Config().DbToken.Name,
+		gw.ctx.Config().DbToken.Addrs,
+		gw.ctx.Config().DbToken.Password,
+		gw.ctx.Config().DbToken.DBIndex)
 	if err != nil {
 		gw.ctx.Errorln(err)
 		return false
@@ -159,14 +159,14 @@ func (gw *Gateway) initRedis() bool {
 
 	// db server
 	err = go_redis_orm.CreateDB(
-		gw.ctx.Config.DbServer.Name,
-		gw.ctx.Config.DbServer.Addrs,
-		gw.ctx.Config.DbServer.Password,
-		gw.ctx.Config.DbServer.DBIndex)
+		gw.ctx.Config().DbServer.Name,
+		gw.ctx.Config().DbServer.Addrs,
+		gw.ctx.Config().DbServer.Password,
+		gw.ctx.Config().DbServer.DBIndex)
 	if err != nil {
 		gw.ctx.Errorln(err)
 		return false
 	}
-	gw.users.ServerRedisCli = go_redis_orm.GetDB(gw.ctx.Config.DbServer.Name)
+	gw.users.ServerRedisCli = go_redis_orm.GetDB(gw.ctx.Config().DbServer.Name)
 	return true
 }

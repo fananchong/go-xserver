@@ -59,7 +59,7 @@ func (mgr *Mgr) init() bool {
 }
 
 func (mgr *Mgr) register() {
-	data := db.NewMgrServer(mgr.ctx.Config.DbMgr.Name, 0)
+	data := db.NewMgrServer(mgr.ctx.Config().DbMgr.Name, 0)
 	data.SetAddr(utils.GetIPInner(mgr.ctx))
 	data.SetPort(utils.GetIntranetListenPort(mgr.ctx))
 	if err := data.Save(); err != nil {

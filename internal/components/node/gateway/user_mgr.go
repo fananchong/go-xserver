@@ -102,7 +102,7 @@ func (userMgr *UserMgr) checkActive() {
 	now := userMgr.ctx.GetTickCount()
 	var dels []*User
 	for _, user := range userMgr.users {
-		if now-user.ActiveTimestamp >= userMgr.ctx.Config.Role.IdleTime*1000 {
+		if now-user.ActiveTimestamp >= userMgr.ctx.Config().Role.IdleTime*1000 {
 			dels = append(dels, user)
 		}
 	}
@@ -122,7 +122,7 @@ func (userMgr *UserMgr) checkActive() {
 		msg.Account = user.Account
 		for nodeType, serverID := range user.Servers {
 			key := db.GetKeyAllocServer(nodeType, user.Account)
-			ttl := userMgr.ctx.Config.Role.SessionAffinityInterval
+			ttl := userMgr.ctx.Config().Role.SessionAffinityInterval
 			if _, err := userMgr.ServerRedisCli.Do("EXPIRE", key, ttl); err != nil { // 设置账号分配的服务器资源信息，过期时间 5 分钟
 				userMgr.ctx.Errorln(err, "account:", user.Account)
 			}

@@ -30,7 +30,7 @@ func NewAccount(account string) *Account {
 		account:   account,
 		chanMsg:   make(chan ChanMsg, 1024),
 		chanClose: make(chan int, 1),
-		RoleList:  db.NewRoleList(Ctx.Config.DbAccount.Name, account),
+		RoleList:  db.NewRoleList(Ctx.Config().DbAccount.Name, account),
 	}
 	return accountObj
 }

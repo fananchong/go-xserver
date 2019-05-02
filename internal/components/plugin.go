@@ -7,7 +7,6 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
-	"github.com/spf13/viper"
 )
 
 // Plugin : 插件组件
@@ -41,9 +40,10 @@ func (p *Plugin) Close() {
 }
 
 func (p *Plugin) loadPlugin(ctx *common.Context) {
-	appName := viper.GetString("app")
+	v := p.ctx.IConfig.(*Config).GetViperObj()
+	appName := v.GetString("app")
 	if appName == "" {
-		printUsage()
+		p.ctx.PrintUsage()
 		os.Exit(1)
 	}
 	so, err := plugin.Open(appName + ".so")

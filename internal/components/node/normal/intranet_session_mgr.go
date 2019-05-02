@@ -75,7 +75,7 @@ func (mgr *IntranetSessionMgr) checkActive() {
 	now := mgr.ctx.GetTickCount()
 	var dels []*User
 	for _, user := range mgr.users {
-		if now-user.ActiveTimestamp >= mgr.ctx.Config.Role.IdleTime*1000 {
+		if now-user.ActiveTimestamp >= mgr.ctx.Config().Role.IdleTime*1000 {
 			dels = append(dels, user)
 		}
 	}

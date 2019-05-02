@@ -35,7 +35,7 @@ func NewNormal(ctx *common.Context) *Normal {
 		normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID())
 		normal.Info.Type = uint32(pluginType)
 		normal.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
-		normal.Info.Ports = ctx.Config.Network.Port
+		normal.Info.Ports = ctx.Config().Network.Port
 		// TODO: 后续支持
 		// normal.Info.Overload
 		// normal.Info.Version

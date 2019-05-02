@@ -69,10 +69,10 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 			sessbase.Close()
 			return false
 		}
-		if msg.GetToken() != sessbase.Ctx.Config.Common.IntranetToken {
+		if msg.GetToken() != sessbase.Ctx.Config().Common.IntranetToken {
 			sessbase.Ctx.Errorln("Token verification failed.",
 				"Msg token:", msg.GetToken(),
-				"Expect token:", sessbase.Ctx.Config.Common.IntranetToken)
+				"Expect token:", sessbase.Ctx.Config().Common.IntranetToken)
 			sessbase.Close()
 			return false
 		}
@@ -111,13 +111,13 @@ func (sessbase *SessionBase) RegisterSelf(id NodeID, selfType config.NodeType, t
 	msg.Data.Id = NodeID2ServerID(id)
 	msg.Data.Type = uint32(selfType)
 	msg.Data.Addrs = []string{utils.GetIPInner(sessbase.Ctx), utils.GetIPOuter(sessbase.Ctx)}
-	msg.Data.Ports = sessbase.Ctx.Config.Network.Port
+	msg.Data.Ports = sessbase.Ctx.Config().Network.Port
 
 	// TODO: 后续支持
 	// msg.Data.Overload
 	// msg.Data.Version
 
-	msg.Token = sessbase.Ctx.Config.Common.IntranetToken
+	msg.Token = sessbase.Ctx.Config().Common.IntranetToken
 	msg.TargetServerType = uint32(targetServerType)
 	sessbase.Info = msg.GetData()
 	sessbase.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)

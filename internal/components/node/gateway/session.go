@@ -79,11 +79,11 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		targetAccount := msg.GetAccount()
 		if targetAccount != "" {
 			sess.funcSendToClient(targetAccount,
-				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config.Common.MsgCmdOffset),
+				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config().Common.MsgCmdOffset),
 				msg.GetData())
 		} else {
 			sess.funcSendToAllClient(
-				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config.Common.MsgCmdOffset),
+				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config().Common.MsgCmdOffset),
 				msg.GetData())
 		}
 	default:

@@ -27,7 +27,7 @@ func NewNode(ctx *common.Context, nodeType config.NodeType) *Node {
 	node.Info.Id = NodeID2ServerID(NewNID())
 	node.Info.Type = uint32(nodeType)
 	node.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
-	node.Info.Ports = ctx.Config.Network.Port
+	node.Info.Ports = ctx.Config().Network.Port
 	// TODO: 后续支持
 	// node.Info.Overload
 	// node.Info.Version
@@ -65,7 +65,7 @@ func (node *Node) Start() bool {
 		}
 		switch v.(type) {
 		case *gotcp.Server:
-			node.Ctx.Config.Network.Port[utils.PORTFORINTRANET] = v.(*gotcp.Server).GetRealPort()
+			node.Ctx.Config().Network.Port[utils.PORTFORINTRANET] = v.(*gotcp.Server).GetRealPort()
 		}
 	}
 	return true

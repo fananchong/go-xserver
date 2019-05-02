@@ -56,7 +56,7 @@ func (role2account *Role2Account) Add(role, account string) {
 
 // AddAndInsertDB : 加入本地缓存并保存数据库
 func (role2account *Role2Account) AddAndInsertDB(role, account string) bool {
-	dbObj := db.NewRoleName(role2account.ctx.Config.DbRoleName.Name, role)
+	dbObj := db.NewRoleName(role2account.ctx.Config().DbRoleName.Name, role)
 	dbObj.SetAccount(account)
 	if err := dbObj.Save(); err != nil {
 		role2account.ctx.Errorln(err, "role:", role, "account:", account)
@@ -77,7 +77,7 @@ func (role2account *Role2Account) GetAndActive(role string) string {
 		return info.Account
 	}
 	role2account.mutex.RUnlock()
-	dbObj := db.NewRoleName(role2account.ctx.Config.DbRoleName.Name, role)
+	dbObj := db.NewRoleName(role2account.ctx.Config().DbRoleName.Name, role)
 	if err := dbObj.Load(); err != nil {
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {
 			role2account.ctx.Errorln(err, "role:", role)

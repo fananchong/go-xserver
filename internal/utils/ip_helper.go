@@ -42,16 +42,16 @@ const (
 // GetIPInner : 获取内网 IP
 func GetIPInner(ctx *common.Context) string {
 	onceipinner.Do(func() {
-		switch ctx.Config.Network.IPType {
+		switch ctx.Config().Network.IPType {
 		case 0:
-			ip, err := networkCard2IP(ctx.Config.Network.IPInner)
+			ip, err := networkCard2IP(ctx.Config().Network.IPInner)
 			if err != nil {
 				ctx.Errorln(err)
 				os.Exit(1)
 			}
 			ipinner = ip
 		default:
-			ipinner = ctx.Config.Network.IPInner
+			ipinner = ctx.Config().Network.IPInner
 		}
 	})
 	return ipinner
@@ -60,16 +60,16 @@ func GetIPInner(ctx *common.Context) string {
 // GetIPOuter : 获取外网 IP
 func GetIPOuter(ctx *common.Context) string {
 	onceipouter.Do(func() {
-		switch ctx.Config.Network.IPType {
+		switch ctx.Config().Network.IPType {
 		case 0:
-			ip, err := networkCard2IP(ctx.Config.Network.IPOuter)
+			ip, err := networkCard2IP(ctx.Config().Network.IPOuter)
 			if err != nil {
 				ctx.Errorln(err)
 				os.Exit(1)
 			}
 			ipouter = ip
 		default:
-			ipouter = ctx.Config.Network.IPOuter
+			ipouter = ctx.Config().Network.IPOuter
 		}
 	})
 	return ipouter
@@ -108,10 +108,10 @@ func networkCard2IP(name string) (string, error) {
 
 // GetIntranetListenPort : 获取服务器组内监听端口
 func GetIntranetListenPort(ctx *common.Context) int32 {
-	return ctx.Config.Network.Port[PORTFORINTRANET]
+	return ctx.Config().Network.Port[PORTFORINTRANET]
 }
 
 // GetDefaultServicePort : 获取缺省的对外端口
 func GetDefaultServicePort(ctx *common.Context) int32 {
-	return ctx.Config.Network.Port[PORTFORCLIENT]
+	return ctx.Config().Network.Port[PORTFORCLIENT]
 }
