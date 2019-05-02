@@ -10,6 +10,7 @@ import (
 // Context : 应用程序上下文
 type Context struct {
 	gocontext.Context     // golang context ，可以用于控制并发，传递全局变量等
+	context.ITime         // 时间对象
 	context.IRand         // 随机数生成器
 	*config.Config        // 配置对象  // TODO, 待优化，支持逻辑层配置接入
 	context.ILogger       // 日志对象

@@ -19,11 +19,11 @@ type AccountInfo struct {
 }
 
 // NewAccountInfo :
-func NewAccountInfo(role, account string) *AccountInfo {
+func NewAccountInfo(role, account string, t int64) *AccountInfo {
 	info := &AccountInfo{
 		Role:            role,
 		Account:         account,
-		ActiveTimestamp: utils.GetMillisecondTimestamp(),
+		ActiveTimestamp: t,
 	}
 	return info
 }
@@ -51,7 +51,7 @@ func NewRole2Account(ctx *common.Context) *Role2Account {
 func (role2account *Role2Account) Add(role, account string) {
 	role2account.mutex.Lock()
 	defer role2account.mutex.Unlock()
-	role2account.cache[role] = NewAccountInfo(role, account)
+	role2account.cache[role] = NewAccountInfo(role, account, role2account.ctx.GetTickCount())
 }
 
 // AddAndInsertDB : 加入本地缓存并保存数据库
@@ -64,7 +64,7 @@ func (role2account *Role2Account) AddAndInsertDB(role, account string) bool {
 	}
 	role2account.mutex.Lock()
 	defer role2account.mutex.Unlock()
-	role2account.cache[role] = NewAccountInfo(role, account)
+	role2account.cache[role] = NewAccountInfo(role, account, role2account.ctx.GetTickCount())
 	return true
 }
 
@@ -72,7 +72,7 @@ func (role2account *Role2Account) AddAndInsertDB(role, account string) bool {
 func (role2account *Role2Account) GetAndActive(role string) string {
 	role2account.mutex.RLock()
 	if info, ok := role2account.cache[role]; ok {
-		info.ActiveTimestamp = utils.GetMillisecondTimestamp()
+		info.ActiveTimestamp = role2account.ctx.GetTickCount()
 		role2account.mutex.RUnlock()
 		return info.Account
 	}
@@ -92,7 +92,7 @@ func (role2account *Role2Account) checkActive() {
 	// TODO: 需要新增最小堆排序容器字段，并维护。使该函数计算复杂度最高为 O(logn)
 	role2account.mutex.Lock()
 	defer role2account.mutex.Unlock()
-	now := utils.GetMillisecondTimestamp()
+	now := role2account.ctx.GetTickCount()
 	var dels []*AccountInfo
 	for _, info := range role2account.cache {
 		if now-info.ActiveTimestamp >= 24*60*60*1000 { // 1 天

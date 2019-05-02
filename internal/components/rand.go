@@ -4,7 +4,6 @@ import (
 	"math/rand"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // Rand : 随机函数组件
@@ -25,7 +24,7 @@ func (r *Rand) Start() bool {
 }
 
 func (r *Rand) init() {
-	r.ctx.IRand = rand.New(rand.NewSource(utils.GetMillisecondTimestamp()))
+	r.ctx.IRand = rand.New(rand.NewSource(r.ctx.GetTickCount()))
 }
 
 // Close : 关闭组件

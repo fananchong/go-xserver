@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/internal/utils"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
+	"github.com/fananchong/go-xserver/internal/utils"
 )
 
 // User :
@@ -21,7 +21,7 @@ func NewUser(account string, sess *nodecommon.SessionBase) *User {
 	user := &User{
 		Account:         account,
 		Sess:            sess,
-		ActiveTimestamp: utils.GetMillisecondTimestamp(),
+		ActiveTimestamp: sess.Ctx.GetTickCount(),
 	}
 	return user
 }
@@ -63,7 +63,7 @@ func (mgr *IntranetSessionMgr) GetAndActive(account string) *nodecommon.SessionB
 	mgr.mutex.RLock()
 	defer mgr.mutex.RUnlock()
 	if user, ok := mgr.users[account]; ok {
-		user.ActiveTimestamp = utils.GetMillisecondTimestamp()
+		user.ActiveTimestamp = mgr.ctx.GetTickCount()
 		return user.Sess
 	}
 	return nil
@@ -72,7 +72,7 @@ func (mgr *IntranetSessionMgr) GetAndActive(account string) *nodecommon.SessionB
 func (mgr *IntranetSessionMgr) checkActive() {
 	mgr.mutex.Lock()
 	defer mgr.mutex.Unlock()
-	now := utils.GetMillisecondTimestamp()
+	now := mgr.ctx.GetTickCount()
 	var dels []*User
 	for _, user := range mgr.users {
 		if now-user.ActiveTimestamp >= mgr.ctx.Config.Role.IdleTime*1000 {

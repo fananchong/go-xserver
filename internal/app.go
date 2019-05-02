@@ -31,6 +31,7 @@ func NewApp() *App {
 func (app *App) Run() {
 	// 注册组件
 	app.components = []utils.IComponent{
+		components.NewTime(app.ctx),
 		components.NewRand(app.ctx),
 		components.NewConfig(app.ctx),
 		components.NewLog(app.ctx),

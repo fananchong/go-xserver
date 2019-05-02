@@ -28,7 +28,7 @@ func NewUser(ctx *common.Context, account string, clientSession context.IClientS
 	user := &User{
 		Account:         account,
 		Servers:         make(map[uint32]nodecommon.NodeID),
-		ActiveTimestamp: utils.GetMillisecondTimestamp(),
+		ActiveTimestamp: ctx.GetTickCount(),
 		ClientSession:   clientSession,
 	}
 	return user
@@ -85,7 +85,7 @@ func (userMgr *UserMgr) GetServerAndActive(account string, nodeType config.NodeT
 	userMgr.mutex.RLock()
 	defer userMgr.mutex.RUnlock()
 	if user, ok := userMgr.users[account]; ok {
-		user.ActiveTimestamp = utils.GetMillisecondTimestamp()
+		user.ActiveTimestamp = userMgr.ctx.GetTickCount()
 		if id, ok := user.Servers[uint32(nodeType)]; ok {
 			return &id, nil
 		}
@@ -99,7 +99,7 @@ func (userMgr *UserMgr) checkActive() {
 	defer userMgr.mutex.Unlock()
 
 	// 检查闲置连接
-	now := utils.GetMillisecondTimestamp()
+	now := userMgr.ctx.GetTickCount()
 	var dels []*User
 	for _, user := range userMgr.users {
 		if now-user.ActiveTimestamp >= userMgr.ctx.Config.Role.IdleTime*1000 {
