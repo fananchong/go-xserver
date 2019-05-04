@@ -3,8 +3,8 @@ package nodelogin
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/common/config"
 	"github.com/fananchong/go-xserver/common/context"
-	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	nodenormal "github.com/fananchong/go-xserver/internal/components/node/normal"

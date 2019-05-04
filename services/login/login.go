@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/services"
 )
 
 // Login : 登陆服务器
@@ -17,7 +18,7 @@ func NewLogin() *Login {
 func (login *Login) Start() bool {
 	Ctx.RegisterCustomAccountVerification(login.customVerify)
 	//Ctx.RegisterAllocationNodeType([]config.NodeType{config.Gateway}) // Gateway 会随机中继 Lobby
-	Ctx.RegisterAllocationNodeType([]config.NodeType{config.Gateway, config.Lobby}) // Gateway 会状态中继 Lobby
+	Ctx.RegisterAllocationNodeType([]config.NodeType{config.Gateway, services.Lobby}) // Gateway 会状态中继 Lobby
 	Ctx.RegisterSessType(User{})
 	return true
 }

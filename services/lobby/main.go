@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/services"
 )
 
 // PluginObj : 代表一个插件对象
@@ -21,7 +22,7 @@ var lobby = NewLobby()
 func init() {
 	fmt.Println("LOAD PLUGIN: LOBBY")
 	PluginObj = &Plugin{}
-	PluginType = config.Lobby
+	PluginType = services.Lobby
 }
 
 // Plugin : 插件类

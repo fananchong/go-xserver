@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
 )
 
 // 框架层的一些全局变量，可以按以下方式 Set/Get

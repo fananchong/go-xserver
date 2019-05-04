@@ -7,7 +7,7 @@ import (
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"

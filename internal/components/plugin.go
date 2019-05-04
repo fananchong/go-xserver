@@ -5,7 +5,7 @@ import (
 	"plugin"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 )
 

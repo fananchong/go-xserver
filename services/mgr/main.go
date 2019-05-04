@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/fananchong/go-xserver/common"
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
 )
 
 // PluginObj : 代表一个插件对象

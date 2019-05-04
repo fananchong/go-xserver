@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/gotcp"

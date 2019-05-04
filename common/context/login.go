@@ -1,8 +1,6 @@
 package context
 
-import (
-	"github.com/fananchong/go-xserver/config"
-)
+import "github.com/fananchong/go-xserver/common/config"
 
 // ILogin 接口暴露框架层登陆模块的使用方法
 // 完整的登陆过程，由框架层登陆模块、逻辑层交互模块共同完成

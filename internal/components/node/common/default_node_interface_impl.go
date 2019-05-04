@@ -3,8 +3,8 @@ package nodecommon
 import (
 	"sync"
 
+	"github.com/fananchong/go-xserver/common/config"
 	"github.com/fananchong/go-xserver/common/context"
-	"github.com/fananchong/go-xserver/config"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/gogo/protobuf/proto"

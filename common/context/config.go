@@ -1,6 +1,6 @@
 package context
 
-import "github.com/fananchong/go-xserver/config"
+import "github.com/fananchong/go-xserver/common/config"
 
 // IConfig : 配置类接口
 type IConfig interface {

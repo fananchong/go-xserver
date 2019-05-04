@@ -1,6 +1,6 @@
 package context
 
-import "github.com/fananchong/go-xserver/config"
+import "github.com/fananchong/go-xserver/common/config"
 
 // FuncTypeOnRelayMsg : 处理中继消息的函数声明
 type FuncTypeOnRelayMsg func(source config.NodeType, account string, cmd uint64, data []byte)

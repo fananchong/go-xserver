@@ -2,7 +2,7 @@ package main
 
 import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
-	"github.com/fananchong/go-xserver/config"
+	"github.com/fananchong/go-xserver/common/config"
 	"github.com/fananchong/go-xserver/services/internal/db"
 )
 

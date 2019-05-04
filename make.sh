@@ -5,6 +5,7 @@ set -e
 CUR_DIR=$PWD
 SRC_DIR=$PWD
 BIN_DIR=$PWD/bin
+CONF_DIR=$PWD/config
 SERVICE_DIR=$PWD/services/
 FLAGS=-race
 
@@ -12,6 +13,8 @@ case $1 in
     "start")
         cd $SERVICE_DIR
         plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
+        mkdir -p $CONF_DIR
+        ln -sf $SRC_DIR/common/config/framework.toml $CONF_DIR/
         cd $BIN_DIR
         mkdir -p $BIN_DIR/logs
         mkdir -p $BIN_DIR/logs.back
