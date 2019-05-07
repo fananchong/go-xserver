@@ -84,6 +84,8 @@
 - 代码优化，参考 goim ，优化代码
 - NodeID 不再使用 UUID， 改为 type * offset + id , 方便阅读 log 、 调试
 - Config 模块支持加载逻辑层配置
+- 登录服务器
+  - 可配置中指定要分配的服务资源，而不是代码中指定
 
 
 ## 已知 BUG
@@ -92,6 +94,11 @@
 
 - 服务发现
   - 依次 1. MgrServer 失效； 2. 某节点失效重启； 3. MgrServer 重启；这种情况，其他节点会自动重连该节点，但是NodeID是旧的！
+
+- 插件工程独立建库问题
+  - 目前 golang 尚不支持主程序、插件程序分别建库
+  - 详细请参考关注官方 Issue ： https://github.com/golang/go/issues/27751
+  - 该 Issue 解决后， go-xserver 的缺省插件将会被移至 https://github.com/fananchong/go-xserver-plugins.git
 
 ## 将要实现的功能
 
