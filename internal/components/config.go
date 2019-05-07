@@ -16,6 +16,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const frameworkCfgName = "framework.toml"
+
 // Config : 配置组件
 type Config struct {
 	ctx        *common.Context
@@ -23,7 +25,7 @@ type Config struct {
 	app        string
 	suffix     string
 	rootCmd    *cobra.Command
-	viperObj   *viper.Viper
+	viperObjs  map[string]*viper.Viper
 	configObj  *config.FrameworkConfig
 }
 
@@ -31,9 +33,10 @@ type Config struct {
 func NewConfig(ctx *common.Context) *Config {
 	cfg := &Config{
 		ctx:       ctx,
-		viperObj:  viper.New(),
+		viperObjs: make(map[string]*viper.Viper),
 		configObj: &config.FrameworkConfig{},
 	}
+	cfg.viperObjs[frameworkCfgName] = viper.New()
 	if err := cfg.init(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -55,10 +58,11 @@ func (*Config) Close() {
 const constEnvPrefix string = "GOXSERVER"
 
 func (cfg *Config) init() error {
+	viperObj := cfg.viperObjs[frameworkCfgName]
 	cfg.rootCmd = &cobra.Command{
 		Use: "go-xserver",
 		Run: func(c *cobra.Command, args []string) {
-			if appName := cfg.viperObj.GetString("app"); appName == "" {
+			if appName := viperObj.GetString("app"); appName == "" {
 				cfg.PrintUsage()
 				os.Exit(1)
 			}
@@ -72,23 +76,23 @@ func (cfg *Config) init() error {
 	flags.StringVarP(&cfg.configPath, "config", "c", "../config", "配置目录路径")
 	flags.StringVarP(&cfg.app, "app", "a", "", "应用名（插件，必填）")
 	flags.StringVarP(&cfg.suffix, "suffix", "s", "", "Log 文件名后缀，多开时可以通过它，避免多个进程共用 1 个 Log 文件")
-	cfg.viperObj.BindPFlags(cfg.rootCmd.PersistentFlags())
+	viperObj.BindPFlags(cfg.rootCmd.PersistentFlags())
 	cfg.bindConfig(cfg.rootCmd, *cfg.configObj)
 	cobra.OnInitialize(func() {
-		cfg.viperObj.SetConfigFile(cfg.configPath + "/framework.toml")
-		cfg.viperObj.AutomaticEnv()
-		if err := cfg.viperObj.ReadInConfig(); err != nil {
+		viperObj.SetConfigFile(cfg.configPath + "/" + frameworkCfgName)
+		viperObj.AutomaticEnv()
+		if err := viperObj.ReadInConfig(); err != nil {
 			fmt.Println("Failed to read configuration file, err =", err)
 			os.Exit(1)
 		}
-		if err := cfg.viperObj.Unmarshal(cfg.configObj); err != nil {
+		if err := viperObj.Unmarshal(cfg.configObj); err != nil {
 			fmt.Println("Parsing the configuration file failed, err =", err)
 			os.Exit(1)
 		}
-		cfg.viperObj.WatchConfig()
-		cfg.viperObj.OnConfigChange(func(e fsnotify.Event) {
+		viperObj.WatchConfig()
+		viperObj.OnConfigChange(func(e fsnotify.Event) {
 			c := &config.FrameworkConfig{}
-			if err := cfg.viperObj.Unmarshal(c); err != nil {
+			if err := viperObj.Unmarshal(c); err != nil {
 				cfg.ctx.Errorln("Parsing the configuration file failed, err =", err)
 			} else {
 				if c.Common.Version != "" {
@@ -149,15 +153,38 @@ func (cfg *Config) parseStruct(flags *pflag.FlagSet, rt reflect.Type, prefix str
 			fmt.Println("bindConfig fail, err = unsupported field: ", rawName)
 			os.Exit(1)
 		}
-		cfg.viperObj.BindPFlag(rawName, flags.Lookup(name))
-		cfg.viperObj.BindEnv(rawName, strings.Replace(fmt.Sprintf("%s_%s", constEnvPrefix, strings.ToUpper(name)), "-", "_", -1))
+		viperObj := cfg.viperObjs[frameworkCfgName]
+		viperObj.BindPFlag(rawName, flags.Lookup(name))
+		viperObj.BindEnv(rawName, strings.Replace(fmt.Sprintf("%s_%s", constEnvPrefix, strings.ToUpper(name)), "-", "_", -1))
 	}
 }
 
 // LoadConfig : 逻辑层可以用该接口加载配置文件
 func (cfg *Config) LoadConfig(cfgfile string, cfgobj interface{}) bool {
-	// TODO:
-	return false
+	if _, ok := cfg.viperObjs[cfgfile]; ok {
+		return true
+	}
+	cfg.viperObjs[cfgfile] = viper.New()
+	viperObj := cfg.viperObjs[cfgfile]
+	viperObj.SetConfigFile(cfg.configPath + "/" + cfgfile)
+	viperObj.AutomaticEnv()
+	if err := viperObj.ReadInConfig(); err != nil {
+		cfg.ctx.Errorf("Failed to read configuration file, err: %s, cfg: %s, path: %s", err.Error(), cfgfile, cfg.configPath)
+		return false
+	}
+	if err := viperObj.Unmarshal(cfgobj); err != nil {
+		cfg.ctx.Errorf("Parsing the configuration file failed, err: %s, cfg: %s, path: %s", err.Error(), cfgfile, cfg.configPath)
+		return false
+	}
+	viperObj.WatchConfig()
+	viperObj.OnConfigChange(func(e fsnotify.Event) {
+		if err := viperObj.Unmarshal(cfgobj); err != nil {
+			cfg.ctx.Errorf("Parsing the configuration file failed, err: %s, cfg: %s, path: %s", err.Error(), cfgfile, cfg.configPath)
+		} else {
+			cfg.ctx.Printf("Configuration information is: %#v\n", cfgobj)
+		}
+	})
+	return true
 }
 
 // Config : 获取框架层配置
@@ -170,7 +197,8 @@ func (cfg *Config) PrintUsage() {
 	cfg.rootCmd.Usage()
 	fmt.Println("")
 	fmt.Println("Environment variables:")
-	keys := cfg.viperObj.AllKeys()
+	viperObj := cfg.viperObjs[frameworkCfgName]
+	keys := viperObj.AllKeys()
 	sort.Sort(sort.StringSlice(keys))
 	for _, k := range keys {
 		env := strings.ToUpper(strings.Replace(constEnvPrefix+"_"+k, ".", "_", -1))
@@ -180,5 +208,5 @@ func (cfg *Config) PrintUsage() {
 
 // GetViperObj : 获取 viper 对象
 func (cfg *Config) GetViperObj() *viper.Viper {
-	return cfg.viperObj
+	return cfg.viperObjs[frameworkCfgName]
 }

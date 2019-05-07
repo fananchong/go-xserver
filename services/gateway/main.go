@@ -31,8 +31,7 @@ type Plugin struct {
 // Start : 插件类实现启动
 func (plugin *Plugin) Start() bool {
 	Ctx.Infoln("Plugin Start")
-	gateway.Start()
-	return true
+	return gateway.Start()
 }
 
 // Close : 插件类实现关闭
