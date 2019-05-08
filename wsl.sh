@@ -11,7 +11,7 @@ case $1 in
     "start")
         mkdir -p $CONF_DIR
         ln -sf $SRC_DIR/common/config/framework.toml $CONF_DIR/
-        ln -sf $SRC_DIR/services/login/login.toml $CONF_DIR/
+        ln -sf $SRC_DIR/default_plugins/login/login.toml $CONF_DIR/
         cd $BIN_DIR
         mkdir -p $BIN_DIR/logs
         mkdir -p $BIN_DIR/logs.back

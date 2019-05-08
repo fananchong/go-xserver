@@ -15,7 +15,7 @@ case $1 in
         plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
         mkdir -p $CONF_DIR
         ln -sf $SRC_DIR/common/config/framework.toml $CONF_DIR/
-        ln -sf $SRC_DIR/services/login/login.toml $CONF_DIR/
+        ln -sf $SRC_DIR/default_plugins/login/login.toml $CONF_DIR/
         cd $BIN_DIR
         mkdir -p $BIN_DIR/logs
         mkdir -p $BIN_DIR/logs.back
@@ -48,6 +48,11 @@ case $1 in
         cd $SRC_DIR
         go vet ./...
         echo "start build ..."
+        cd $SRC_DIR/default_plugins
+        plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
+        for plugin_name in $plugins; do
+            go build $FLAGS -buildmode=plugin -o $BIN_DIR/$plugin_name.so ./$plugin_name;
+        done
         cd $SERVICE_DIR
         plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
         for plugin_name in $plugins; do
