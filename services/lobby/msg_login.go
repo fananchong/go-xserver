@@ -141,4 +141,6 @@ func (accountObj *Account) onEnterGame(data []byte) {
 	// TODO: 未加载角色各细节数据，则加载之
 
 	utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_ENTER_GAME), msg)
+
+	Ctx.Infoln("Enter Game Success, account:", accountObj.account, "roleid:", role.Key)
 }

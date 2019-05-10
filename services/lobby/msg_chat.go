@@ -8,10 +8,10 @@ import (
 
 // onChat : 聊天
 func (accountObj *Account) onChat(data []byte) {
-	Ctx.Infoln("Chat, account:", accountObj.account)
+	Ctx.Infoln("Chat, account:", accountObj.account, "roleid:", accountObj.currentRole.Key)
 	msg := &protocol.MSG_LOBBY_CHAT{}
 	if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], msg) == nil {
-		Ctx.Errorln("Message parsing failed, message number is`protocol.MSG_LOBBY_CHAT`(", int(protocol.CMD_LOBBY_CHAT), "). account", accountObj.account)
+		Ctx.Errorln("Message parsing failed, message number is`protocol.MSG_LOBBY_CHAT`(", int(protocol.CMD_LOBBY_CHAT), "). account", accountObj.account, "roleid:", accountObj.currentRole.Key)
 		return
 	}
 	msg.From = accountObj.GetRole().GetName()

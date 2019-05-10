@@ -17,13 +17,15 @@ var _ = math.Inf
 type CMD_GW_ENUM int32
 
 const (
-	CMD_GW_INVALID          CMD_GW_ENUM = 0
-	CMD_GW_PING             CMD_GW_ENUM = 1
-	CMD_GW_REGISTER_SERVER  CMD_GW_ENUM = 2
-	CMD_GW_LOSE_SERVER      CMD_GW_ENUM = 3
-	CMD_GW_REGISTER_ACCOUNT CMD_GW_ENUM = 4
-	CMD_GW_RELAY_CLIENT_MSG CMD_GW_ENUM = 5
-	CMD_GW_LOSE_ACCOUNT     CMD_GW_ENUM = 6
+	CMD_GW_INVALID           CMD_GW_ENUM = 0
+	CMD_GW_PING              CMD_GW_ENUM = 1
+	CMD_GW_REGISTER_SERVER   CMD_GW_ENUM = 2
+	CMD_GW_LOSE_SERVER       CMD_GW_ENUM = 3
+	CMD_GW_REGISTER_ACCOUNT  CMD_GW_ENUM = 4
+	CMD_GW_RELAY_CLIENT_MSG  CMD_GW_ENUM = 5
+	CMD_GW_LOSE_ACCOUNT      CMD_GW_ENUM = 6
+	CMD_GW_RELAY_SERVER_MSG1 CMD_GW_ENUM = 7
+	CMD_GW_RELAY_SERVER_MSG2 CMD_GW_ENUM = 8
 )
 
 var CMD_GW_ENUM_name = map[int32]string{
@@ -34,15 +36,19 @@ var CMD_GW_ENUM_name = map[int32]string{
 	4: "REGISTER_ACCOUNT",
 	5: "RELAY_CLIENT_MSG",
 	6: "LOSE_ACCOUNT",
+	7: "RELAY_SERVER_MSG1",
+	8: "RELAY_SERVER_MSG2",
 }
 var CMD_GW_ENUM_value = map[string]int32{
-	"INVALID":          0,
-	"PING":             1,
-	"REGISTER_SERVER":  2,
-	"LOSE_SERVER":      3,
-	"REGISTER_ACCOUNT": 4,
-	"RELAY_CLIENT_MSG": 5,
-	"LOSE_ACCOUNT":     6,
+	"INVALID":           0,
+	"PING":              1,
+	"REGISTER_SERVER":   2,
+	"LOSE_SERVER":       3,
+	"REGISTER_ACCOUNT":  4,
+	"RELAY_CLIENT_MSG":  5,
+	"LOSE_ACCOUNT":      6,
+	"RELAY_SERVER_MSG1": 7,
+	"RELAY_SERVER_MSG2": 8,
 }
 
 func (x CMD_GW_ENUM) String() string {
@@ -125,11 +131,103 @@ func (m *MSG_GW_LOSE_ACCOUNT) GetAccount() string {
 	return ""
 }
 
+// 中继服务器消息 ( S -> GATEWAY -> S)
+type MSG_RELAY_SERVER_MSG1 struct {
+	SourceID   *SERVER_ID `protobuf:"bytes,1,opt,name=SourceID" json:"SourceID,omitempty"`
+	TargetType uint32     `protobuf:"varint,2,opt,name=TargetType,proto3" json:"TargetType,omitempty"`
+	SendType   uint32     `protobuf:"varint,3,opt,name=SendType,proto3" json:"SendType,omitempty"`
+	CMD        uint32     `protobuf:"varint,4,opt,name=CMD,proto3" json:"CMD,omitempty"`
+	Data       []byte     `protobuf:"bytes,5,opt,name=Data,proto3" json:"Data,omitempty"`
+}
+
+func (m *MSG_RELAY_SERVER_MSG1) Reset()                    { *m = MSG_RELAY_SERVER_MSG1{} }
+func (m *MSG_RELAY_SERVER_MSG1) String() string            { return proto.CompactTextString(m) }
+func (*MSG_RELAY_SERVER_MSG1) ProtoMessage()               {}
+func (*MSG_RELAY_SERVER_MSG1) Descriptor() ([]byte, []int) { return fileDescriptorGateway, []int{4} }
+
+func (m *MSG_RELAY_SERVER_MSG1) GetSourceID() *SERVER_ID {
+	if m != nil {
+		return m.SourceID
+	}
+	return nil
+}
+
+func (m *MSG_RELAY_SERVER_MSG1) GetTargetType() uint32 {
+	if m != nil {
+		return m.TargetType
+	}
+	return 0
+}
+
+func (m *MSG_RELAY_SERVER_MSG1) GetSendType() uint32 {
+	if m != nil {
+		return m.SendType
+	}
+	return 0
+}
+
+func (m *MSG_RELAY_SERVER_MSG1) GetCMD() uint32 {
+	if m != nil {
+		return m.CMD
+	}
+	return 0
+}
+
+func (m *MSG_RELAY_SERVER_MSG1) GetData() []byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
+// 中继服务器消息 ( S -> GATEWAY -> S)
+type MSG_RELAY_SERVER_MSG2 struct {
+	SourceID *SERVER_ID `protobuf:"bytes,1,opt,name=SourceID" json:"SourceID,omitempty"`
+	TargetID *SERVER_ID `protobuf:"bytes,2,opt,name=TargetID" json:"TargetID,omitempty"`
+	CMD      uint32     `protobuf:"varint,3,opt,name=CMD,proto3" json:"CMD,omitempty"`
+	Data     []byte     `protobuf:"bytes,4,opt,name=Data,proto3" json:"Data,omitempty"`
+}
+
+func (m *MSG_RELAY_SERVER_MSG2) Reset()                    { *m = MSG_RELAY_SERVER_MSG2{} }
+func (m *MSG_RELAY_SERVER_MSG2) String() string            { return proto.CompactTextString(m) }
+func (*MSG_RELAY_SERVER_MSG2) ProtoMessage()               {}
+func (*MSG_RELAY_SERVER_MSG2) Descriptor() ([]byte, []int) { return fileDescriptorGateway, []int{5} }
+
+func (m *MSG_RELAY_SERVER_MSG2) GetSourceID() *SERVER_ID {
+	if m != nil {
+		return m.SourceID
+	}
+	return nil
+}
+
+func (m *MSG_RELAY_SERVER_MSG2) GetTargetID() *SERVER_ID {
+	if m != nil {
+		return m.TargetID
+	}
+	return nil
+}
+
+func (m *MSG_RELAY_SERVER_MSG2) GetCMD() uint32 {
+	if m != nil {
+		return m.CMD
+	}
+	return 0
+}
+
+func (m *MSG_RELAY_SERVER_MSG2) GetData() []byte {
+	if m != nil {
+		return m.Data
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*CMD_GW)(nil), "protocol.CMD_GW")
 	proto.RegisterType((*MSG_GW_REGISTER_ACCOUNT)(nil), "protocol.MSG_GW_REGISTER_ACCOUNT")
 	proto.RegisterType((*MSG_GW_RELAY_CLIENT_MSG)(nil), "protocol.MSG_GW_RELAY_CLIENT_MSG")
 	proto.RegisterType((*MSG_GW_LOSE_ACCOUNT)(nil), "protocol.MSG_GW_LOSE_ACCOUNT")
+	proto.RegisterType((*MSG_RELAY_SERVER_MSG1)(nil), "protocol.MSG_RELAY_SERVER_MSG1")
+	proto.RegisterType((*MSG_RELAY_SERVER_MSG2)(nil), "protocol.MSG_RELAY_SERVER_MSG2")
 	proto.RegisterEnum("protocol.CMD_GW_ENUM", CMD_GW_ENUM_name, CMD_GW_ENUM_value)
 }
 func (m *CMD_GW) Marshal() (dAtA []byte, err error) {
@@ -233,6 +331,104 @@ func (m *MSG_GW_LOSE_ACCOUNT) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
+func (m *MSG_RELAY_SERVER_MSG1) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MSG_RELAY_SERVER_MSG1) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.SourceID != nil {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(m.SourceID.Size()))
+		n1, err := m.SourceID.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.TargetType != 0 {
+		dAtA[i] = 0x10
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(m.TargetType))
+	}
+	if m.SendType != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(m.SendType))
+	}
+	if m.CMD != 0 {
+		dAtA[i] = 0x20
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(m.CMD))
+	}
+	if len(m.Data) > 0 {
+		dAtA[i] = 0x2a
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(len(m.Data)))
+		i += copy(dAtA[i:], m.Data)
+	}
+	return i, nil
+}
+
+func (m *MSG_RELAY_SERVER_MSG2) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MSG_RELAY_SERVER_MSG2) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.SourceID != nil {
+		dAtA[i] = 0xa
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(m.SourceID.Size()))
+		n2, err := m.SourceID.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
+	if m.TargetID != nil {
+		dAtA[i] = 0x12
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(m.TargetID.Size()))
+		n3, err := m.TargetID.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n3
+	}
+	if m.CMD != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(m.CMD))
+	}
+	if len(m.Data) > 0 {
+		dAtA[i] = 0x22
+		i++
+		i = encodeVarintGateway(dAtA, i, uint64(len(m.Data)))
+		i += copy(dAtA[i:], m.Data)
+	}
+	return i, nil
+}
+
 func encodeFixed64Gateway(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	dAtA[offset+1] = uint8(v >> 8)
@@ -297,6 +493,50 @@ func (m *MSG_GW_LOSE_ACCOUNT) Size() (n int) {
 	var l int
 	_ = l
 	l = len(m.Account)
+	if l > 0 {
+		n += 1 + l + sovGateway(uint64(l))
+	}
+	return n
+}
+
+func (m *MSG_RELAY_SERVER_MSG1) Size() (n int) {
+	var l int
+	_ = l
+	if m.SourceID != nil {
+		l = m.SourceID.Size()
+		n += 1 + l + sovGateway(uint64(l))
+	}
+	if m.TargetType != 0 {
+		n += 1 + sovGateway(uint64(m.TargetType))
+	}
+	if m.SendType != 0 {
+		n += 1 + sovGateway(uint64(m.SendType))
+	}
+	if m.CMD != 0 {
+		n += 1 + sovGateway(uint64(m.CMD))
+	}
+	l = len(m.Data)
+	if l > 0 {
+		n += 1 + l + sovGateway(uint64(l))
+	}
+	return n
+}
+
+func (m *MSG_RELAY_SERVER_MSG2) Size() (n int) {
+	var l int
+	_ = l
+	if m.SourceID != nil {
+		l = m.SourceID.Size()
+		n += 1 + l + sovGateway(uint64(l))
+	}
+	if m.TargetID != nil {
+		l = m.TargetID.Size()
+		n += 1 + l + sovGateway(uint64(l))
+	}
+	if m.CMD != 0 {
+		n += 1 + sovGateway(uint64(m.CMD))
+	}
+	l = len(m.Data)
 	if l > 0 {
 		n += 1 + l + sovGateway(uint64(l))
 	}
@@ -653,6 +893,343 @@ func (m *MSG_GW_LOSE_ACCOUNT) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *MSG_RELAY_SERVER_MSG1) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGateway
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MSG_RELAY_SERVER_MSG1: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MSG_RELAY_SERVER_MSG1: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceID", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGateway
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.SourceID == nil {
+				m.SourceID = &SERVER_ID{}
+			}
+			if err := m.SourceID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TargetType", wireType)
+			}
+			m.TargetType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TargetType |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SendType", wireType)
+			}
+			m.SendType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SendType |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CMD", wireType)
+			}
+			m.CMD = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CMD |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthGateway
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Data = append(m.Data[:0], dAtA[iNdEx:postIndex]...)
+			if m.Data == nil {
+				m.Data = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGateway(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGateway
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MSG_RELAY_SERVER_MSG2) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGateway
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MSG_RELAY_SERVER_MSG2: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MSG_RELAY_SERVER_MSG2: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SourceID", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGateway
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.SourceID == nil {
+				m.SourceID = &SERVER_ID{}
+			}
+			if err := m.SourceID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TargetID", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGateway
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.TargetID == nil {
+				m.TargetID = &SERVER_ID{}
+			}
+			if err := m.TargetID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CMD", wireType)
+			}
+			m.CMD = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CMD |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGateway
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthGateway
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Data = append(m.Data[:0], dAtA[iNdEx:postIndex]...)
+			if m.Data == nil {
+				m.Data = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGateway(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGateway
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func skipGateway(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0
@@ -761,22 +1338,30 @@ var (
 func init() { proto.RegisterFile("gateway.proto", fileDescriptorGateway) }
 
 var fileDescriptorGateway = []byte{
-	// 272 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0x4f, 0x2c, 0x49,
-	0x2d, 0x4f, 0xac, 0xd4, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x00, 0x53, 0xc9, 0xf9, 0x39,
-	0x4a, 0x3d, 0x8c, 0x5c, 0x6c, 0xce, 0xbe, 0x2e, 0xf1, 0xee, 0xe1, 0x4a, 0x8d, 0x8c, 0x5c, 0x2c,
-	0xae, 0x7e, 0xa1, 0xbe, 0x42, 0xdc, 0x5c, 0xec, 0x9e, 0x7e, 0x61, 0x8e, 0x3e, 0x9e, 0x2e, 0x02,
-	0x0c, 0x42, 0x1c, 0x5c, 0x2c, 0x01, 0x9e, 0x7e, 0xee, 0x02, 0x8c, 0x42, 0xc2, 0x5c, 0xfc, 0x41,
-	0xae, 0xee, 0x9e, 0xc1, 0x21, 0xae, 0x41, 0xf1, 0xc1, 0xae, 0x41, 0x61, 0xae, 0x41, 0x02, 0x4c,
-	0x42, 0xfc, 0x5c, 0xdc, 0x3e, 0xfe, 0xc1, 0xae, 0x30, 0x01, 0x66, 0x21, 0x11, 0x2e, 0x01, 0xb8,
-	0x2a, 0x47, 0x67, 0x67, 0xff, 0x50, 0xbf, 0x10, 0x01, 0x16, 0x88, 0xa8, 0x8f, 0x63, 0x64, 0xbc,
-	0xb3, 0x8f, 0xa7, 0xab, 0x5f, 0x48, 0xbc, 0x6f, 0xb0, 0xbb, 0x00, 0xab, 0x90, 0x00, 0x17, 0x0f,
-	0x58, 0x33, 0x4c, 0x1d, 0x9b, 0x92, 0x31, 0x97, 0xb8, 0x6f, 0xb0, 0x7b, 0xbc, 0x7b, 0x78, 0x3c,
-	0xba, 0x21, 0x42, 0x12, 0x5c, 0xec, 0x8e, 0xc9, 0xc9, 0xf9, 0xa5, 0x79, 0x25, 0x12, 0x8c, 0x0a,
-	0x8c, 0x1a, 0x9c, 0x41, 0x30, 0xae, 0x52, 0x24, 0x92, 0x26, 0x54, 0x3b, 0x70, 0x6b, 0x12, 0x12,
-	0xe0, 0x62, 0x76, 0xf6, 0x75, 0x91, 0x60, 0x52, 0x60, 0xd4, 0xe0, 0x0d, 0x02, 0x31, 0x85, 0x84,
-	0xb8, 0x58, 0x5c, 0x12, 0x4b, 0x12, 0x25, 0x98, 0x15, 0x18, 0x35, 0x78, 0x82, 0xc0, 0x6c, 0x25,
-	0x7d, 0x2e, 0x61, 0xa8, 0xd1, 0xc8, 0x0e, 0xc5, 0x6d, 0xac, 0x93, 0xc0, 0x89, 0x47, 0x72, 0x8c,
-	0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0x43, 0x12, 0x1b, 0x38,
-	0xac, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xd0, 0xfc, 0x08, 0xe7, 0x83, 0x01, 0x00, 0x00,
+	// 397 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x91, 0xc1, 0x6e, 0xaa, 0x40,
+	0x18, 0x85, 0x1d, 0x41, 0xe5, 0xfe, 0x6a, 0x9c, 0x3b, 0x5e, 0x73, 0x89, 0x0b, 0x62, 0x58, 0xb9,
+	0xd2, 0x5c, 0x7d, 0x02, 0x2e, 0x10, 0x32, 0x09, 0x60, 0x33, 0xa0, 0xc6, 0x15, 0xa1, 0x94, 0xb8,
+	0xa9, 0x62, 0x0c, 0xa6, 0xf1, 0x2d, 0xfa, 0x06, 0xdd, 0x77, 0xd3, 0x7d, 0x9f, 0xa0, 0xcb, 0x3e,
+	0x42, 0x63, 0x5f, 0xa4, 0x11, 0xc4, 0xd2, 0x5a, 0x9b, 0x74, 0xc5, 0xcc, 0xf9, 0xcf, 0xf9, 0xf9,
+	0x0e, 0x40, 0x7d, 0xee, 0xc7, 0xe1, 0x8d, 0xbf, 0xed, 0xad, 0xd6, 0x51, 0x1c, 0x11, 0x21, 0x79,
+	0x04, 0xd1, 0x75, 0xbb, 0x16, 0x44, 0x8b, 0x45, 0xb4, 0x4c, 0x75, 0xf9, 0x11, 0x41, 0x59, 0xb5,
+	0x34, 0xcf, 0x98, 0xca, 0x0f, 0x08, 0x78, 0xdd, 0x1e, 0x5b, 0xa4, 0x0a, 0x15, 0x6a, 0x4f, 0x14,
+	0x93, 0x6a, 0xb8, 0x40, 0x04, 0xe0, 0x2f, 0xa8, 0x6d, 0x60, 0x44, 0x9a, 0xd0, 0x60, 0xba, 0x41,
+	0x1d, 0x57, 0x67, 0x9e, 0xa3, 0xb3, 0x89, 0xce, 0x70, 0x91, 0x34, 0xa0, 0x6a, 0x8e, 0x1c, 0x3d,
+	0x13, 0x38, 0xf2, 0x07, 0xf0, 0xd1, 0xa5, 0xa8, 0xea, 0x68, 0x6c, 0xbb, 0x98, 0x4f, 0x55, 0x53,
+	0x99, 0x79, 0xaa, 0x49, 0x75, 0xdb, 0xf5, 0x2c, 0xc7, 0xc0, 0x25, 0x82, 0xa1, 0x96, 0x84, 0x33,
+	0x5f, 0x99, 0xb4, 0xe0, 0x77, 0xea, 0x4b, 0xf7, 0xed, 0x7d, 0xff, 0x70, 0xe5, 0x2b, 0x79, 0x80,
+	0x05, 0x79, 0x08, 0x7f, 0x2d, 0xc7, 0xf0, 0x8c, 0xa9, 0xf7, 0xf9, 0x95, 0x44, 0x84, 0x8a, 0x12,
+	0x04, 0xd1, 0x66, 0x19, 0x8b, 0xa8, 0x83, 0xba, 0xbf, 0x58, 0x76, 0x95, 0x67, 0xb9, 0xd0, 0x47,
+	0xa2, 0xf3, 0x21, 0x82, 0x81, 0x53, 0x2d, 0x4d, 0x2c, 0x76, 0x50, 0xb7, 0xce, 0xf6, 0x47, 0x42,
+	0x80, 0xd7, 0xfc, 0xd8, 0x17, 0xb9, 0x0e, 0xea, 0xd6, 0x58, 0x72, 0x96, 0xfb, 0xd0, 0x3c, 0xac,
+	0xce, 0xd7, 0xfa, 0x86, 0xe5, 0x1e, 0x41, 0x6b, 0x9f, 0x38, 0xe9, 0x4c, 0xfa, 0x20, 0x38, 0xd1,
+	0x66, 0x1d, 0x84, 0x54, 0x4b, 0x42, 0xd5, 0x41, 0xb3, 0x97, 0xfd, 0xc2, 0xde, 0xc1, 0x48, 0x35,
+	0x76, 0x34, 0x11, 0x09, 0xc0, 0xf5, 0xd7, 0xf3, 0x30, 0x76, 0xb7, 0xab, 0xf0, 0x00, 0x9a, 0x53,
+	0x48, 0x1b, 0x04, 0x27, 0x5c, 0x5e, 0x25, 0x53, 0x2e, 0x99, 0x1e, 0xef, 0x59, 0x3b, 0xfe, 0xb4,
+	0x5d, 0x29, 0xd7, 0xee, 0xee, 0x0c, 0xec, 0xe0, 0xe7, 0xb0, 0x7d, 0x10, 0x52, 0x34, 0x9a, 0x7e,
+	0xd3, 0x73, 0x81, 0xcc, 0x94, 0x11, 0x72, 0xa7, 0x84, 0xfc, 0x3b, 0xe1, 0x7f, 0xfc, 0xb4, 0x93,
+	0xd0, 0xf3, 0x4e, 0x42, 0x2f, 0x3b, 0x09, 0xdd, 0xbe, 0x4a, 0x85, 0xcb, 0x72, 0xb2, 0x75, 0xf8,
+	0x16, 0x00, 0x00, 0xff, 0xff, 0x99, 0x5e, 0x01, 0xdb, 0x0e, 0x03, 0x00, 0x00,
 }

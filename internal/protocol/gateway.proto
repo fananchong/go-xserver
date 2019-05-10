@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package protocol;
+import "common.proto";
 
 message CMD_GW {
     enum ENUM {
@@ -11,6 +12,8 @@ message CMD_GW {
         REGISTER_ACCOUNT = 4;               // 注册账号 ( GATEWAY -> S )。只通知账号对应分配的服务
         RELAY_CLIENT_MSG = 5;               // 中继客户端消息 ( GATEWAY -> S / S -> GATEWAY )
         LOSE_ACCOUNT = 6;                   // 丢失账号 ( GATEWAY -> S )。只通知账号对应分配的服务
+        RELAY_SERVER_MSG1 = 7;              // 中继服务器消息 ( S -> GATEWAY -> S)
+        RELAY_SERVER_MSG2 = 8;              // 中继服务器消息 ( S -> GATEWAY -> S)
     }
 }
 
@@ -25,7 +28,7 @@ message CMD_GW {
 
 // 注册账号 ( GATEWAY -> S )。只通知账号对应分配的服务
 message MSG_GW_REGISTER_ACCOUNT {
-    string Account = 1;                      // 账号
+    string Account = 1;                     // 账号
 }
 
 // 中继客户端消息 ( GATEWAY -> S / S -> GATEWAY )
@@ -38,5 +41,22 @@ message MSG_GW_RELAY_CLIENT_MSG {
 
 // 丢失账号 ( GATEWAY -> S )。只通知账号对应分配的服务
 message MSG_GW_LOSE_ACCOUNT {
-    string Account = 1;                      // 账号
+    string Account = 1;                     // 账号
+}
+
+// 中继服务器消息 ( S -> GATEWAY -> S)
+message MSG_RELAY_SERVER_MSG1 {
+    SERVER_ID SourceID = 1;                 // 服务ID（源）
+    uint32 TargetType = 2;                  // 目标服务类型
+    uint32 SendType = 3;                    // 发送类型。 0 广播； 1 随机一个
+    uint32 CMD = 4;                         // 消息号
+    bytes Data = 5;                         // 数据
+}
+
+// 中继服务器消息 ( S -> GATEWAY -> S)
+message MSG_RELAY_SERVER_MSG2 {
+    SERVER_ID SourceID = 1;                 // 服务ID（源）
+    SERVER_ID TargetID = 2;                 // 服务ID（目标）
+    uint32 CMD = 3;                         // 消息号
+    bytes Data = 4;                         // 数据
 }

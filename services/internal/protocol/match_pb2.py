@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0bmatch.proto\x12\x08protocol\x1a\x12lobby_custom.proto\">\n\tCMD_MATCH\"1\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05MATCH\x10\x01\x12\x11\n\x0cMSGCMDOFFSET\x10\x88\'\";\n\x17\x45NUM_MATCH_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"!\n\x0fMSG_MATCH_MATCH\x12\x0e\n\x06RoleID\x18\x01 \x01(\x04\"v\n\x16MSG_MATCH_MATCH_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_MATCH_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFOb\x06proto3')
+  serialized_pb=_b('\n\x0bmatch.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"+\n\tCMD_MATCH\"\x1e\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05MATCH\x10\x01\";\n\x17\x45NUM_MATCH_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"!\n\x0fMSG_MATCH_MATCH\x12\x0e\n\x06RoleID\x18\x01 \x01(\x04\"v\n\x16MSG_MATCH_MATCH_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_MATCH_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFOb\x06proto3')
   ,
   dependencies=[lobby__custom__pb2.DESCRIPTOR,])
 
@@ -40,15 +40,11 @@ _CMD_MATCH_ENUM = _descriptor.EnumDescriptor(
       name='MATCH', index=1, number=1,
       options=None,
       type=None),
-    _descriptor.EnumValueDescriptor(
-      name='MSGCMDOFFSET', index=2, number=5000,
-      options=None,
-      type=None),
   ],
   containing_type=None,
   options=None,
   serialized_start=58,
-  serialized_end=107,
+  serialized_end=88,
 )
 _sym_db.RegisterEnumDescriptor(_CMD_MATCH_ENUM)
 
@@ -69,8 +65,8 @@ _ENUM_MATCH_COMMON_ERROR_ENUM = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=136,
-  serialized_end=168,
+  serialized_start=117,
+  serialized_end=149,
 )
 _sym_db.RegisterEnumDescriptor(_ENUM_MATCH_COMMON_ERROR_ENUM)
 
@@ -96,7 +92,7 @@ _CMD_MATCH = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=45,
-  serialized_end=107,
+  serialized_end=88,
 )
 
 
@@ -120,8 +116,8 @@ _ENUM_MATCH_COMMON_ERROR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=109,
-  serialized_end=168,
+  serialized_start=90,
+  serialized_end=149,
 )
 
 
@@ -151,8 +147,8 @@ _MSG_MATCH_MATCH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=170,
-  serialized_end=203,
+  serialized_start=151,
+  serialized_end=184,
 )
 
 
@@ -189,8 +185,8 @@ _MSG_MATCH_MATCH_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=205,
-  serialized_end=323,
+  serialized_start=186,
+  serialized_end=304,
 )
 
 _CMD_MATCH_ENUM.containing_type = _CMD_MATCH

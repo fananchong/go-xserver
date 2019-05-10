@@ -37,6 +37,8 @@ type NodeID uuid.UUID
 //  RegisterFuncOnRelayMsg(f FuncTypeOnRelayMsg)                                   // 【4】注册自定义处理 Gateway 中继过来的消息
 //  SendMsgToClient(account string, cmd uint64, data []byte) bool                  // 【5】发送消息给客户端，通过 Gateway 中继
 //  BroadcastMsgToClient(cmd uint64, data []byte) bool                             // 【5】广播消息给客户端，通过 Gateway 中继
+//	SendMsgToServer(t config.NodeType, cmd uint64, data []byte) bool               // 【5】发送消息给某类型服务（随机一个）
+//	BroadcastMsgToServer(t config.NodeType, cmd uint64, data []byte) bool          // 【5】广播消息给某类型服务
 //  RegisterFuncOnLoseAccount(f FuncTypeOnLoseAccount)                             // 【6】注册自定义处理`丢失账号`
 // }
 

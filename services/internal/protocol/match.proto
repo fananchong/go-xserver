@@ -7,7 +7,6 @@ message CMD_MATCH {
     enum ENUM {
         INVALID = 0;                                    // 未定义
         MATCH = 1;                                      // 请求匹配 ( LOBBY -> MATCH )
-        MSGCMDOFFSET = 5000;                            // 消息号偏移量。如发送 `MSG_MATCH_MATCH` 消息时，实际发送消息号为： MSGCMDOFFSET + MATCH
     }
 }
 

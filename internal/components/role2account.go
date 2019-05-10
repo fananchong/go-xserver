@@ -5,9 +5,8 @@ import (
 	"time"
 
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
-	"github.com/fananchong/go-xserver/internal/db"
-
 	"github.com/fananchong/go-xserver/common"
+	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/utils"
 )
 

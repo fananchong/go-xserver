@@ -120,7 +120,7 @@ func getMgrInfoByBlock(ctx *common.Context) (string, int32) {
 		if err := data.Load(); err == nil {
 			break
 		} else {
-			ctx.Errorln(err)
+			ctx.Errorln("Get management server information fail. error:", err.Error())
 			time.Sleep(1 * time.Second)
 		}
 	}
@@ -193,5 +193,17 @@ func (sess *Session) BroadcastMsgToClient(cmd uint64, data []byte) bool {
 		msgRelay.Data = data
 		targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 	})
+	return true
+}
+
+// SendMsgToServer : 发送消息给某类型服务（随机一个）
+func (sess *Session) SendMsgToServer(t config.NodeType, cmd uint64, data []byte) bool {
+	// TODO:
+	return true
+}
+
+// BroadcastMsgToServer : 广播消息给某类型服务
+func (sess *Session) BroadcastMsgToServer(t config.NodeType, cmd uint64, data []byte) bool {
+	// TODO:
 	return true
 }

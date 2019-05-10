@@ -106,6 +106,7 @@ func (login *Login) loginByDefault(account, password string) context.LoginErrCod
 	if err := accountObj.Load(); err != nil {
 		// 新建账号
 		if err != go_redis_orm.ERR_ISNOT_EXIST_KEY {
+			login.ctx.Errorln(err, "account:", account)
 			return context.LoginSystemError
 		}
 		accountObj.SetPasswd(password)
