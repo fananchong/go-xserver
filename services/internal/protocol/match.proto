@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package protocol;
+import "lobby_custom.proto";
+
+message CMD_MATCH {
+    enum ENUM {
+        INVALID = 0;                                    // 未定义
+        MATCH = 1;                                      // 请求匹配 ( LOBBY -> MATCH )
+        MSGCMDOFFSET = 5000;                            // 消息号偏移量。如发送 `MSG_MATCH_MATCH` 消息时，实际发送消息号为： MSGCMDOFFSET + MATCH
+    }
+}
+
+message ENUM_MATCH_COMMON_ERROR {
+    enum ENUM {
+        OK = 0;                                         // 没有错误
+        SYSTEM_ERROR = 1;                               // 系统错误
+    }
+}
+
+// 请求匹配 ( LOBBY -> MATCH )
+message MSG_MATCH_MATCH {
+    uint64 RoleID = 1;                                  // 角色ID
+}
+
+message MSG_MATCH_MATCH_RESULT {
+    ENUM_MATCH_COMMON_ERROR.ENUM Err = 1;               // 0:成功；非0错误号
+    repeated ROLE_BASE_INFO Roles = 2;                  // 角色列表
+}
