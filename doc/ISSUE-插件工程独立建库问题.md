@@ -15,10 +15,12 @@ go-xserver 已经把缺省插件移至 https://github.com/fananchong/go-xserver-
 2. 切最新稳定版
 3. 注释 [go/src/runtime/plugin.go](https://github.com/golang/go/blob/50bd1c4d4eb4fac8ddeb5f063c099daccfb71b26/src/runtime/plugin.go) 文件中：
     ```go
-    if pmd.pluginpath == md.pluginpath {
-      md.bad = true
-      return "", nil, "plugin already loaded"
-    }
+	for _, pkghash := range md.pkghashes {
+		if pkghash.linktimehash != *pkghash.runtimehash {
+			md.bad = true
+			return "", nil, "plugin was built with a different version of package " + pkghash.modulename
+		}
+	}
     ```
 4. 编译 go 代码
 5. 使用编译出来的 go 程序编译 go-xserver
