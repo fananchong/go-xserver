@@ -111,6 +111,14 @@ func (node *Node) SendMsgToServer(t config.NodeType, cmd uint64, data []byte) bo
 	panic("")
 }
 
+// ReplyMsgToServer : 回发消息给请求服务器
+func (node *Node) ReplyMsgToServer(cmd uint64, data []byte) bool {
+	// Gateway 、 MgrServer 调用该接口会 panic
+	//    - Gateway 不需要这个接口，没有意义
+	//    - MgrServer 如果有需求需要通过 Gateway 给客户端消息，则可以实现之。优先级太低了！
+	panic("")
+}
+
 // BroadcastMsgToServer : 广播消息给某类型服务
 func (node *Node) BroadcastMsgToServer(t config.NodeType, cmd uint64, data []byte) bool {
 	// Gateway 、 MgrServer 调用该接口会 panic

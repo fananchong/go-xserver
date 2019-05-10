@@ -17,8 +17,9 @@ import (
 // Session : 网络会话类
 type Session struct {
 	*nodecommon.SessionBase
-	GWMgr    *IntranetSessionMgr
-	shutdown int32
+	GWMgr       *IntranetSessionMgr
+	shutdown    int32
+	ReqServerID *protocol.SERVER_ID
 }
 
 // NewSession : 网络会话类的构造函数
@@ -198,12 +199,47 @@ func (sess *Session) BroadcastMsgToClient(cmd uint64, data []byte) bool {
 
 // SendMsgToServer : 发送消息给某类型服务（随机一个）
 func (sess *Session) SendMsgToServer(t config.NodeType, cmd uint64, data []byte) bool {
-	// TODO:
-	return true
+	gw := sess.SessMgr.SelectOne(config.Gateway)
+	if gw != nil {
+		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
+		msgRelay.SourceID = nodecommon.NodeID2ServerID(sess.GetID())
+		msgRelay.TargetType = uint32(t)
+		msgRelay.SendType = protocol.RELAY_SERVER_MSG_TYPE_RANDOM
+		msgRelay.CMD = uint32(cmd)
+		msgRelay.Data = data
+		return gw.SendMsg(uint64(protocol.CMD_GW_RELAY_SERVER_MSG1), msgRelay)
+	}
+	return false
+}
+
+// ReplyMsgToServer : 回发消息给请求服务器
+func (sess *Session) ReplyMsgToServer(cmd uint64, data []byte) bool {
+	if sess.ReqServerID == nil {
+		return false
+	}
+	gw := sess.SessMgr.SelectOne(config.Gateway)
+	if gw != nil {
+		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
+		msgRelay.SourceID = nodecommon.NodeID2ServerID(sess.GetID())
+		msgRelay.TargetID = sess.ReqServerID
+		msgRelay.CMD = uint32(cmd)
+		msgRelay.Data = data
+		return gw.SendMsg(uint64(protocol.CMD_GW_RELAY_SERVER_MSG2), msgRelay)
+	}
+	return false
 }
 
 // BroadcastMsgToServer : 广播消息给某类型服务
 func (sess *Session) BroadcastMsgToServer(t config.NodeType, cmd uint64, data []byte) bool {
-	// TODO:
-	return true
+	gw := sess.SessMgr.SelectOne(config.Gateway)
+	if gw != nil {
+		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
+		msgRelay.SourceID = nodecommon.NodeID2ServerID(sess.GetID())
+		msgRelay.TargetType = uint32(t)
+		msgRelay.SendType = protocol.RELAY_SERVER_MSG_TYPE_BROADCAST
+		msgRelay.CMD = uint32(cmd)
+		msgRelay.Data = data
+		return gw.SendMsg(uint64(protocol.CMD_GW_RELAY_SERVER_MSG1), msgRelay)
+	}
+	return false
 }
