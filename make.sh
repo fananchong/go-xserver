@@ -11,8 +11,6 @@ FLAGS=-race
 
 case $1 in
     "start")
-        cd $SERVICE_DIR
-        plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
         mkdir -p $CONF_DIR
         ln -sf $SRC_DIR/common/config/framework.toml $CONF_DIR/
         ln -sf $SRC_DIR/default_plugins/login/login.toml $CONF_DIR/
@@ -22,6 +20,7 @@ case $1 in
         if [[ `ls -l ./logs | wc -l` > 1  ]]; then
             mv -f ./logs/* ./logs.back/
         fi
+        plugins=`ls | grep .so | awk -F"." '{print $1}'`
         for plugin_name in $plugins; do
             c=1
             if [[ $plugin_name != "mgr" ]]; then
