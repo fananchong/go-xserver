@@ -46,7 +46,7 @@ func BroadcastMsgToClient(ctx *common.Context, cmd uint64, msg proto.Message) (b
 
 // SendMsgToServer : 发送消息给某类型服务（随机一个）
 func SendMsgToServer(ctx *common.Context, t config.NodeType, cmd uint64, msg proto.Message) (bool, error) {
-	data, flag, err := gotcp.Encode(cmd, msg)
+	data, flag, err := gotcp.EncodeCmd(cmd, msg)
 	if err != nil {
 		return false, err
 	}
@@ -59,7 +59,7 @@ func SendMsgToServer(ctx *common.Context, t config.NodeType, cmd uint64, msg pro
 
 // ReplyMsgToServer : 回发消息给请求服务器
 func ReplyMsgToServer(ctx *common.Context, cmd uint64, msg proto.Message) (bool, error) {
-	data, flag, err := gotcp.Encode(cmd, msg)
+	data, flag, err := gotcp.EncodeCmd(cmd, msg)
 	if err != nil {
 		return false, err
 	}
@@ -72,7 +72,7 @@ func ReplyMsgToServer(ctx *common.Context, cmd uint64, msg proto.Message) (bool,
 
 // BroadcastMsgToServer : 广播消息给某类型服务
 func BroadcastMsgToServer(ctx *common.Context, t config.NodeType, cmd uint64, msg proto.Message) (bool, error) {
-	data, flag, err := gotcp.Encode(cmd, msg)
+	data, flag, err := gotcp.EncodeCmd(cmd, msg)
 	if err != nil {
 		return false, err
 	}

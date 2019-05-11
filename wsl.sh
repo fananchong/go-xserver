@@ -19,15 +19,16 @@ case $1 in
             mv -f ./logs/* ./logs.back/
         fi
         nohup ./go-xserver --app mgr --network-port '0,30000' --common-logflushinterval 200 > /dev/null 2>&1 &
-        nohup ./go-xserver --app login --network-port '7500,0' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
-        nohup ./go-xserver --app login --network-port '7501,0' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
-        nohup ./go-xserver --app login --network-port '7502,0' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
-        nohup ./go-xserver --app gateway --network-port '7600,36001' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
-        nohup ./go-xserver --app gateway --network-port '7601,36002' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
-        nohup ./go-xserver --app gateway --network-port '7602,36003' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
-        nohup ./go-xserver --app lobby --network-port '7700,0' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
-        nohup ./go-xserver --app lobby --network-port '7701,0' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
-        nohup ./go-xserver --app lobby --network-port '7702,0' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
+        nohup ./go-xserver --app login --network-port '7200,0' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
+        nohup ./go-xserver --app login --network-port '7201,0' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
+        nohup ./go-xserver --app login --network-port '7202,0' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7300,33001' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7301,33002' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7302,33003' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
+        nohup ./go-xserver --app lobby --network-port '7400,0' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
+        nohup ./go-xserver --app lobby --network-port '7401,0' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
+        nohup ./go-xserver --app lobby --network-port '7402,0' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
+        nohup ./go-xserver --app match --network-port '7500,0' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
         sleep 1s
         ps -ux | grep go-xserver
         exit 0
