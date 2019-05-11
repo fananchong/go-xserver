@@ -93,7 +93,9 @@
   - 消息加解密
 - 框架层
   - 代码整理，加强代码可读性
-  - NodeID 不再使用 UUID， 改为 type * offset + id , 方便阅读 log 、 调试
+  - NodeID 不再使用 UUID， 改为 type * offset + id , 方便阅读 log 、 调试 （优先级高）
+  - 中继消息报文隐晦的把 Flag 字段附加在 data 尾部，需要被取缔；统一客户端消息中继、服务器组内消息中继使用界面 （优先级高）
+  - FuncTypeOnRelayMsg 、 ReplyMsgToServer 接口调整，需要参数 NODEID （优先级高）
 - 大厅服、匹配服、房间服独立建库，并制作 1 小游戏，作为使用 go-xserver 的例子项目
   - 服务器组内通信全部完成后，再迁出来。这时 go-xserver 可以设置版本号 v1.0
 
