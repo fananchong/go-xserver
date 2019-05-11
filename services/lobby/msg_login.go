@@ -30,7 +30,7 @@ func (accountObj *Account) onCreateRole(data []byte) {
 	Ctx.Infoln("Create role, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_CREATE_ROLE{}
 	if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], req) == nil {
-		Ctx.Errorln("Message parsing failed, message number is`protocol.MSG_LOBBY_CREATE_ROLE`(", int(protocol.CMD_LOBBY_CREATE_ROLE), "). account", accountObj.account)
+		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_CREATE_ROLE`(", int(protocol.CMD_LOBBY_CREATE_ROLE), "). account", accountObj.account)
 		return
 	}
 
@@ -111,7 +111,7 @@ func (accountObj *Account) onEnterGame(data []byte) {
 	Ctx.Infoln("Enter Game, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_ENTER_GAME{}
 	if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], req) == nil {
-		Ctx.Errorln("Message parsing failed, message number is`protocol.MSG_LOBBY_ENTER_GAME`(", int(protocol.CMD_LOBBY_ENTER_GAME), "). account", accountObj.account)
+		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_ENTER_GAME`(", int(protocol.CMD_LOBBY_ENTER_GAME), "). account", accountObj.account)
 		return
 	}
 

@@ -53,16 +53,18 @@ message RELAY_SERVER_MSG_TYPE {
 }
 message MSG_GW_RELAY_SERVER_MSG1 {
     SERVER_ID SourceID = 1;                 // 服务ID（源）
-    uint32 TargetType = 2;                  // 目标服务类型
-    RELAY_SERVER_MSG_TYPE.ENUM SendType = 3;// 发送类型。 0 广播； 1 随机一个
-    uint32 CMD = 4;                         // 消息号
-    bytes Data = 5;                         // 数据
+    uint32 SourceType = 2;                  // 服务类型（源）
+    uint32 TargetType = 3;                  // 服务类型（目标）
+    RELAY_SERVER_MSG_TYPE.ENUM SendType = 4;// 发送类型。 0 广播； 1 随机一个
+    uint32 CMD = 5;                         // 消息号
+    bytes Data = 6;                         // 数据
 }
 
 // 中继服务器消息 ( S -> GATEWAY -> S)
 message MSG_GW_RELAY_SERVER_MSG2 {
     SERVER_ID SourceID = 1;                 // 服务ID（源）
-    SERVER_ID TargetID = 2;                 // 服务ID（目标）
-    uint32 CMD = 3;                         // 消息号
-    bytes Data = 4;                         // 数据
+    uint32 SourceType = 2;                  // 服务类型（源）
+    SERVER_ID TargetID = 3;                 // 服务ID（目标）
+    uint32 CMD = 4;                         // 消息号
+    bytes Data = 5;                         // 数据
 }

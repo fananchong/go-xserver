@@ -203,6 +203,7 @@ func (sess *Session) SendMsgToServer(t config.NodeType, cmd uint64, data []byte)
 	if gw != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
 		msgRelay.SourceID = nodecommon.NodeID2ServerID(sess.GetID())
+		msgRelay.SourceType = uint32(sess.GetType())
 		msgRelay.TargetType = uint32(t)
 		msgRelay.SendType = protocol.RELAY_SERVER_MSG_TYPE_RANDOM
 		msgRelay.CMD = uint32(cmd)
@@ -221,6 +222,7 @@ func (sess *Session) ReplyMsgToServer(cmd uint64, data []byte) bool {
 	if gw != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
 		msgRelay.SourceID = nodecommon.NodeID2ServerID(sess.GetID())
+		msgRelay.SourceType = uint32(sess.GetType())
 		msgRelay.TargetID = sess.ReqServerID
 		msgRelay.CMD = uint32(cmd)
 		msgRelay.Data = data
@@ -235,6 +237,7 @@ func (sess *Session) BroadcastMsgToServer(t config.NodeType, cmd uint64, data []
 	if gw != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
 		msgRelay.SourceID = nodecommon.NodeID2ServerID(sess.GetID())
+		msgRelay.SourceType = uint32(sess.GetType())
 		msgRelay.TargetType = uint32(t)
 		msgRelay.SendType = protocol.RELAY_SERVER_MSG_TYPE_BROADCAST
 		msgRelay.CMD = uint32(cmd)

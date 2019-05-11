@@ -71,13 +71,6 @@ func (sess *IntranetSession) DoClose(sessbase *nodecommon.SessionBase) {
 func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	done = true
 	switch protocol.CMD_GW_ENUM(cmd) {
-	case protocol.CMD_GW_REGISTER_ACCOUNT:
-		msg := &protocol.MSG_GW_REGISTER_ACCOUNT{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.MSG_GW_REGISTER_ACCOUNT`(", int(protocol.CMD_GW_REGISTER_ACCOUNT), ")")
-			return
-		}
-		sess.sourceSess.GWMgr.AddUser(msg.Account, sess.SessionBase)
 	case protocol.CMD_GW_RELAY_CLIENT_MSG:
 		f := sess.FuncOnRelayMsg()
 		if f == nil {
@@ -86,10 +79,51 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		}
 		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.MSG_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
+			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			return
 		}
 		f(config.Client, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+	case protocol.CMD_GW_RELAY_SERVER_MSG1:
+		f := sess.FuncOnRelayMsg()
+		if f == nil {
+			sess.Ctx.Errorln("There is no handler function, the handler function is `FuncOnRelayMsg`")
+			return
+		}
+		msg := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_SERVER_MSG1`(", int(protocol.CMD_GW_RELAY_SERVER_MSG1), ")")
+			return
+		}
+		if msg.GetTargetType() != uint32(sess.sourceSess.GetType()) {
+			sess.Ctx.Errorln("Field 'TargetType' error. TargetType:", msg.GetTargetType(), "SessType:", sess.sourceSess.GetType())
+			return
+		}
+		sess.sourceSess.ReqServerID = msg.GetSourceID()
+		f(config.NodeType(msg.GetSourceType()), "", uint64(msg.GetCMD()), msg.GetData())
+	case protocol.CMD_GW_RELAY_SERVER_MSG2:
+		f := sess.FuncOnRelayMsg()
+		if f == nil {
+			sess.Ctx.Errorln("There is no handler function, the handler function is `FuncOnRelayMsg`")
+			return
+		}
+		msg := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_SERVER_MSG2`(", int(protocol.CMD_GW_RELAY_SERVER_MSG2), ")")
+			return
+		}
+		if !nodecommon.EqualSID(msg.GetTargetID(), nodecommon.NodeID2ServerID(sess.sourceSess.GetID())) {
+			sess.Ctx.Errorln("Field 'TargetID' error. TargetID:", msg.GetTargetID(), "SessID:", sess.sourceSess.GetID())
+			return
+		}
+		sess.sourceSess.ReqServerID = msg.GetSourceID()
+		f(config.NodeType(msg.GetSourceType()), "", uint64(msg.GetCMD()), msg.GetData())
+	case protocol.CMD_GW_REGISTER_ACCOUNT:
+		msg := &protocol.MSG_GW_REGISTER_ACCOUNT{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_REGISTER_ACCOUNT`(", int(protocol.CMD_GW_REGISTER_ACCOUNT), ")")
+			return
+		}
+		sess.sourceSess.GWMgr.AddUser(msg.Account, sess.SessionBase)
 	case protocol.CMD_GW_LOSE_ACCOUNT:
 		f := sess.FuncOnLoseAccount()
 		if f == nil {
@@ -98,7 +132,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		}
 		msg := &protocol.MSG_GW_LOSE_ACCOUNT{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {
-			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.MSG_GW_LOSE_ACCOUNT`(", int(protocol.CMD_GW_LOSE_ACCOUNT), ")")
+			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_LOSE_ACCOUNT`(", int(protocol.CMD_GW_LOSE_ACCOUNT), ")")
 			return
 		}
 		f(msg.Account)

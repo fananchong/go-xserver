@@ -86,6 +86,47 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config().Common.MsgCmdOffset),
 				msg.GetData())
 		}
+	case protocol.CMD_GW_RELAY_SERVER_MSG1:
+		msg := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_SERVER_MSG1`(", int(protocol.CMD_GW_RELAY_SERVER_MSG1), ")")
+			done = false
+			return
+		}
+		if msg.GetSendType() == protocol.RELAY_SERVER_MSG_TYPE_BROADCAST {
+			sess.SessMgr.ForByType(config.NodeType(msg.GetTargetType()), func(targetSess *nodecommon.SessionBase) {
+				targetSess.Send(data, flag)
+			})
+		} else if msg.GetSendType() == protocol.RELAY_SERVER_MSG_TYPE_RANDOM {
+			targetSess := sess.SessMgr.SelectOne(config.NodeType(msg.GetTargetType()))
+			if targetSess != nil {
+				targetSess.Send(data, flag)
+			} else {
+				sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetType:", msg.GetTargetType())
+				done = false
+				return
+			}
+		} else {
+			sess.Ctx.Errorln("Field 'send type' error, value:", msg.GetSendType(), "cmd:", msg.GetCMD(), "targetType:", msg.GetTargetType())
+			done = false
+			return
+		}
+	case protocol.CMD_GW_RELAY_SERVER_MSG2:
+		msg := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
+			sess.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_SERVER_MSG2`(", int(protocol.CMD_GW_RELAY_SERVER_MSG2), ")")
+			done = false
+			return
+		}
+		id := nodecommon.ServerID2NodeID(msg.GetTargetID())
+		targetSess := sess.SessMgr.GetByID(id)
+		if targetSess != nil {
+			targetSess.Send(data, flag)
+		} else {
+			sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetServerID:", nodecommon.NodeID2UUID(id).String())
+			done = false
+			return
+		}
 	default:
 		done = false
 	}
