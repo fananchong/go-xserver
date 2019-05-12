@@ -16,7 +16,7 @@
   ./make.sh
   ```
 
-- 【非必须】 Windows 10 下开发，请参考[在 Win10 中 Linux 环境搭建](doc/编译-在Win10中Linux环境搭建.md)
+- 【非必须】 Windows 10 下开发，请参考[在 Win10 中 Linux 环境搭建](doc/WIKI-在Win10中Linux环境搭建.md)
 
 
 ## 运行
