@@ -23,7 +23,7 @@ case $1 in
         plugins=`ls | grep .so | awk -F"." '{print $1}'`
         for plugin_name in $plugins; do
             c=1
-            if [[ $plugin_name != "mgr" ]]; then
+            if [[ $plugin_name != "mgr" && $plugin_name != "match" ]]; then
                 c=3
             fi
             for (( i=1; i<=$c; i++ )); do
@@ -48,7 +48,7 @@ case $1 in
         go vet ./...
         echo "start build ..."
         cd $SRC_DIR/default_plugins
-        plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal'`
+        plugins=`ls -l | grep '^d' | awk '{print $9}' | grep -v 'internal\|bin'`
         for plugin_name in $plugins; do
             go build $FLAGS -buildmode=plugin -o $BIN_DIR/$plugin_name.so ./$plugin_name;
         done
