@@ -3,6 +3,7 @@ package nodecommon
 import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/common/context"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
@@ -105,7 +106,7 @@ func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 }
 
 // RegisterSelf : 注册自己
-func (sessbase *SessionBase) RegisterSelf(id NodeID, selfType config.NodeType, targetServerType config.NodeType) {
+func (sessbase *SessionBase) RegisterSelf(id context.NodeID, selfType config.NodeType, targetServerType config.NodeType) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = NodeID2ServerID(id)

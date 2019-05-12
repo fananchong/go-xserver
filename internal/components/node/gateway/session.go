@@ -37,8 +37,8 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
 	if nodecommon.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
 		sess.Ctx.Errorln("Service ID is different.")
-		sess.Ctx.Errorln("sess.Info.GetId() :", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
-		sess.Ctx.Errorln("msg.GetData().GetId() :", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
+		sess.Ctx.Errorln("sess.Info.GetId() :", sess.Info.GetId().GetID())
+		sess.Ctx.Errorln("msg.GetData().GetId() :", msg.GetData().GetId().GetID())
 		sess.Close()
 		return
 	}
@@ -49,7 +49,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	}
 	sess.Info = msg.GetData()
 	sess.SessMgr.Register(sess.SessionBase)
-	sess.Ctx.Infoln("The service node registers with me, the node ID is", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Infoln("The service node registers with me, the node ID is",msg.GetData().GetId().GetID())
 	sess.Ctx.Infoln(sess.Info)
 }
 
@@ -61,7 +61,7 @@ func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag
 func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 	if sess.SessionBase == sessbase && sessbase.Info != nil {
 		sess.SessMgr.Lose1(sessbase)
-		sess.Ctx.Infoln("Service node loses connection, type:", sess.Info.GetType(), "id:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
+		sess.Ctx.Infoln("Service node loses connection, type:", sess.Info.GetType(), "id:", sess.Info.GetId().GetID())
 	}
 }
 
@@ -123,7 +123,7 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		if targetSess != nil {
 			targetSess.Send(data, flag)
 		} else {
-			sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetServerID:", nodecommon.NodeID2UUID(id).String())
+			sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetServerID:",id)
 			done = false
 			return
 		}

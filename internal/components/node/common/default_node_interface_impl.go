@@ -8,14 +8,10 @@ import (
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/gogo/protobuf/proto"
-	uuid "github.com/satori/go.uuid"
 )
 
-// NodeID : 节点ID类型
-type NodeID uuid.UUID
-
 // type INode interface {
-// 	GetID() NodeID                                                                 // 【1】获取节点ID
+// 	GetID() context.NodeID                                                         // 【1】获取节点ID
 // 	GetType() NodeType                                                             // 【1】获取节点类型
 // 	GetIP(i IPType) string                                                         // 【1】获取IP
 // 	GetPort(i int) int32                                                           // 【1】获取端口
@@ -24,13 +20,13 @@ type NodeID uuid.UUID
 // 	GetNodeOne(nodeType NodeType) INode                                            // 【2】根据节点类型，随机选择 1 节点
 // 	GetNodeList(nodeType NodeType) []INode                                         // 【2】获取某类型节点列表
 // 	GetNodeAll() []INode                                                           // 【2】获取所有节点
-// 	GetNode(nodeID NodeID) INode                                                   // 【2】获取节点
-// 	HaveNode(nodeID NodeID) bool                                                   // 【2】是否有节点
+// 	GetNode(nodeID context.NodeID) INode                                           // 【2】获取节点
+// 	HaveNode(nodeID context.NodeID) bool                                           // 【2】是否有节点
 // 	PrintNodeInfo(log ILogger, nodeType NodeType)                                  // 【2】打印节点信息
 // 	PrintAllNodeInfo(log ILogger)                                                  // 【2】打印节点信息
 // 	SendOne(nodeType NodeType, cmd uint64, msg proto.Message) bool                 // 【3】根据节点类型，随机选择 1 节点，发送数据
 // 	SendByType(nodeType NodeType, cmd uint64, msg proto.Message, excludeSelf bool) // 【3】对某类型节点，广播数据
-// 	SendByID(nodeID NodeID, cmd uint64, msg proto.Message) bool                    // 【3】往指定节点，发送数据
+// 	SendByID(nodeID context.NodeID, cmd uint64, msg proto.Message) bool            // 【3】往指定节点，发送数据
 // 	SendMsg(cmd uint64, msg proto.Message) bool                                    // 【3】往该节点，发送数据
 // 	SendAll(cmd uint64, msg proto.Message, excludeSelf bool)                       // 【3】对服务器组，广播数据
 //  EnableMessageRelay(v bool)                                                     // 【4】开启消息中继功能。开启该功能的节点，会连接 Gateway 。 C -> Gateway -> Node ; Node1 -> Gateway -> Node2(s)
@@ -46,7 +42,7 @@ type NodeID uuid.UUID
 // DefaultNodeInterfaceImpl : 缺省的节点接口实现
 type DefaultNodeInterfaceImpl struct {
 	Info               *protocol.SERVER_INFO
-	nid                NodeID
+	nid                context.NodeID
 	once               sync.Once
 	enableMessageReply bool
 	SessMgr            *SessionMgr
@@ -55,14 +51,14 @@ type DefaultNodeInterfaceImpl struct {
 }
 
 // GetID : 获取本节点信息，节点ID
-func (impl *DefaultNodeInterfaceImpl) GetID() NodeID {
+func (impl *DefaultNodeInterfaceImpl) GetID() context.NodeID {
 	if impl.Info != nil {
 		impl.once.Do(func() {
 			impl.nid = ServerID2NodeID(impl.Info.GetId())
 		})
 		return impl.nid
 	}
-	return NodeID{}
+	return context.NodeID(0)
 }
 
 // GetType : 获取节点类型
@@ -141,13 +137,13 @@ func (impl *DefaultNodeInterfaceImpl) GetNodeAll() []*SessionBase {
 }
 
 // HaveNode : 是否有节点
-func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID NodeID) bool {
+func (impl *DefaultNodeInterfaceImpl) HaveNode(nodeID context.NodeID) bool {
 	node := impl.SessMgr.GetByID(nodeID)
 	return node != nil
 }
 
 // GetNode : 获取节点
-func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID NodeID) *SessionBase {
+func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID context.NodeID) *SessionBase {
 	node := impl.SessMgr.GetByID(nodeID)
 	if node != nil {
 		return node
@@ -159,7 +155,7 @@ func (impl *DefaultNodeInterfaceImpl) GetNode(nodeID NodeID) *SessionBase {
 func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log context.ILogger, nodeType config.NodeType) {
 	log.Infoln("==========================================================================================================")
 	for _, v := range impl.GetNodeList(nodeType) {
-		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
+		log.Infoln("id:", v.GetID(), "type:",
 			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
 			v.GetIP(utils.IPINNER), "ip1:", v.GetIP(utils.IPOUTER))
 	}
@@ -170,7 +166,7 @@ func (impl *DefaultNodeInterfaceImpl) PrintNodeInfo(log context.ILogger, nodeTyp
 func (impl *DefaultNodeInterfaceImpl) PrintAllNodeInfo(log context.ILogger) {
 	log.Infoln("==========================================================================================================")
 	for _, v := range impl.GetNodeAll() {
-		log.Infoln("id:", NodeID2UUID(v.GetID()).String(), "type:",
+		log.Infoln("id:", v.GetID(), "type:",
 			v.GetType(), "port0:", v.GetPort(0), "port1:", v.GetPort(1), "ip0:",
 			v.GetIP(utils.IPINNER), "ip1:", v.GetIP(utils.IPOUTER))
 	}
@@ -196,7 +192,7 @@ func (impl *DefaultNodeInterfaceImpl) SendByType(nodeType config.NodeType, cmd u
 }
 
 // SendByID : 往指定节点，发送数据
-func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID NodeID, cmd uint64, msg proto.Message) bool {
+func (impl *DefaultNodeInterfaceImpl) SendByID(nodeID context.NodeID, cmd uint64, msg proto.Message) bool {
 	if sess := impl.SessMgr.GetByID(nodeID); sess != nil {
 		return sess.SendMsg(cmd, msg)
 	}

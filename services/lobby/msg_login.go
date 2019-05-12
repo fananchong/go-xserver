@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/fananchong/go-xserver/services/internal/db"
 	"github.com/fananchong/go-xserver/services/internal/protocol"
 	"github.com/fananchong/go-xserver/services/internal/utility"
 	"github.com/fananchong/gotcp"
@@ -67,7 +66,7 @@ func (accountObj *Account) onCreateRole(data []byte) {
 			return
 		}
 		// 生成角色ID
-		roleID, err := lobby.NewID(db.IDGenTypeRole)
+		roleID, err := Ctx.GetUID("ROLEID")
 		if err != nil {
 			Ctx.Errorln(err, "account:", accountObj.account)
 			msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR

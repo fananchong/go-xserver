@@ -37,14 +37,14 @@ func (sess *IntranetSession) Start() {
 				break
 			}
 			address := fmt.Sprintf("%s:%d", sess.Info.GetAddrs()[utils.IPINNER], sess.Info.GetPorts()[utils.PORTFORINTRANET])
-			sess.Ctx.Infoln("Try to connect to the gateway server, address:", address, "node:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
+			sess.Ctx.Infoln("Try to connect to the gateway server, address:", address, "node:", sess.Info.GetId().GetID())
 			if sess.Connect(address, sess) == false {
 				time.Sleep(1 * time.Second)
 				continue
 			}
 			sess.Verify()
 			sess.RegisterSelf(sess.sourceSess.GetID(), sess.sourceSess.GetType(), config.Gateway)
-			sess.Ctx.Infoln("Successfully connected to the gateway server, address:", address, "node:", nodecommon.ServerID2UUID(sess.Info.GetId()).String())
+			sess.Ctx.Infoln("Successfully connected to the gateway server, address:", address, "node:", sess.Info.GetId().GetID())
 			break
 		}
 	}()

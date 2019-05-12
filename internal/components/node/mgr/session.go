@@ -45,7 +45,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	sess.MsgData = make([]byte, len(data))
 	copy(sess.MsgData, data)
 	sess.MsgFlag = flag
-	sess.Ctx.Infoln("The service node registers with me, the node ID is ", nodecommon.ServerID2UUID(msg.GetData().GetId()).String())
+	sess.Ctx.Infoln("The service node registers with me, the node ID is ",msg.GetData().GetId().GetID())
 	sess.Ctx.Infoln(sess.Info)
 
 	sess.SessMgr.Register(sess.SessionBase)
@@ -75,7 +75,7 @@ func (sess *Session) DoClose(sessbase *nodecommon.SessionBase) {
 		sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 			elem.SendMsg(uint64(protocol.CMD_MGR_LOSE_SERVER), msg)
 		})
-		sess.Ctx.Infoln("Service node loses connection, type:", msg.Type, "id:", nodecommon.ServerID2UUID(msg.Id).String())
+		sess.Ctx.Infoln("Service node loses connection, type:", msg.Type, "id:", msg.Id.GetID())
 	}
 }
 

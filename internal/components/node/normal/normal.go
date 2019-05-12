@@ -32,7 +32,7 @@ func NewNormal(ctx *common.Context) *Normal {
 	pluginType := misc.GetPluginType(ctx)
 	if pluginType != config.Mgr {
 		normal.Info = &protocol.SERVER_INFO{}
-		normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID())
+		normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID(ctx, pluginType))
 		normal.Info.Type = uint32(pluginType)
 		normal.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
 		normal.Info.Ports = ctx.Config().Network.Port
@@ -41,7 +41,7 @@ func NewNormal(ctx *common.Context) *Normal {
 		// normal.Info.Version
 		normal.init()
 		normal.ctx.INode = normal
-		ctx.Infoln("NODE ID:", nodecommon.NodeID2UUID(normal.GetID()).String(), ", NODE TYPE:", pluginType)
+		ctx.Infoln("NODE ID:", normal.GetID(), ", NODE TYPE:", pluginType)
 	}
 	return normal
 }

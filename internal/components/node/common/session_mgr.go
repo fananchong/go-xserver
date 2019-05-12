@@ -5,6 +5,7 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/common/context"
 	"github.com/fananchong/go-xserver/internal/protocol"
 )
 
@@ -13,7 +14,7 @@ type SessionMgr struct {
 	ctx     *common.Context
 	m       sync.RWMutex
 	ss      map[config.NodeType][]*SessionBase
-	ssByID  map[NodeID]*SessionBase
+	ssByID  map[context.NodeID]*SessionBase
 	counter map[int]uint32
 }
 
@@ -22,7 +23,7 @@ func NewSessionMgr(ctx *common.Context) *SessionMgr {
 	sessMgr := &SessionMgr{
 		ctx:     ctx,
 		ss:      make(map[config.NodeType][]*SessionBase),
-		ssByID:  make(map[NodeID]*SessionBase),
+		ssByID:  make(map[context.NodeID]*SessionBase),
 		counter: make(map[int]uint32),
 	}
 	return sessMgr
@@ -77,7 +78,7 @@ func (sessmgr *SessionMgr) deleteSessInSS(sid *protocol.SERVER_ID, t config.Node
 }
 
 // GetByID : 根据 NID 获取网络会话节点
-func (sessmgr *SessionMgr) GetByID(nid NodeID) *SessionBase {
+func (sessmgr *SessionMgr) GetByID(nid context.NodeID) *SessionBase {
 	sessmgr.m.RLock()
 	defer sessmgr.m.RUnlock()
 	if v, ok := sessmgr.ssByID[nid]; ok {

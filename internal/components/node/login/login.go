@@ -124,19 +124,8 @@ func (login *Login) loginByDefault(account, password string) context.LoginErrCod
 }
 
 func (login *Login) initRedis() bool {
-	// db account
-	err := go_redis_orm.CreateDB(
-		login.ctx.Config().DbAccount.Name,
-		login.ctx.Config().DbAccount.Addrs,
-		login.ctx.Config().DbAccount.Password,
-		login.ctx.Config().DbAccount.DBIndex)
-	if err != nil {
-		login.ctx.Errorln(err)
-		return false
-	}
-
 	// db token
-	err = go_redis_orm.CreateDB(
+	err := go_redis_orm.CreateDB(
 		login.ctx.Config().DbToken.Name,
 		login.ctx.Config().DbToken.Addrs,
 		login.ctx.Config().DbToken.Password,

@@ -39,6 +39,7 @@ func (app *App) Run() {
 		components.NewPlugin(app.ctx),
 		components.NewRedis(app.ctx),
 		components.NewRole2Account(app.ctx),
+		components.NewUID(app.ctx),
 		components.NewTCPServer(app.ctx),
 		nodenormal.NewNormal(app.ctx),
 		nodemgr.NewMgr(app.ctx),

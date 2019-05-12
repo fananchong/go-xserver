@@ -18,7 +18,7 @@ import (
 // User : 表示 1 个客户端对象
 type User struct {
 	Account         string
-	Servers         map[uint32]nodecommon.NodeID
+	Servers         map[uint32]context.NodeID
 	ActiveTimestamp int64
 	ClientSession   context.IClientSesion
 }
@@ -27,7 +27,7 @@ type User struct {
 func NewUser(ctx *common.Context, account string, clientSession context.IClientSesion) *User {
 	user := &User{
 		Account:         account,
-		Servers:         make(map[uint32]nodecommon.NodeID),
+		Servers:         make(map[uint32]context.NodeID),
 		ActiveTimestamp: ctx.GetTickCount(),
 		ClientSession:   clientSession,
 	}
@@ -81,7 +81,7 @@ func (userMgr *UserMgr) AddUser(account string, servers map[uint32]*protocol.SER
 }
 
 // GetServerAndActive : 获取玩家对应服务器类型的服务器资源信息
-func (userMgr *UserMgr) GetServerAndActive(account string, nodeType config.NodeType) (*nodecommon.NodeID, error) {
+func (userMgr *UserMgr) GetServerAndActive(account string, nodeType config.NodeType) (*context.NodeID, error) {
 	userMgr.mutex.RLock()
 	defer userMgr.mutex.RUnlock()
 	if user, ok := userMgr.users[account]; ok {

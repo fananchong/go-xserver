@@ -54,7 +54,7 @@ func (sess *Session) connectMgrServer() {
 
 // DoRegister : 某节点注册时处理
 func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
-	sess.Ctx.Infoln("The service node registers information with me with ID", nodecommon.ServerID2UUID(msg.GetData().GetId()).String(), "type:", msg.GetData().GetType())
+	sess.Ctx.Infoln("The service node registers information with me with ID", msg.GetData().GetId().GetID(), "type:", msg.GetData().GetType())
 
 	tempSess := sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(msg.GetData().GetId()))
 	if tempSess == nil {
@@ -83,7 +83,7 @@ func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte
 
 // DoLose : 节点丢失时处理
 func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
-	sess.Ctx.Infoln("Service node connection lost, ID is", nodecommon.ServerID2UUID(msg.GetId()).String(), "type:", msg.GetType())
+	sess.Ctx.Infoln("Service node connection lost, ID is", msg.GetId().GetID(), "type:", msg.GetType())
 
 	// 如果存在互连关系的，关闭 TCP 连接
 	if sess.IsEnableMessageRelay() && msg.GetType() == uint32(config.Gateway) {

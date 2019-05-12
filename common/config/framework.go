@@ -6,11 +6,11 @@ package config
 type FrameworkConfig struct {
 	Common     frameworkConfigCommon  // 一些基础参数
 	Network    frameworkConfigNetwork // 网络配置
-	DbAccount  frameworkConfigRedis   // 帐号数据库（Redis）
-	DbToken    frameworkConfigRedis   // Token 数据库（Redis）
-	DbServer   frameworkConfigRedis   // Server 数据库（Redis）
-	DbMgr      frameworkConfigRedis   // Mgr 数据库（Redis）
-	DbRoleName frameworkConfigRedis   // 角色名-账号数据库（Redis）
+	DbAccount  FrameworkConfigRedis   // 帐号数据库（Redis）
+	DbToken    FrameworkConfigRedis   // Token 数据库（Redis）
+	DbServer   FrameworkConfigRedis   // Server 数据库（Redis）
+	DbMgr      FrameworkConfigRedis   // Mgr 数据库（Redis）
+	DbRoleName FrameworkConfigRedis   // 角色名-账号数据库（Redis）
 	Role       frameworkConfigRole    // 角色相关配置
 }
 
@@ -32,7 +32,8 @@ type frameworkConfigNetwork struct {
 	Port    []int32 `default:"[7500, 30000]" desc:"第一个端口为对外提供服务的端口；第二个端口为服务器组内提供服务的端口；若有其他继续填充，自定义"`
 }
 
-type frameworkConfigRedis struct {
+// FrameworkConfigRedis : redis 配置
+type FrameworkConfigRedis struct {
 	Name     string   `desc:"Redis 数据库名称"`
 	Addrs    []string `default:"[127.0.0.1:6379]" desc:"Redis 数据库地址"`
 	Password string   `default:"123456" desc:"Redis 数据库密码"`
