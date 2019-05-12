@@ -1,0 +1,25 @@
+set CUR_DIR=%~dp0
+set GOBIN=%GOPATH%\bin
+go get -u github.com/gpmgo/gopm
+
+cd %GOPATH%\bin
+gopm bin -u -v github.com/ramya-rao-a/go-outline
+gopm bin -u -v github.com/acroca/go-symbols
+gopm bin -u -v github.com/mdempsky/gocode
+gopm bin -u -v github.com/rogpeppe/godef
+gopm bin -u -v golang.org/x/tools/cmd/godoc
+gopm bin -u -v github.com/zmb3/gogetdoc
+gopm bin -u -v golang.org/x/lint/golint
+gopm bin -u -v github.com/fatih/gomodifytags
+gopm bin -u -v golang.org/x/tools/cmd/gorename
+gopm bin -u -v sourcegraph.com/sqs/goreturns
+gopm bin -u -v golang.org/x/tools/cmd/goimports
+gopm bin -u -v github.com/cweill/gotests/...
+gopm bin -u -v golang.org/x/tools/cmd/guru
+gopm bin -u -v github.com/josharian/impl
+gopm bin -u -v github.com/haya14busa/goplay/cmd/goplay
+gopm bin -u -v github.com/uudashr/gopkgs/cmd/gopkgs
+gopm bin -u -v github.com/davidrjenni/reftools/cmd/fillstruct
+gopm bin -u -v github.com/alecthomas/gometalinter
+
+cd %CUR_DIR%

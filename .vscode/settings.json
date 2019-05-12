@@ -1,3 +1,9 @@
 {
-    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\bash.exe"
+    "terminal.integrated.shell.windows": "C:\\Windows\\System32\\bash.exe",
+    "go.autocompleteUnimportedPackages": true,
+    "go.docsTool": "godoc",
+    "go.formatTool": "goimports",
+    "go.lintTool": "golint",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
 }
