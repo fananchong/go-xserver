@@ -57,7 +57,7 @@ func (login *Login) RegisterAllocationNodeType(types []config.NodeType) {
 
 // Login : 登陆处理
 func (login *Login) Login(account, password string, defaultMode bool, userdata []byte) (string,
-	[]string, []int32, []config.NodeType, context.LoginErrCode) {
+	[]string, []int32, []config.NodeType, []context.NodeID, context.LoginErrCode) {
 
 	//账号验证
 	var err context.LoginErrCode
@@ -67,13 +67,13 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 		err = login.verificationFunc(account, password, userdata)
 	}
 	if err != context.LoginSuccess {
-		return "", nil, nil, nil, err
+		return "", nil, nil, nil, nil, err
 	}
 
 	// 分配服务资源列表
 	addressList, portList, ids, ok := login.selectServerList(account, login.allocServerType)
 	if !ok {
-		return "", nil, nil, nil, context.LoginSystemError
+		return "", nil, nil, nil, nil, context.LoginSystemError
 	}
 
 	//生成 Token
@@ -88,9 +88,13 @@ func (login *Login) Login(account, password string, defaultMode bool, userdata [
 	}
 	if err := tokenObj.Save(); err != nil {
 		login.ctx.Errorln(err, "account:", account)
-		return "", nil, nil, nil, context.LoginSystemError
+		return "", nil, nil, nil, nil, context.LoginSystemError
 	}
-	return tempID, addressList, portList, login.allocServerType, context.LoginSuccess
+	var retIDs []context.NodeID
+	for i := 0; i < len(login.allocServerType); i++ {
+		retIDs = append(retIDs, context.NodeID(ids[i].GetID())) 
+	} 
+	return tempID, addressList, portList, login.allocServerType, retIDs, context.LoginSuccess
 }
 
 // Close : 关闭
