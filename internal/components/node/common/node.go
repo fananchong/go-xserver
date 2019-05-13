@@ -24,7 +24,6 @@ func NewNode(ctx *common.Context, nodeType config.NodeType) *Node {
 	node := &Node{Ctx: ctx}
 	node.SessMgr = NewSessionMgr(ctx)
 	node.Info = &protocol.SERVER_INFO{}
-	node.Info.Id = NodeID2ServerID(NewNID(ctx, nodeType))
 	node.Info.Type = uint32(nodeType)
 	node.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
 	node.Info.Ports = ctx.Config().Network.Port
@@ -36,6 +35,9 @@ func NewNode(ctx *common.Context, nodeType config.NodeType) *Node {
 
 // Init : 初始化节点
 func (node *Node) Init(sessType interface{}, components []utils.IComponent) bool {
+	// 分配 NODE ID
+	node.Info.Id = NodeID2ServerID(NewNID(node.Ctx, config.NodeType(node.Info.Type)))
+
 	// tcp server
 	server := &gotcp.Server{}
 	server.RegisterSessType(sessType)

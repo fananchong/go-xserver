@@ -9,6 +9,7 @@ import (
 	"github.com/fananchong/go-xserver/common/config"
 	"github.com/fananchong/go-xserver/internal/components/misc"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
+	nodegateway "github.com/fananchong/go-xserver/internal/components/node/gateway"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 )
@@ -32,7 +33,9 @@ func NewNormal(ctx *common.Context) *Normal {
 	pluginType := misc.GetPluginType(ctx)
 	if pluginType != config.Mgr {
 		normal.Info = &protocol.SERVER_INFO{}
-		normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID(ctx, pluginType))
+		if pluginType != config.Gateway {
+			normal.Info.Id = nodecommon.NodeID2ServerID(nodecommon.NewNID(ctx, pluginType))
+		}
 		normal.Info.Type = uint32(pluginType)
 		normal.Info.Addrs = []string{utils.GetIPInner(ctx), utils.GetIPOuter(ctx)}
 		normal.Info.Ports = ctx.Config().Network.Port
@@ -41,7 +44,9 @@ func NewNormal(ctx *common.Context) *Normal {
 		// normal.Info.Version
 		normal.init()
 		normal.ctx.INode = normal
-		ctx.Infoln("NODE ID:", normal.GetID(), ", NODE TYPE:", pluginType)
+		if pluginType != config.Gateway {
+			ctx.Infoln("NODE ID:", normal.GetID(), ", NODE TYPE:", pluginType)
+		}
 	}
 	return normal
 }
@@ -64,6 +69,10 @@ func (normal *Normal) Start() bool {
 	if pluginType != config.Mgr {
 		go func() {
 			misc.WaitComponent(normal.ctx)
+			if pluginType == config.Gateway {
+				normal.Info.Id = nodecommon.NodeID2ServerID(normal.ctx.IGateway.(*nodegateway.Gateway).GetID())
+				normal.ctx.Infoln("NODE ID:", normal.GetID(), ", NODE TYPE:", pluginType)
+			}
 			normal.ctx.Infoln("Service node start ...")
 			if normal.start() == false {
 				normal.ctx.Errorln("Service node failed to start")
