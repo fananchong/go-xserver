@@ -8,7 +8,7 @@
 
 ## 编译
 
-- [安装 golang 1.11+](https://golang.google.cn/dl/)
+- [安装 golang 1.12+](https://golang.google.cn/dl/)
 - [安装 docker](https://docs.docker.com/install/linux/docker-ce/centos/)
 - 编译执行以下语句即可：
 
