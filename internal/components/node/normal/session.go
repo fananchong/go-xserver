@@ -8,6 +8,7 @@ import (
 	go_redis_orm "github.com/fananchong/go-redis-orm.v2"
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/common/context"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/db"
 	"github.com/fananchong/go-xserver/internal/protocol"
@@ -17,9 +18,8 @@ import (
 // Session : 网络会话类
 type Session struct {
 	*nodecommon.SessionBase
-	GWMgr       *IntranetSessionMgr
-	shutdown    int32
-	ReqServerID *protocol.SERVER_ID
+	GWMgr    *IntranetSessionMgr
+	shutdown int32
 }
 
 // NewSession : 网络会话类的构造函数
@@ -214,16 +214,13 @@ func (sess *Session) SendMsgToServer(t config.NodeType, cmd uint64, data []byte)
 }
 
 // ReplyMsgToServer : 回发消息给请求服务器
-func (sess *Session) ReplyMsgToServer(cmd uint64, data []byte) bool {
-	if sess.ReqServerID == nil {
-		return false
-	}
+func (sess *Session) ReplyMsgToServer(targetID context.NodeID, cmd uint64, data []byte) bool {
 	gw := sess.SessMgr.SelectOne(config.Gateway)
 	if gw != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
 		msgRelay.SourceID = nodecommon.NodeID2ServerID(sess.GetID())
 		msgRelay.SourceType = uint32(sess.GetType())
-		msgRelay.TargetID = sess.ReqServerID
+		msgRelay.TargetID = nodecommon.NodeID2ServerID(targetID)
 		msgRelay.CMD = uint32(cmd)
 		msgRelay.Data = data
 		return gw.SendMsg(uint64(protocol.CMD_GW_RELAY_SERVER_MSG2), msgRelay)

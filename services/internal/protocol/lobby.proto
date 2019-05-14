@@ -11,6 +11,7 @@ message CMD_LOBBY {
         ENTER_GAME = 3;                                 // 进入游戏 ( C -> LOBBY )
         CHAT = 4;                                       // 聊天 ( C -> LOBBY -> C )
         MATCH = 5;                                      // 匹配 ( C -> LOBBY )
+        MATCH_RESULT = 6;                               // 匹配 ( LOBBY -> C )
         MSGCMDOFFSET = 4000;                            // 消息号偏移量。如发送 `MSG_LOBBY_LOGIN` 消息时，实际发送消息号为： MSGCMDOFFSET + LOGIN
     }
 }
@@ -61,4 +62,10 @@ message MSG_LOBBY_CHAT {
 
 // 匹配 ( C -> LOBBY )
 message MSG_LOBBY_MATCH {
+}
+
+// 匹配 ( LOBBY -> C )
+message MSG_LOBBY_MATCH_RESULT {
+    ENUM_LOBBY_COMMON_ERROR.ENUM Err = 1;               // 0:成功；非0错误号
+    repeated ROLE_BASE_INFO Roles = 2;                  // 角色列表
 }

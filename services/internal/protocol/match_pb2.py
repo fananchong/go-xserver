@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='match.proto',
   package='protocol',
   syntax='proto3',
-  serialized_pb=_b('\n\x0bmatch.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"+\n\tCMD_MATCH\"\x1e\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05MATCH\x10\x01\";\n\x17\x45NUM_MATCH_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"!\n\x0fMSG_MATCH_MATCH\x12\x0e\n\x06RoleID\x18\x01 \x01(\x04\"v\n\x16MSG_MATCH_MATCH_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_MATCH_COMMON_ERROR.ENUM\x12\'\n\x05Roles\x18\x02 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFOb\x06proto3')
+  serialized_pb=_b('\n\x0bmatch.proto\x12\x08protocol\x1a\x12lobby_custom.proto\"+\n\tCMD_MATCH\"\x1e\n\x04\x45NUM\x12\x0b\n\x07INVALID\x10\x00\x12\t\n\x05MATCH\x10\x01\";\n\x17\x45NUM_MATCH_COMMON_ERROR\" \n\x04\x45NUM\x12\x06\n\x02OK\x10\x00\x12\x10\n\x0cSYSTEM_ERROR\x10\x01\"2\n\x0fMSG_MATCH_MATCH\x12\x0f\n\x07\x41\x63\x63ount\x18\x01 \x01(\t\x12\x0e\n\x06RoleID\x18\x02 \x01(\x04\"\x97\x01\n\x16MSG_MATCH_MATCH_RESULT\x12\x33\n\x03\x45rr\x18\x01 \x01(\x0e\x32&.protocol.ENUM_MATCH_COMMON_ERROR.ENUM\x12\x0f\n\x07\x41\x63\x63ount\x18\x02 \x01(\t\x12\x0e\n\x06RoleID\x18\x03 \x01(\x04\x12\'\n\x05Roles\x18\x04 \x03(\x0b\x32\x18.protocol.ROLE_BASE_INFOb\x06proto3')
   ,
   dependencies=[lobby__custom__pb2.DESCRIPTOR,])
 
@@ -129,8 +129,15 @@ _MSG_MATCH_MATCH = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='RoleID', full_name='protocol.MSG_MATCH_MATCH.RoleID', index=0,
-      number=1, type=4, cpp_type=4, label=1,
+      name='Account', full_name='protocol.MSG_MATCH_MATCH.Account', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='RoleID', full_name='protocol.MSG_MATCH_MATCH.RoleID', index=1,
+      number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -148,7 +155,7 @@ _MSG_MATCH_MATCH = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=151,
-  serialized_end=184,
+  serialized_end=201,
 )
 
 
@@ -167,8 +174,22 @@ _MSG_MATCH_MATCH_RESULT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Roles', full_name='protocol.MSG_MATCH_MATCH_RESULT.Roles', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      name='Account', full_name='protocol.MSG_MATCH_MATCH_RESULT.Account', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='RoleID', full_name='protocol.MSG_MATCH_MATCH_RESULT.RoleID', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='Roles', full_name='protocol.MSG_MATCH_MATCH_RESULT.Roles', index=3,
+      number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -185,8 +206,8 @@ _MSG_MATCH_MATCH_RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=186,
-  serialized_end=304,
+  serialized_start=204,
+  serialized_end=355,
 )
 
 _CMD_MATCH_ENUM.containing_type = _CMD_MATCH

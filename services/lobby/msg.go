@@ -36,6 +36,8 @@ func (accountObj *Account) processMsg(cmd uint64, data []byte) {
 			accountObj.onChat(data)
 		case protocol.CMD_LOBBY_MATCH:
 			accountObj.onMatch(data)
+		case protocol.CMD_LOBBY_MATCH_RESULT:
+			accountObj.onMatchResult(data)
 		default:
 			Ctx.Errorln("[LOBBY] Unknown cmd, cmd:", cmd)
 		}

@@ -22,9 +22,9 @@ case $1 in
         nohup ./go-xserver --app login --network-port '7200,0' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
         nohup ./go-xserver --app login --network-port '7201,0' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
         nohup ./go-xserver --app login --network-port '7202,0' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
-        nohup ./go-xserver --app gateway --network-port '7300,33001' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
-        nohup ./go-xserver --app gateway --network-port '7301,33002' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
-        nohup ./go-xserver --app gateway --network-port '7302,33003' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7300,33000' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7301,33001' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
+        nohup ./go-xserver --app gateway --network-port '7302,33002' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &
         nohup ./go-xserver --app lobby --network-port '0,0' --common-logflushinterval 200 --suffix 1 > /dev/null 2>&1 &
         nohup ./go-xserver --app lobby --network-port '0,0' --common-logflushinterval 200 --suffix 2 > /dev/null 2>&1 &
         nohup ./go-xserver --app lobby --network-port '0,0' --common-logflushinterval 200 --suffix 3 > /dev/null 2>&1 &

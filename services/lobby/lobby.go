@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/common/context"
+	"github.com/fananchong/go-xserver/services"
 )
 
 // Lobby : 大厅服务器
@@ -30,10 +32,12 @@ func (lobby *Lobby) Close() {
 
 }
 
-func (lobby *Lobby) onRelayMsg(source config.NodeType, account string, cmd uint64, data []byte) {
+func (lobby *Lobby) onRelayMsg(source config.NodeType, targetID context.NodeID, account string, cmd uint64, data []byte) {
 	switch source {
 	case config.Client:
 		lobby.accountMgr.PostMsg(account, cmd, data)
+	case services.Match:
+		lobby.onMatchMsg(targetID, cmd, data)
 	default:
 		Ctx.Errorln("Unknown source, type:", source, "(", int(source), ")")
 	}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/common/context"
 	"github.com/fananchong/gotcp"
 	"github.com/gogo/protobuf/proto"
 )
@@ -58,13 +59,13 @@ func SendMsgToServer(ctx *common.Context, t config.NodeType, cmd uint64, msg pro
 }
 
 // ReplyMsgToServer : 回发消息给请求服务器
-func ReplyMsgToServer(ctx *common.Context, cmd uint64, msg proto.Message) (bool, error) {
+func ReplyMsgToServer(ctx *common.Context, targetID context.NodeID, cmd uint64, msg proto.Message) (bool, error) {
 	data, flag, err := gotcp.EncodeCmd(cmd, msg)
 	if err != nil {
 		return false, err
 	}
 	data = append(data, flag)
-	if ctx.ReplyMsgToServer(cmd, data) {
+	if ctx.ReplyMsgToServer(targetID, cmd, data) {
 		return true, nil
 	}
 	return false, fmt.Errorf("ReplyMsgToServer message failed, cmd:%d", cmd)

@@ -19,10 +19,13 @@ message ENUM_MATCH_COMMON_ERROR {
 
 // 请求匹配 ( LOBBY -> MATCH )
 message MSG_MATCH_MATCH {
-    uint64 RoleID = 1;                                  // 角色ID
+    string Account = 1;                                 // 账号
+    uint64 RoleID = 2;                                  // 角色ID
 }
 
 message MSG_MATCH_MATCH_RESULT {
     ENUM_MATCH_COMMON_ERROR.ENUM Err = 1;               // 0:成功；非0错误号
-    repeated ROLE_BASE_INFO Roles = 2;                  // 角色列表
+    string Account = 2;                                 // 账号
+    uint64 RoleID = 3;                                  // 角色ID
+    repeated ROLE_BASE_INFO Roles = 4;                  // 角色列表
 }

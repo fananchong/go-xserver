@@ -6,6 +6,7 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/common/context"
 	nodecommon "github.com/fananchong/go-xserver/internal/components/node/common"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
@@ -82,7 +83,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			return
 		}
-		f(config.Client, msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
+		f(config.Client, context.NodeID(0), msg.GetAccount(), uint64(msg.GetCMD()), msg.GetData())
 	case protocol.CMD_GW_RELAY_SERVER_MSG1:
 		f := sess.FuncOnRelayMsg()
 		if f == nil {
@@ -98,8 +99,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			sess.Ctx.Errorln("Field 'TargetType' error. TargetType:", msg.GetTargetType(), "SessType:", sess.sourceSess.GetType())
 			return
 		}
-		sess.sourceSess.ReqServerID = msg.GetSourceID()
-		f(config.NodeType(msg.GetSourceType()), "", uint64(msg.GetCMD()), msg.GetData())
+		f(config.NodeType(msg.GetSourceType()), nodecommon.ServerID2NodeID(msg.GetSourceID()), "", uint64(msg.GetCMD()), msg.GetData())
 	case protocol.CMD_GW_RELAY_SERVER_MSG2:
 		f := sess.FuncOnRelayMsg()
 		if f == nil {
@@ -115,8 +115,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			sess.Ctx.Errorln("Field 'TargetID' error. TargetID:", msg.GetTargetID(), "SessID:", sess.sourceSess.GetID())
 			return
 		}
-		sess.sourceSess.ReqServerID = msg.GetSourceID()
-		f(config.NodeType(msg.GetSourceType()), "", uint64(msg.GetCMD()), msg.GetData())
+		f(config.NodeType(msg.GetSourceType()), nodecommon.ServerID2NodeID(msg.GetSourceID()), "", uint64(msg.GetCMD()), msg.GetData())
 	case protocol.CMD_GW_REGISTER_ACCOUNT:
 		msg := &protocol.MSG_GW_REGISTER_ACCOUNT{}
 		if gotcp.DecodeCmd(data, flag, msg) == nil {

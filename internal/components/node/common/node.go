@@ -6,6 +6,7 @@ import (
 
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/config"
+	"github.com/fananchong/go-xserver/common/context"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
@@ -114,7 +115,7 @@ func (node *Node) SendMsgToServer(t config.NodeType, cmd uint64, data []byte) bo
 }
 
 // ReplyMsgToServer : 回发消息给请求服务器
-func (node *Node) ReplyMsgToServer(cmd uint64, data []byte) bool {
+func (node *Node) ReplyMsgToServer(targetID context.NodeID, cmd uint64, data []byte) bool {
 	// Gateway 、 MgrServer 调用该接口会 panic
 	//    - Gateway 不需要这个接口，没有意义
 	//    - MgrServer 如果有需求需要通过 Gateway 给客户端消息，则可以实现之。优先级太低了！

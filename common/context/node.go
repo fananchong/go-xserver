@@ -5,8 +5,8 @@ import "github.com/fananchong/go-xserver/common/config"
 // NodeID : 服务节点ID类型
 type NodeID uint32
 
-// FuncTypeOnRelayMsg : 处理中继消息的函数声明
-type FuncTypeOnRelayMsg func(source config.NodeType, account string, cmd uint64, data []byte)
+// FuncTypeOnRelayMsg : 处理中继消息的函数声明。 客户端来的消息 nodeID 为 0； 服务器端间的消息 account 为空
+type FuncTypeOnRelayMsg func(source config.NodeType, nodeID NodeID, account string, cmd uint64, data []byte)
 
 // FuncTypeOnLoseAccount : 处理丢失账号的函数声明
 type FuncTypeOnLoseAccount func(account string)
@@ -18,7 +18,7 @@ type INode interface {
 	SendMsgToClient(account string, cmd uint64, data []byte) bool         // 【5】发送消息给客户端，通过 Gateway 中继
 	BroadcastMsgToClient(cmd uint64, data []byte) bool                    // 【5】广播消息给客户端，通过 Gateway 中继
 	SendMsgToServer(t config.NodeType, cmd uint64, data []byte) bool      // 【5】发送消息给某类型服务（随机一个）
-	ReplyMsgToServer(cmd uint64, data []byte) bool                        // 【5】回发消息给请求服务器
+	ReplyMsgToServer(targetID NodeID, cmd uint64, data []byte) bool       // 【5】回发消息给请求服务器
 	BroadcastMsgToServer(t config.NodeType, cmd uint64, data []byte) bool // 【5】广播消息给某类型服务
 	RegisterFuncOnLoseAccount(f FuncTypeOnLoseAccount)                    // 【6】注册自定义处理`丢失账号`
 }
