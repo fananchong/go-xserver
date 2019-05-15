@@ -53,7 +53,7 @@ func (sess *Session) connectMgrServer() {
 }
 
 // DoRegister : 某节点注册时处理
-func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 	sess.Ctx.Infoln("The service node registers information with me with ID", msg.GetData().GetId().GetID(), "type:", msg.GetData().GetType())
 
 	tempSess := sess.SessMgr.GetByID(nodecommon.ServerID2NodeID(msg.GetData().GetId()))
@@ -78,11 +78,11 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 }
 
 // DoVerify : 验证时保存自己的注册消息
-func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 }
 
 // DoLose : 节点丢失时处理
-func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
+func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER) {
 	sess.Ctx.Infoln("Service node connection lost, ID is", msg.GetId().GetID(), "type:", msg.GetType())
 
 	// 如果存在互连关系的，关闭 TCP 连接

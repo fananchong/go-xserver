@@ -11,9 +11,7 @@ type ChanMsg struct {
 
 // PostMsg : 推送消息
 func (accountObj *Account) PostMsg(cmd uint64, data []byte, flag uint8) {
-	datacopy := make([]byte, len(data))
-	copy(datacopy, data)
-	accountObj.chanMsg <- ChanMsg{cmd, datacopy, flag}
+	accountObj.chanMsg <- ChanMsg{cmd, data, flag}
 }
 
 // ProcessMsg : 处理消息

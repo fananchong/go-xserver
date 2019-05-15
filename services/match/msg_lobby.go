@@ -11,7 +11,7 @@ func (match *Match) onLobbyMsg(targetID context.NodeID, cmd uint64, data []byte,
 	switch protocol.CMD_MATCH_ENUM(cmd) {
 	case protocol.CMD_MATCH_MATCH:
 		req := &protocol.MSG_MATCH_MATCH{}
-		if gotcp.DecodeCmd(data, flag, req) == nil {
+		if gotcp.Decode(data, flag, req) == nil {
 			Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MATCH_MATCH`(", int(protocol.CMD_MATCH_MATCH), ")")
 			return
 		}

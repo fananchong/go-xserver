@@ -24,15 +24,13 @@ func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISe
 }
 
 // DoVerify : 验证时保存自己的注册消息
-func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 	sess.Info = msg.GetData()
-	sess.MsgData = make([]byte, len(data))
-	copy(sess.MsgData, data)
-	sess.MsgFlag = flag
+	sess.MsgData, sess.MsgFlag, _ = gotcp.Encode(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
 }
 
 // DoRegister : 某节点注册时处理
-func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 	if nodecommon.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
 		sess.Close()
 		return
@@ -42,27 +40,25 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 		return
 	}
 	sess.Info = msg.GetData()
-	sess.MsgData = make([]byte, len(data))
-	copy(sess.MsgData, data)
-	sess.MsgFlag = flag
-	sess.Ctx.Infoln("The service node registers with me, the node ID is ",msg.GetData().GetId().GetID())
+	sess.MsgData, sess.MsgFlag, _ = gotcp.Encode(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
+	sess.Ctx.Infoln("The service node registers with me, the node ID is ", msg.GetData().GetId().GetID())
 	sess.Ctx.Infoln(sess.Info)
 
 	sess.SessMgr.Register(sess.SessionBase)
 	sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
-			elem.Send(data, flag)
+			elem.SendEx(int(protocol.CMD_MGR_REGISTER_SERVER), sess.MsgData, sess.MsgFlag)
 		}
 	})
 	sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
-			sess.Send(elem.MsgData, elem.MsgFlag)
+			sess.SendEx(int(protocol.CMD_MGR_REGISTER_SERVER), elem.MsgData, elem.MsgFlag)
 		}
 	})
 }
 
 // DoLose : 节点丢失时处理
-func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
+func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER) {
 }
 
 // DoClose : 节点关闭时处理

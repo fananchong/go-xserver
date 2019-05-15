@@ -12,7 +12,7 @@ import (
 func (accountObj *Account) onMatch(data []byte, flag uint8) {
 	Ctx.Infoln("Match, account:", accountObj.account, "roleid:", accountObj.currentRole.Key)
 	msg := &protocol.MSG_LOBBY_MATCH{}
-	if gotcp.DecodeCmd(data, flag, msg) == nil {
+	if gotcp.Decode(data, flag, msg) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_MATCH`(", int(protocol.CMD_LOBBY_MATCH), "). account", accountObj.account, "roleid:", accountObj.currentRole.Key)
 		return
 	}
@@ -31,7 +31,7 @@ func (accountObj *Account) onMatch(data []byte, flag uint8) {
 func (accountObj *Account) onMatchResult(data []byte, flag uint8) {
 	Ctx.Infoln("MatchResult, account:", accountObj.account, "roleid:", accountObj.currentRole.Key)
 	msg := &protocol.MSG_LOBBY_MATCH_RESULT{}
-	if gotcp.DecodeCmd(data, flag, msg) == nil {
+	if gotcp.Decode(data, flag, msg) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_MATCH_RESULT`(", int(protocol.CMD_LOBBY_MATCH_RESULT), ")")
 		return
 	}
@@ -42,7 +42,7 @@ func (lobby *Lobby) onMatchMsg(targetID context.NodeID, cmd uint64, data []byte,
 	switch protocol.CMD_MATCH_ENUM(cmd) {
 	case protocol.CMD_MATCH_MATCH:
 		msg := &protocol.MSG_MATCH_MATCH_RESULT{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MATCH_MATCH`(", int(protocol.CMD_MATCH_MATCH), ")")
 			return
 		}
@@ -50,7 +50,7 @@ func (lobby *Lobby) onMatchMsg(targetID context.NodeID, cmd uint64, data []byte,
 		tmpMsg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_ENUM(msg.GetErr())
 		tmpMsg.Roles = append(tmpMsg.Roles, msg.GetRoles()...)
 		// 暂时序列化下，更好的，应该有传递 msg 的接口
-		data, flag, err := gotcp.EncodeCmd(uint64(protocol.CMD_LOBBY_MATCH_RESULT), tmpMsg)
+		data, flag, err := gotcp.Encode(uint64(protocol.CMD_LOBBY_MATCH_RESULT), tmpMsg)
 		if err != nil {
 			Ctx.Errorf("error:%s, account:%s, roleid:%d", err.Error(), msg.GetAccount(), msg.GetRoleID())
 			return

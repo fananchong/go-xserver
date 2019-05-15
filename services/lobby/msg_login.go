@@ -28,7 +28,7 @@ func (accountObj *Account) onLogin(data []byte, flag uint8) {
 func (accountObj *Account) onCreateRole(data []byte, flag uint8) {
 	Ctx.Infoln("Create role, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_CREATE_ROLE{}
-	if gotcp.DecodeCmd(data, flag, req) == nil {
+	if gotcp.Decode(data, flag, req) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_CREATE_ROLE`(", int(protocol.CMD_LOBBY_CREATE_ROLE), "). account", accountObj.account)
 		return
 	}
@@ -44,6 +44,14 @@ func (accountObj *Account) onCreateRole(data []byte, flag uint8) {
 	if req.GetInfo() == nil {
 		Ctx.Errorln("Message field error, Info is nil. account:", accountObj.account)
 		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_SYSTEM_ERROR
+		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
+		return
+	}
+
+	// 名字不能为空
+	if req.GetInfo().GetRoleName() == "" {
+		Ctx.Errorln("Role name is ''. account:", accountObj.account)
+		msg.Err = protocol.ENUM_LOBBY_COMMON_ERROR_DUPLICATION_ROLE_NAME
 		utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_CREATE_ROLE), msg)
 		return
 	}
@@ -109,7 +117,7 @@ func (accountObj *Account) onCreateRole(data []byte, flag uint8) {
 func (accountObj *Account) onEnterGame(data []byte, flag uint8) {
 	Ctx.Infoln("Enter Game, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_ENTER_GAME{}
-	if gotcp.DecodeCmd(data, flag, req) == nil {
+	if gotcp.Decode(data, flag, req) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_ENTER_GAME`(", int(protocol.CMD_LOBBY_ENTER_GAME), "). account", accountObj.account)
 		return
 	}

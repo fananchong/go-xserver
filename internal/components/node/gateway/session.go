@@ -29,12 +29,12 @@ func (sess *Session) Init(root gocontext.Context, conn net.Conn, derived gotcp.I
 }
 
 // DoVerify : 验证时保存自己的注册消息
-func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 	sess.Info = msg.GetData()
 }
 
 // DoRegister : 某节点注册时处理
-func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 	if nodecommon.EqualSID(sess.Info.GetId(), msg.GetData().GetId()) == false {
 		sess.Ctx.Errorln("Service ID is different.")
 		sess.Ctx.Errorln("sess.Info.GetId() :", sess.Info.GetId().GetID())
@@ -54,7 +54,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 }
 
 // DoLose : 节点丢失时处理
-func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
+func (sess *Session) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER) {
 }
 
 // DoClose : 节点关闭时处理
@@ -71,7 +71,7 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 	switch protocol.CMD_GW_ENUM(cmd) {
 	case protocol.CMD_GW_RELAY_CLIENT_MSG:
 		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			done = false
 			return
@@ -88,19 +88,19 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		}
 	case protocol.CMD_GW_RELAY_SERVER_MSG1:
 		msg := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_SERVER_MSG1`(", int(protocol.CMD_GW_RELAY_SERVER_MSG1), ")")
 			done = false
 			return
 		}
 		if msg.GetSendType() == protocol.RELAY_SERVER_MSG_TYPE_BROADCAST {
 			sess.SessMgr.ForByType(config.NodeType(msg.GetTargetType()), func(targetSess *nodecommon.SessionBase) {
-				targetSess.Send(data, flag)
+				targetSess.SendEx(int(cmd), data, flag)
 			})
 		} else if msg.GetSendType() == protocol.RELAY_SERVER_MSG_TYPE_RANDOM {
 			targetSess := sess.SessMgr.SelectOne(config.NodeType(msg.GetTargetType()))
 			if targetSess != nil {
-				targetSess.Send(data, flag)
+				targetSess.SendEx(int(cmd), data, flag)
 			} else {
 				sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetType:", msg.GetTargetType())
 				done = false
@@ -113,7 +113,7 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		}
 	case protocol.CMD_GW_RELAY_SERVER_MSG2:
 		msg := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_GW_RELAY_SERVER_MSG2`(", int(protocol.CMD_GW_RELAY_SERVER_MSG2), ")")
 			done = false
 			return
@@ -121,7 +121,7 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		id := nodecommon.ServerID2NodeID(msg.GetTargetID())
 		targetSess := sess.SessMgr.GetByID(id)
 		if targetSess != nil {
-			targetSess.Send(data, flag)
+			targetSess.SendEx(int(cmd), data, flag)
 		} else {
 			sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetServerID:", id)
 			done = false

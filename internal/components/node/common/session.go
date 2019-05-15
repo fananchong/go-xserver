@@ -11,9 +11,9 @@ import (
 
 // ISessionDerived : SessionBase 派生类接口定义
 type ISessionDerived interface {
-	DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte)
-	DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte)
-	DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte)
+	DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER)
+	DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER)
+	DoLose(msg *protocol.MSG_MGR_LOSE_SERVER)
 	DoClose(sessbase *SessionBase)
 	DoRecv(cmd uint64, data []byte, flag byte) (done bool)
 }
@@ -39,11 +39,12 @@ func NewSessionBase(ctx *common.Context, derived ISessionDerived) *SessionBase {
 
 // OnRecv : 接收到网络数据包，被触发
 func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
-	cmd := protocol.CMD_MGR_ENUM(gotcp.GetCmd(data))
-	if sessbase.IsVerified() == false && sessbase.doVerify(cmd, data, flag) == false {
+	cmd := gotcp.GetCmd(data)
+	data = gotcp.GetData(data)
+	if sessbase.IsVerified() == false && sessbase.doVerify(protocol.CMD_MGR_ENUM(cmd), data, flag) == false {
 		return
 	}
-	switch cmd {
+	switch protocol.CMD_MGR_ENUM(cmd) {
 	case protocol.CMD_MGR_REGISTER_SERVER:
 		sessbase.doRegister(data, flag)
 	case protocol.CMD_MGR_LOSE_SERVER:
@@ -51,7 +52,7 @@ func (sessbase *SessionBase) OnRecv(data []byte, flag byte) {
 	case protocol.CMD_MGR_PING:
 		// No need to do anything
 	default:
-		if sessbase.derived.DoRecv(uint64(cmd), data, flag) == false {
+		if sessbase.derived.DoRecv(cmd, data, flag) == false {
 			sessbase.Ctx.Errorln("Unknown message number, message number is", cmd)
 		}
 	}
@@ -65,7 +66,7 @@ func (sessbase *SessionBase) OnClose() {
 func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, flag byte) bool {
 	if cmd == protocol.CMD_MGR_REGISTER_SERVER {
 		msg := &protocol.MSG_MGR_REGISTER_SERVER{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sessbase.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
 			sessbase.Close()
 			return false
@@ -77,7 +78,7 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 			sessbase.Close()
 			return false
 		}
-		sessbase.derived.DoVerify(msg, data, flag)
+		sessbase.derived.DoVerify(msg)
 		sessbase.Verify()
 		return true
 	}
@@ -88,21 +89,21 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 
 func (sessbase *SessionBase) doRegister(data []byte, flag byte) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
-	if gotcp.DecodeCmd(data, flag, msg) == nil {
+	if gotcp.Decode(data, flag, msg) == nil {
 		sessbase.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_REGISTER_SERVER`(", int(protocol.CMD_MGR_REGISTER_SERVER), ")")
 		sessbase.Close()
 		return
 	}
-	sessbase.derived.DoRegister(msg, data, flag)
+	sessbase.derived.DoRegister(msg)
 }
 
 func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 	msg := &protocol.MSG_MGR_LOSE_SERVER{}
-	if gotcp.DecodeCmd(data, flag, msg) == nil {
+	if gotcp.Decode(data, flag, msg) == nil {
 		sessbase.Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MGR_LOSE_SERVER`(", int(protocol.CMD_MGR_LOSE_SERVER), ")")
 		return
 	}
-	sessbase.derived.DoLose(msg, data, flag)
+	sessbase.derived.DoLose(msg)
 }
 
 // RegisterSelf : 注册自己

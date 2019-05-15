@@ -52,15 +52,15 @@ func (sess *IntranetSession) Start() {
 }
 
 // DoRegister : 某节点注册时处理
-func (sess *IntranetSession) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *IntranetSession) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 }
 
 // DoVerify : 验证时保存自己的注册消息
-func (sess *IntranetSession) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER, data []byte, flag byte) {
+func (sess *IntranetSession) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 }
 
 // DoLose : 节点丢失时处理
-func (sess *IntranetSession) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER, data []byte, flag byte) {
+func (sess *IntranetSession) DoLose(msg *protocol.MSG_MGR_LOSE_SERVER) {
 
 }
 
@@ -79,7 +79,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			return
 		}
 		msg := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_CLIENT_MSG`(", int(protocol.CMD_GW_RELAY_CLIENT_MSG), ")")
 			return
 		}
@@ -91,7 +91,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			return
 		}
 		msg := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_SERVER_MSG1`(", int(protocol.CMD_GW_RELAY_SERVER_MSG1), ")")
 			return
 		}
@@ -107,7 +107,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			return
 		}
 		msg := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_RELAY_SERVER_MSG2`(", int(protocol.CMD_GW_RELAY_SERVER_MSG2), ")")
 			return
 		}
@@ -118,7 +118,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 		f(config.NodeType(msg.GetSourceType()), nodecommon.ServerID2NodeID(msg.GetSourceID()), "", uint64(msg.GetCMD()), msg.GetData(), uint8(msg.GetFlag()))
 	case protocol.CMD_GW_REGISTER_ACCOUNT:
 		msg := &protocol.MSG_GW_REGISTER_ACCOUNT{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_REGISTER_ACCOUNT`(", int(protocol.CMD_GW_REGISTER_ACCOUNT), ")")
 			return
 		}
@@ -130,7 +130,7 @@ func (sess *IntranetSession) DoRecv(cmd uint64, data []byte, flag byte) (done bo
 			return
 		}
 		msg := &protocol.MSG_GW_LOSE_ACCOUNT{}
-		if gotcp.DecodeCmd(data, flag, msg) == nil {
+		if gotcp.Decode(data, flag, msg) == nil {
 			sess.Ctx.Errorln("Message parsing failed, message number is `protocol.CMD_GW_LOSE_ACCOUNT`(", int(protocol.CMD_GW_LOSE_ACCOUNT), ")")
 			return
 		}
