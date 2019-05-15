@@ -9,10 +9,10 @@ import (
 )
 
 // onMatch : 请求匹配
-func (accountObj *Account) onMatch(data []byte) {
+func (accountObj *Account) onMatch(data []byte, flag uint8) {
 	Ctx.Infoln("Match, account:", accountObj.account, "roleid:", accountObj.currentRole.Key)
 	msg := &protocol.MSG_LOBBY_MATCH{}
-	if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], msg) == nil {
+	if gotcp.DecodeCmd(data, flag, msg) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_MATCH`(", int(protocol.CMD_LOBBY_MATCH), "). account", accountObj.account, "roleid:", accountObj.currentRole.Key)
 		return
 	}
@@ -28,21 +28,21 @@ func (accountObj *Account) onMatch(data []byte) {
 	}
 }
 
-func (accountObj *Account) onMatchResult(data []byte) {
+func (accountObj *Account) onMatchResult(data []byte, flag uint8) {
 	Ctx.Infoln("MatchResult, account:", accountObj.account, "roleid:", accountObj.currentRole.Key)
-    msg := &protocol.MSG_LOBBY_MATCH_RESULT{}
-    if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], msg) == nil {
-        Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_MATCH_RESULT`(", int(protocol.CMD_LOBBY_MATCH_RESULT), ")")
-        return
-    }
-    utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_MATCH_RESULT), msg) 
+	msg := &protocol.MSG_LOBBY_MATCH_RESULT{}
+	if gotcp.DecodeCmd(data, flag, msg) == nil {
+		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_MATCH_RESULT`(", int(protocol.CMD_LOBBY_MATCH_RESULT), ")")
+		return
+	}
+	utility.SendMsgToClient(Ctx, accountObj.account, uint64(protocol.CMD_LOBBY_MATCH_RESULT), msg)
 }
 
-func (lobby *Lobby) onMatchMsg(targetID context.NodeID, cmd uint64, data []byte) {
+func (lobby *Lobby) onMatchMsg(targetID context.NodeID, cmd uint64, data []byte, flag uint8) {
 	switch protocol.CMD_MATCH_ENUM(cmd) {
 	case protocol.CMD_MATCH_MATCH:
 		msg := &protocol.MSG_MATCH_MATCH_RESULT{}
-		if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], msg) == nil {
+		if gotcp.DecodeCmd(data, flag, msg) == nil {
 			Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_MATCH_MATCH`(", int(protocol.CMD_MATCH_MATCH), ")")
 			return
 		}
@@ -55,8 +55,7 @@ func (lobby *Lobby) onMatchMsg(targetID context.NodeID, cmd uint64, data []byte)
 			Ctx.Errorf("error:%s, account:%s, roleid:%d", err.Error(), msg.GetAccount(), msg.GetRoleID())
 			return
 		}
-        data = append(data, flag)
-		lobby.accountMgr.PostMsg(msg.GetAccount(), uint64(protocol.CMD_LOBBY_MATCH_RESULT), data)
+		lobby.accountMgr.PostMsg(msg.GetAccount(), uint64(protocol.CMD_LOBBY_MATCH_RESULT), data, flag)
 	default:
 		Ctx.Errorln("Unknown cmd:", cmd)
 	}

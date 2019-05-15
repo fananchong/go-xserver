@@ -75,7 +75,7 @@ func (accountObj *Account) Start() {
 		for {
 			select {
 			case msg := <-accountObj.chanMsg:
-				accountObj.processMsg(msg.Cmd, msg.Data)
+				accountObj.processMsg(msg.Cmd, msg.Data, msg.Flag)
 			case <-accountObj.chanClose:
 				return
 			}

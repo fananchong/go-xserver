@@ -32,12 +32,12 @@ func (lobby *Lobby) Close() {
 
 }
 
-func (lobby *Lobby) onRelayMsg(source config.NodeType, targetID context.NodeID, account string, cmd uint64, data []byte) {
+func (lobby *Lobby) onRelayMsg(source config.NodeType, targetID context.NodeID, account string, cmd uint64, data []byte, flag uint8) {
 	switch source {
 	case config.Client:
-		lobby.accountMgr.PostMsg(account, cmd, data)
+		lobby.accountMgr.PostMsg(account, cmd, data, flag)
 	case services.Match:
-		lobby.onMatchMsg(targetID, cmd, data)
+		lobby.onMatchMsg(targetID, cmd, data, flag)
 	default:
 		Ctx.Errorln("Unknown source, type:", source, "(", int(source), ")")
 	}

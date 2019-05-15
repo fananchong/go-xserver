@@ -56,7 +56,7 @@ func (accountMgr *AccountMgr) DelAccount(account string) {
 }
 
 // PostMsg : 推送消息
-func (accountMgr *AccountMgr) PostMsg(account string, cmd uint64, data []byte) {
+func (accountMgr *AccountMgr) PostMsg(account string, cmd uint64, data []byte, flag uint8) {
 	var accountObj *Account
 	if protocol.CMD_LOBBY_ENUM(cmd) == protocol.CMD_LOBBY_LOGIN {
 		accountObj = accountMgr.onLogin(account)
@@ -71,7 +71,7 @@ func (accountMgr *AccountMgr) PostMsg(account string, cmd uint64, data []byte) {
 		Ctx.Errorln("The account's work coroutine has been closed. account:", account, "cmd:", cmd)
 		return
 	}
-	accountObj.PostMsg(cmd, data)
+	accountObj.PostMsg(cmd, data, flag)
 }
 
 func (accountMgr *AccountMgr) onLogin(account string) *Account {

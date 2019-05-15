@@ -7,10 +7,10 @@ import (
 )
 
 // onChat : 聊天
-func (accountObj *Account) onChat(data []byte) {
+func (accountObj *Account) onChat(data []byte, flag uint8) {
 	Ctx.Infoln("Chat, account:", accountObj.account, "roleid:", accountObj.currentRole.Key)
 	msg := &protocol.MSG_LOBBY_CHAT{}
-	if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], msg) == nil {
+	if gotcp.DecodeCmd(data, flag, msg) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_CHAT`(", int(protocol.CMD_LOBBY_CHAT), "). account", accountObj.account, "roleid:", accountObj.currentRole.Key)
 		return
 	}

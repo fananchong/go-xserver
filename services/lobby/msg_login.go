@@ -7,7 +7,7 @@ import (
 )
 
 // onLogin : 获取角色列表（登录大厅服务）
-func (accountObj *Account) onLogin(data []byte) {
+func (accountObj *Account) onLogin(data []byte, flag uint8) {
 	Ctx.Infoln("Login, account:", accountObj.account)
 	msg := &protocol.MSG_LOBBY_LOGIN_RESULT{}
 	for i, role := range accountObj.GetRoles() {
@@ -25,10 +25,10 @@ func (accountObj *Account) onLogin(data []byte) {
 }
 
 // onCreateRole : 创建角色
-func (accountObj *Account) onCreateRole(data []byte) {
+func (accountObj *Account) onCreateRole(data []byte, flag uint8) {
 	Ctx.Infoln("Create role, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_CREATE_ROLE{}
-	if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], req) == nil {
+	if gotcp.DecodeCmd(data, flag, req) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_CREATE_ROLE`(", int(protocol.CMD_LOBBY_CREATE_ROLE), "). account", accountObj.account)
 		return
 	}
@@ -106,10 +106,10 @@ func (accountObj *Account) onCreateRole(data []byte) {
 }
 
 // onEnterGame : 获取角色详细信息（进入游戏）
-func (accountObj *Account) onEnterGame(data []byte) {
+func (accountObj *Account) onEnterGame(data []byte, flag uint8) {
 	Ctx.Infoln("Enter Game, account:", accountObj.account)
 	req := &protocol.MSG_LOBBY_ENTER_GAME{}
-	if gotcp.DecodeCmd(data[:len(data)-1], data[len(data)-1], req) == nil {
+	if gotcp.DecodeCmd(data, flag, req) == nil {
 		Ctx.Errorln("Message parsing failed, message number is`protocol.CMD_LOBBY_ENTER_GAME`(", int(protocol.CMD_LOBBY_ENTER_GAME), "). account", accountObj.account)
 		return
 	}

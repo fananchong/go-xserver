@@ -49,7 +49,7 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER, data []by
 	}
 	sess.Info = msg.GetData()
 	sess.SessMgr.Register(sess.SessionBase)
-	sess.Ctx.Infoln("The service node registers with me, the node ID is",msg.GetData().GetId().GetID())
+	sess.Ctx.Infoln("The service node registers with me, the node ID is", msg.GetData().GetId().GetID())
 	sess.Ctx.Infoln(sess.Info)
 }
 
@@ -80,11 +80,11 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		if targetAccount != "" {
 			sess.funcSendToClient(targetAccount,
 				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config().Common.MsgCmdOffset),
-				msg.GetData())
+				msg.GetData(), uint8(msg.GetFlag()))
 		} else {
 			sess.funcSendToAllClient(
 				uint64(msg.GetCMD())+uint64(sess.Info.GetType())*uint64(sess.Ctx.Config().Common.MsgCmdOffset),
-				msg.GetData())
+				msg.GetData(), uint8(msg.GetFlag()))
 		}
 	case protocol.CMD_GW_RELAY_SERVER_MSG1:
 		msg := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
@@ -123,7 +123,7 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 		if targetSess != nil {
 			targetSess.Send(data, flag)
 		} else {
-			sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetServerID:",id)
+			sess.Ctx.Errorln("No find server.", "cmd:", msg.GetCMD(), "targetServerID:", id)
 			done = false
 			return
 		}

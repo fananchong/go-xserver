@@ -145,13 +145,14 @@ func (sess *Session) DoRecv(cmd uint64, data []byte, flag byte) (done bool) {
 }
 
 // SendMsgToClient : 发送消息给客户端，通过 Gateway 中继
-func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bool {
+func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte, flag uint8) bool {
 	targetSess := sess.GWMgr.GetAndActive(account)
 	if targetSess != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 		msgRelay.Account = account
 		msgRelay.CMD = uint32(cmd)
 		msgRelay.Data = data
+		msgRelay.Flag = uint32(flag)
 		return targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 	}
 	// 非本服务节点上的账号，则查找对应的 Gateway ID ，再发送
@@ -182,23 +183,25 @@ func (sess *Session) SendMsgToClient(account string, cmd uint64, data []byte) bo
 	msgRelay.Account = account
 	msgRelay.CMD = uint32(cmd)
 	msgRelay.Data = data
+	msgRelay.Flag = uint32(flag)
 	return targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 }
 
 // BroadcastMsgToClient : 广播消息给客户端，通过 Gateway 中继
-func (sess *Session) BroadcastMsgToClient(cmd uint64, data []byte) bool {
+func (sess *Session) BroadcastMsgToClient(cmd uint64, data []byte, flag uint8) bool {
 	sess.SessMgr.ForByType(config.Gateway, func(targetSess *nodecommon.SessionBase) {
 		msgRelay := &protocol.MSG_GW_RELAY_CLIENT_MSG{}
 		msgRelay.Account = ""
 		msgRelay.CMD = uint32(cmd)
 		msgRelay.Data = data
+		msgRelay.Flag = uint32(flag)
 		targetSess.SendMsg(uint64(protocol.CMD_GW_RELAY_CLIENT_MSG), msgRelay)
 	})
 	return true
 }
 
 // SendMsgToServer : 发送消息给某类型服务（随机一个）
-func (sess *Session) SendMsgToServer(t config.NodeType, cmd uint64, data []byte) bool {
+func (sess *Session) SendMsgToServer(t config.NodeType, cmd uint64, data []byte, flag uint8) bool {
 	gw := sess.SessMgr.SelectOne(config.Gateway)
 	if gw != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
@@ -208,13 +211,14 @@ func (sess *Session) SendMsgToServer(t config.NodeType, cmd uint64, data []byte)
 		msgRelay.SendType = protocol.RELAY_SERVER_MSG_TYPE_RANDOM
 		msgRelay.CMD = uint32(cmd)
 		msgRelay.Data = data
+		msgRelay.Flag = uint32(flag)
 		return gw.SendMsg(uint64(protocol.CMD_GW_RELAY_SERVER_MSG1), msgRelay)
 	}
 	return false
 }
 
 // ReplyMsgToServer : 回发消息给请求服务器
-func (sess *Session) ReplyMsgToServer(targetID context.NodeID, cmd uint64, data []byte) bool {
+func (sess *Session) ReplyMsgToServer(targetID context.NodeID, cmd uint64, data []byte, flag uint8) bool {
 	gw := sess.SessMgr.SelectOne(config.Gateway)
 	if gw != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG2{}
@@ -223,13 +227,14 @@ func (sess *Session) ReplyMsgToServer(targetID context.NodeID, cmd uint64, data 
 		msgRelay.TargetID = nodecommon.NodeID2ServerID(targetID)
 		msgRelay.CMD = uint32(cmd)
 		msgRelay.Data = data
+		msgRelay.Flag = uint32(flag)
 		return gw.SendMsg(uint64(protocol.CMD_GW_RELAY_SERVER_MSG2), msgRelay)
 	}
 	return false
 }
 
 // BroadcastMsgToServer : 广播消息给某类型服务
-func (sess *Session) BroadcastMsgToServer(t config.NodeType, cmd uint64, data []byte) bool {
+func (sess *Session) BroadcastMsgToServer(t config.NodeType, cmd uint64, data []byte, flag uint8) bool {
 	gw := sess.SessMgr.SelectOne(config.Gateway)
 	if gw != nil {
 		msgRelay := &protocol.MSG_GW_RELAY_SERVER_MSG1{}
@@ -239,6 +244,7 @@ func (sess *Session) BroadcastMsgToServer(t config.NodeType, cmd uint64, data []
 		msgRelay.SendType = protocol.RELAY_SERVER_MSG_TYPE_BROADCAST
 		msgRelay.CMD = uint32(cmd)
 		msgRelay.Data = data
+		msgRelay.Flag = uint32(flag)
 		return gw.SendMsg(uint64(protocol.CMD_GW_RELAY_SERVER_MSG1), msgRelay)
 	}
 	return false

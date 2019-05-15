@@ -10,14 +10,17 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
+// 框架层使用 []byte 数据块作为参数
+// 逻辑层可以自定义协议格式，这里用的是 protobuf
+// 封装下接口，方便代码调用
+
 // SendMsgToClient : 发送数据给客户端
 func SendMsgToClient(ctx *common.Context, account string, cmd uint64, msg proto.Message) (bool, error) {
 	data, flag, err := gotcp.Encode(cmd, msg)
 	if err != nil {
 		return false, err
 	}
-	data = append(data, flag)
-	if ctx.SendMsgToClient(account, cmd, data) {
+	if ctx.SendMsgToClient(account, cmd, data, flag) {
 		return true, nil
 	}
 	return false, fmt.Errorf("Sending message failed, account: %s, cmd:%d", account, cmd)
@@ -38,8 +41,7 @@ func BroadcastMsgToClient(ctx *common.Context, cmd uint64, msg proto.Message) (b
 	if err != nil {
 		return false, err
 	}
-	data = append(data, flag)
-	if ctx.BroadcastMsgToClient(cmd, data) {
+	if ctx.BroadcastMsgToClient(cmd, data, flag) {
 		return true, nil
 	}
 	return false, fmt.Errorf("Broadcast message failed, cmd:%d", cmd)
@@ -51,8 +53,7 @@ func SendMsgToServer(ctx *common.Context, t config.NodeType, cmd uint64, msg pro
 	if err != nil {
 		return false, err
 	}
-	data = append(data, flag)
-	if ctx.SendMsgToServer(t, cmd, data) {
+	if ctx.SendMsgToServer(t, cmd, data, flag) {
 		return true, nil
 	}
 	return false, fmt.Errorf("SendMsgToServer message failed, cmd:%d", cmd)
@@ -64,8 +65,7 @@ func ReplyMsgToServer(ctx *common.Context, targetID context.NodeID, cmd uint64, 
 	if err != nil {
 		return false, err
 	}
-	data = append(data, flag)
-	if ctx.ReplyMsgToServer(targetID, cmd, data) {
+	if ctx.ReplyMsgToServer(targetID, cmd, data, flag) {
 		return true, nil
 	}
 	return false, fmt.Errorf("ReplyMsgToServer message failed, cmd:%d", cmd)
@@ -77,8 +77,7 @@ func BroadcastMsgToServer(ctx *common.Context, t config.NodeType, cmd uint64, ms
 	if err != nil {
 		return false, err
 	}
-	data = append(data, flag)
-	if ctx.BroadcastMsgToServer(t, cmd, data) {
+	if ctx.BroadcastMsgToServer(t, cmd, data, flag) {
 		return true, nil
 	}
 	return false, fmt.Errorf("BroadcastMsgToServer message failed, cmd:%d", cmd)

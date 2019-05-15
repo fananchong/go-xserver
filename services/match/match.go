@@ -27,10 +27,10 @@ func (match *Match) Start() bool {
 func (match *Match) Close() {
 }
 
-func (match *Match) onRelayMsg(source config.NodeType, targetID context.NodeID, _ string, cmd uint64, data []byte) {
+func (match *Match) onRelayMsg(source config.NodeType, targetID context.NodeID, _ string, cmd uint64, data []byte, flag uint8) {
 	switch source {
 	case services.Lobby:
-		match.onLobbyMsg(targetID, cmd, data)
+		match.onLobbyMsg(targetID, cmd, data, flag)
 	default:
 		Ctx.Errorln("Unknown source, type:", source, "(", int(source), ")")
 	}

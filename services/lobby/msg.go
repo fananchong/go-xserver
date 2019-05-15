@@ -6,24 +6,25 @@ import "github.com/fananchong/go-xserver/services/internal/protocol"
 type ChanMsg struct {
 	Cmd  uint64
 	Data []byte
+	Flag uint8
 }
 
 // PostMsg : 推送消息
-func (accountObj *Account) PostMsg(cmd uint64, data []byte) {
+func (accountObj *Account) PostMsg(cmd uint64, data []byte, flag uint8) {
 	datacopy := make([]byte, len(data))
 	copy(datacopy, data)
-	accountObj.chanMsg <- ChanMsg{cmd, datacopy}
+	accountObj.chanMsg <- ChanMsg{cmd, datacopy, flag}
 }
 
 // ProcessMsg : 处理消息
-func (accountObj *Account) processMsg(cmd uint64, data []byte) {
+func (accountObj *Account) processMsg(cmd uint64, data []byte, flag uint8) {
 	switch protocol.CMD_LOBBY_ENUM(cmd) {
 	case protocol.CMD_LOBBY_LOGIN:
-		accountObj.onLogin(data)
+		accountObj.onLogin(data, flag)
 	case protocol.CMD_LOBBY_CREATE_ROLE:
-		accountObj.onCreateRole(data)
+		accountObj.onCreateRole(data, flag)
 	case protocol.CMD_LOBBY_ENTER_GAME:
-		accountObj.onEnterGame(data)
+		accountObj.onEnterGame(data, flag)
 	default:
 		// 上面 3 个协议，属登录 Lobby 相关流程处理。单独拎出来
 		// 其余协议就在下面处理
@@ -33,11 +34,11 @@ func (accountObj *Account) processMsg(cmd uint64, data []byte) {
 		}
 		switch protocol.CMD_LOBBY_ENUM(cmd) {
 		case protocol.CMD_LOBBY_CHAT:
-			accountObj.onChat(data)
+			accountObj.onChat(data, flag)
 		case protocol.CMD_LOBBY_MATCH:
-			accountObj.onMatch(data)
+			accountObj.onMatch(data, flag)
 		case protocol.CMD_LOBBY_MATCH_RESULT:
-			accountObj.onMatchResult(data)
+			accountObj.onMatchResult(data, flag)
 		default:
 			Ctx.Errorln("[LOBBY] Unknown cmd, cmd:", cmd)
 		}
