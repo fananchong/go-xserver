@@ -44,7 +44,7 @@ func (sess *IntranetSession) Start() {
 				continue
 			}
 			sess.Verify()
-			sess.RegisterSelf(sess.sourceSess.GetID(), sess.sourceSess.GetType(), config.Gateway)
+			sess.RegisterSelf(sess.sourceSess.GetID(), sess.sourceSess.GetType(), config.Gateway, sess.Info.GetId())
 			sess.Ctx.Infoln("Successfully connected to the gateway server, address:", address, "node:", sess.Info.GetId().GetID())
 			break
 		}

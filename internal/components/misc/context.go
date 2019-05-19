@@ -16,6 +16,7 @@ const (
 	_contextValueKey ContextValueType = iota
 	_waitGroup
 	_pluginType
+	_pluginID
 )
 
 // CreateContext : 获取 context.Context 对象
@@ -23,6 +24,7 @@ func CreateContext() context.Context {
 	contextValue := make(map[ContextValueType]interface{})
 	contextValue[_waitGroup] = &sync.WaitGroup{}
 	contextValue[_pluginType] = 0
+	contextValue[_pluginID] = 0
 	return context.WithValue(context.Background(), _contextValueKey, contextValue)
 }
 
@@ -54,4 +56,16 @@ func SetPluginType(ctx context.Context, t config.NodeType) {
 func GetPluginType(ctx context.Context) config.NodeType {
 	values := ctx.Value(_contextValueKey).(map[ContextValueType]interface{})
 	return values[_pluginType].(config.NodeType)
+}
+
+// SetPluginID : 设置插件ID
+func SetPluginID(ctx context.Context, id uint32) {
+	values := ctx.Value(_contextValueKey).(map[ContextValueType]interface{})
+	values[_pluginID] = id
+}
+
+// GetPluginID : 获取插件ID
+func GetPluginID(ctx context.Context) uint32 {
+	values := ctx.Value(_contextValueKey).(map[ContextValueType]interface{})
+	return values[_pluginID].(uint32)
 }

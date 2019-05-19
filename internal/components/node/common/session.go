@@ -4,6 +4,7 @@ import (
 	"github.com/fananchong/go-xserver/common"
 	"github.com/fananchong/go-xserver/common/config"
 	"github.com/fananchong/go-xserver/common/context"
+	"github.com/fananchong/go-xserver/internal/components/misc"
 	"github.com/fananchong/go-xserver/internal/protocol"
 	"github.com/fananchong/go-xserver/internal/utils"
 	"github.com/fananchong/gotcp"
@@ -22,10 +23,9 @@ type ISessionDerived interface {
 type SessionBase struct {
 	DefaultNodeInterfaceImpl
 	*gotcp.Session
-	Ctx     *common.Context
-	MsgData []byte
-	MsgFlag byte
-	derived ISessionDerived
+	Ctx              *common.Context
+	CacheRegisterMsg *protocol.MSG_MGR_REGISTER_SERVER
+	derived          ISessionDerived
 }
 
 // NewSessionBase : 网络会话类的构造函数
@@ -78,6 +78,20 @@ func (sessbase *SessionBase) doVerify(cmd protocol.CMD_MGR_ENUM, data []byte, fl
 			sessbase.Close()
 			return false
 		}
+		if msg.GetTargetServerType() != uint32(misc.GetPluginType(sessbase.Ctx)) {
+			sessbase.Ctx.Errorln("Target server type verification failed.",
+				"Msg target server type:", msg.GetTargetServerType(),
+				"Expect target server type:", sessbase.GetType())
+			sessbase.Close()
+			return false
+		}
+		if msg.GetTargetServerID().GetID() != 0 && msg.GetTargetServerID().GetID() != misc.GetPluginID(sessbase.Ctx) {
+			sessbase.Ctx.Errorln("Target server id verification failed.",
+				"Msg target server id:", msg.GetTargetServerID().GetID(),
+				"Expect target server id:", sessbase.GetID())
+			sessbase.Close()
+			return false
+		}
 		sessbase.derived.DoVerify(msg)
 		sessbase.Verify()
 		return true
@@ -107,7 +121,7 @@ func (sessbase *SessionBase) doLose(data []byte, flag byte) {
 }
 
 // RegisterSelf : 注册自己
-func (sessbase *SessionBase) RegisterSelf(id context.NodeID, selfType config.NodeType, targetServerType config.NodeType) {
+func (sessbase *SessionBase) RegisterSelf(id context.NodeID, selfType config.NodeType, targetServerType config.NodeType, targetServerID *protocol.SERVER_ID) {
 	msg := &protocol.MSG_MGR_REGISTER_SERVER{}
 	msg.Data = &protocol.SERVER_INFO{}
 	msg.Data.Id = NodeID2ServerID(id)
@@ -121,6 +135,7 @@ func (sessbase *SessionBase) RegisterSelf(id context.NodeID, selfType config.Nod
 
 	msg.Token = sessbase.Ctx.Config().Common.IntranetToken
 	msg.TargetServerType = uint32(targetServerType)
+	msg.TargetServerID = targetServerID
 	sessbase.Info = msg.GetData()
 	sessbase.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
 

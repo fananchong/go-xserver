@@ -48,7 +48,7 @@ func (sess *Session) connectMgrServer() {
 			goto TRY_AGAIN
 		}
 		sess.Verify()
-		sess.RegisterSelf(sess.GetID(), sess.GetType(), config.Mgr)
+		sess.RegisterSelf(sess.GetID(), sess.GetType(), config.Mgr, &protocol.SERVER_ID{})
 	}
 }
 

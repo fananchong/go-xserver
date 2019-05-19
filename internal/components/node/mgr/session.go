@@ -26,7 +26,7 @@ func (sess *Session) Init(root context.Context, conn net.Conn, derived gotcp.ISe
 // DoVerify : 验证时保存自己的注册消息
 func (sess *Session) DoVerify(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 	sess.Info = msg.GetData()
-	sess.MsgData, sess.MsgFlag, _ = gotcp.Encode(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
+	sess.CacheRegisterMsg = msg
 }
 
 // DoRegister : 某节点注册时处理
@@ -40,19 +40,22 @@ func (sess *Session) DoRegister(msg *protocol.MSG_MGR_REGISTER_SERVER) {
 		return
 	}
 	sess.Info = msg.GetData()
-	sess.MsgData, sess.MsgFlag, _ = gotcp.Encode(uint64(protocol.CMD_MGR_REGISTER_SERVER), msg)
 	sess.Ctx.Infoln("The service node registers with me, the node ID is ", msg.GetData().GetId().GetID())
 	sess.Ctx.Infoln(sess.Info)
 
 	sess.SessMgr.Register(sess.SessionBase)
 	sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
-			elem.SendEx(int(protocol.CMD_MGR_REGISTER_SERVER), sess.MsgData, sess.MsgFlag)
+			sess.CacheRegisterMsg.TargetServerType = uint32(elem.GetType())
+			sess.CacheRegisterMsg.TargetServerID = nodecommon.NodeID2ServerID(elem.GetID())
+			elem.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), sess.CacheRegisterMsg)
 		}
 	})
 	sess.SessMgr.ForAll(func(elem *nodecommon.SessionBase) {
 		if elem != sess.SessionBase {
-			sess.SendEx(int(protocol.CMD_MGR_REGISTER_SERVER), elem.MsgData, elem.MsgFlag)
+			elem.CacheRegisterMsg.TargetServerType = uint32(sess.GetType())
+			elem.CacheRegisterMsg.TargetServerID = nodecommon.NodeID2ServerID(sess.GetID())
+			sess.SendMsg(uint64(protocol.CMD_MGR_REGISTER_SERVER), elem.CacheRegisterMsg)
 		}
 	})
 }

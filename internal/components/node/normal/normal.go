@@ -46,6 +46,7 @@ func NewNormal(ctx *common.Context) *Normal {
 		normal.ctx.INode = normal
 		if pluginType != config.Gateway {
 			ctx.Infoln("NODE ID:", normal.GetID(), ", NODE TYPE:", pluginType)
+			misc.SetPluginID(normal.ctx, uint32(normal.GetID()))
 		}
 	}
 	return normal
@@ -72,6 +73,7 @@ func (normal *Normal) Start() bool {
 			if pluginType == config.Gateway {
 				normal.Info.Id = nodecommon.NodeID2ServerID(normal.ctx.IGateway.(*nodegateway.Gateway).GetID())
 				normal.ctx.Infoln("NODE ID:", normal.GetID(), ", NODE TYPE:", pluginType)
+				misc.SetPluginID(normal.ctx, uint32(normal.GetID()))
 			}
 			normal.ctx.Infoln("Service node start ...")
 			if normal.start() == false {
