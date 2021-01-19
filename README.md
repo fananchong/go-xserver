@@ -16,9 +16,6 @@
   ./make.sh
   ```
 
-- 【非必须】 Windows 10 下开发，请参考[在 Win10 中 Linux 环境搭建](doc/WIKI-在Win10中Linux环境搭建.md)
-
-
 ## 运行
 
 - 安装 Redis ，并修改 config/config.toml 相关配置
@@ -28,17 +25,6 @@
   ./make.sh start
   ./make.sh stop
   ```
-
-- Run In WSL 例子
-  ```shell
-  ./wsl.sh start
-  ./wsl.sh stop
-  ```
-
-   wsl 目前`监听同一个端口不报错`，详细请参考 issue ： https://github.com/Microsoft/WSL/issues/2915
-
-   因此 wsl.sh 脚本中具体指定下 --network-port 参数
-
 
 ## 测试客户端
 
@@ -70,8 +56,9 @@
   
 ## v0.2
 
-- 参考 micro/go-micro 改造框架层代码
-- 服务发现重做，参考 micro/go-micro 提炼 接口，并默认支持 mdns 
+- 基于 gRPC-go 改造框架层代码
+- 分布式事务框架
+- 支持 istio 部署
 
 
 ## WIKI
